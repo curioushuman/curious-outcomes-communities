@@ -5,12 +5,12 @@ import { LoggableModule } from '@curioushuman/loggable';
 
 import { MongoDbModule } from '../shared/infra/database/mongo-db/mongo-db.module';
 import { IdentityAndAccessModule } from '../identity-and-access/identity-and-access.module';
-import { PokemonModule } from '../pokemon/pokemon.module';
+import { ContactsModule } from '../modules/contacts/contacts.module';
 
 /**
  * Modules = the aggregates of our domain
  */
-const modules = [PokemonModule];
+const modules = [ContactsModule];
 
 /**
  * Supporting imports
