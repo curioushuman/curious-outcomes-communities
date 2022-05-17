@@ -8,7 +8,7 @@
       "outputs": [],
       "options": {
         "commands": [
-          "docker build -f ./apps/api/Dockerfile . --target development -t curioushuman/poke-api"
+          "docker build -f ./apps/api/Dockerfile . --target development -t curioushuman/curious-outcomes-api"
         ],
         "parallel": false
       }
@@ -18,7 +18,7 @@
       "outputs": [],
       "options": {
         "commands": [
-          "docker build -f ./apps/api/Dockerfile . --target test -t curioushuman/poke-api"
+          "docker build -f ./apps/api/Dockerfile . --target test -t curioushuman/curious-outcomes-api"
         ],
         "parallel": false
       }
@@ -28,7 +28,7 @@
       "outputs": [],
       "options": {
         "commands": [
-          "docker build --platform=linux/amd64 -f ./apps/api/Dockerfile . --target production -t curioushuman/poke-api:{args.tag}"
+          "docker build --platform=linux/amd64 -f ./apps/api/Dockerfile . --target production -t curioushuman/curious-outcomes-api:{args.tag}"
         ],
         "parallel": false
       }

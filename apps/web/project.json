@@ -8,7 +8,7 @@
       "outputs": [],
       "options": {
         "commands": [
-          "docker build -f ./apps/web/Dockerfile . --target development -t curioushuman/poke-web"
+          "docker build -f ./apps/web/Dockerfile . --target development -t curioushuman/curious-outcomes-web"
         ],
         "parallel": false
       }
@@ -18,7 +18,7 @@
       "outputs": [],
       "options": {
         "commands": [
-          "docker build -f ./apps/web/Dockerfile . --target test -t curioushuman/poke-web"
+          "docker build -f ./apps/web/Dockerfile . --target test -t curioushuman/curious-outcomes-web"
         ],
         "parallel": false
       }
@@ -28,7 +28,7 @@
       "outputs": [],
       "options": {
         "commands": [
-          "docker build --platform=linux/amd64 -f ./apps/web/Dockerfile . --target production -t curioushuman/poke-web:{args.tag}"
+          "docker build --platform=linux/amd64 -f ./apps/web/Dockerfile . --target production -t curioushuman/curious-outcomes-web:{args.tag}"
         ],
         "parallel": false
       }

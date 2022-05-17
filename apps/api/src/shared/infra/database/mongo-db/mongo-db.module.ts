@@ -13,11 +13,11 @@ import { MongoDbService } from './mongo-db.service';
         const logger = new LoggableLogger(
           'MongoDbModule.MongooseModule.forRootAsync'
         );
-        const db = process.env.POKE_MONGODB_DATABASE;
-        const u = process.env.POKE_MONGODB_USERNAME;
-        const p = process.env.POKE_MONGODB_PASSWORD;
-        const n = process.env.POKE_RELEASE_NAME;
-        const ns = process.env.POKE_RELEASE_NAMESPACE;
+        const db = process.env.MONGODB_DATABASE;
+        const u = process.env.MONGODB_USERNAME;
+        const p = process.env.MONGODB_PASSWORD;
+        const n = process.env.K8S_RELEASE_NAME;
+        const ns = process.env.K8S_RELEASE_NAMESPACE;
         const port = process.env.POKE_API_MONGODB_SERVICE_PORT_MONGODB;
         const uri = `mongodb://${u}:${p}@${n}-mongodb.${ns}.svc.cluster.local:${port}/${db}`;
         logger.debug(`MongoDB URI: ${uri}`);

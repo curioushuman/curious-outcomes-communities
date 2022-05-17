@@ -1,8 +1,8 @@
 {
-  "name": "pok-e-dentifier",
+  "name": "curious-outcomes-communities",
   "version": "0.0.1",
-  "description": "For those embarrassing Pokemon moments...",
-  "productName": "Pok-E-Dentifier",
+  "description": "Using community-supported learning to drive the most necessary outcomes.",
+  "productName": "Curious Outcomes Communities",
   "author": "Mike Kelly",
   "license": "MIT",
   "scripts": {

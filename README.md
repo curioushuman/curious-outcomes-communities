@@ -1,6 +1,6 @@
-# Pok-e-dentifier
+# Curious Outcomes Communities
 
-For those embarrassing pokemon moments..
+Using community-supported learning to drive the most necessary outcomes.
 
 ## Built with
 
@@ -10,26 +10,11 @@ For those embarrassing pokemon moments..
 - K8s
 - Skaffold
 
-## Status
-
-Not quite production ready, outstanding:
-
-- App
-  - Connection to API
-  - Auth
-  - Further tidying
-  - Testing
-- API
-  - Connection to Poke-API
-  - Auth
-- CI/CD
-  - More info available in [poke-k8s](https://github.com/curioushuman/poke-k8s) repo
-
 # Setup
 
 ## Install K8s
 
-- Clone the [poke-k8s repo](https://github.com/curioushuman/poke-k8s) to the same directory as this repo
+- Clone the [curious-outcomes-k8s repo](https://github.com/curioushuman/curious-outcomes-k8s) to the same directory as this repo
 - Follow the (Simple) setup steps from that repo
 
 ## Software
@@ -71,13 +56,13 @@ $ skaffold dev
 
 Then access web interface via:
 
-- [http://poke-web.dev](http://poke-web.dev)
+- [http://curious-outcomes-web.dev](http://curious-outcomes-web.dev)
 
 If you are presented with an HTTPS error, type `thisisunsafe` to resolve locally.
 
 To access API:
 
-- [http://poke-api.dev](http://poke-api.dev)
+- [http://curious-outcomes-api.dev](http://curious-outcomes-api.dev)
 
 You can run some basic manual tests via the `~/apps/api/requests.http` file so long as you have the [REST Client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) extension installed.
 

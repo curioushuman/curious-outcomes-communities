@@ -1,14 +1,14 @@
 ### Test for readiness
-GET http://poke.dev/api/ping
+GET http://curious-outcomes.dev/api/ping
 
 
 ### Users
-POST http://poke.dev/api/users
+POST http://curious-outcomes.dev/api/users
 
 
 ### PROD: Test for readiness
-GET https://api.curiouscommunities.net/api/ping
+GET https://api.curious-outcomes.community/api/ping
 
 
 ### STAGING: Test for readiness
-GET http://api-staging.curiouscommunities.net/api/ping
+GET http://api-staging.curious-outcomes.community/api/ping

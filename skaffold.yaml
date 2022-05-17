@@ -6,29 +6,29 @@ deploy:
   helm:
     releases:
     # TODO create chart museum and draw from there
-    - name: poke-api
+    - name: co-api
       version: ~0.0.3
-      chartPath: ../poke-k8s/core/helm/poke-api
-      namespace: poke-dev
+      chartPath: ../k8s/core/helm/api
+      namespace: co-dev
       createNamespace: true
       artifactOverrides:
-        image: curioushuman/poke-api
+        image: curioushuman/curious-outcomes-api
       imageStrategy:
         helm: {}
-    - name: poke-web
+    - name: co-web
       version: ~0.0.1
-      chartPath: ../poke-k8s/core/helm/poke-web
-      namespace: poke-dev
+      chartPath: ../k8s/core/helm/web
+      namespace: co-dev
       # createNamespace: true
       artifactOverrides:
-        image: curioushuman/poke-web
+        image: curioushuman/curious-outcomes-web
       imageStrategy:
         helm: {}
 build:
   local:
     push: false
   artifacts:
-    - image: curioushuman/poke-api
+    - image: curioushuman/curious-outcomes-api
       context: .
       docker:
         dockerfile: apps/api/Dockerfile
@@ -39,7 +39,7 @@ build:
             dest: '/usr/src/app/'
           - src: 'libs/shared/**/*.ts'
             dest: '/usr/src/app/'
-    - image: curioushuman/poke-web
+    - image: curioushuman/curious-outcomes-web
       context: .
       docker:
         dockerfile: apps/web/Dockerfile
