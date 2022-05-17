@@ -1,0 +1,50 @@
+apiVersion: skaffold/v2beta27
+kind: Config
+deploy:
+  # kubeContext: "minikube"
+  kubeContext: "docker-desktop"
+  helm:
+    releases:
+    # TODO create chart museum and draw from there
+    - name: poke-api
+      version: ~0.0.3
+      chartPath: ../poke-k8s/core/helm/poke-api
+      namespace: poke-dev
+      createNamespace: true
+      artifactOverrides:
+        image: curioushuman/poke-api
+      imageStrategy:
+        helm: {}
+    - name: poke-web
+      version: ~0.0.1
+      chartPath: ../poke-k8s/core/helm/poke-web
+      namespace: poke-dev
+      # createNamespace: true
+      artifactOverrides:
+        image: curioushuman/poke-web
+      imageStrategy:
+        helm: {}
+build:
+  local:
+    push: false
+  artifacts:
+    - image: curioushuman/poke-api
+      context: .
+      docker:
+        dockerfile: apps/api/Dockerfile
+        target: test
+      sync:
+        manual:
+          - src: 'apps/api/src/**/*.ts'
+            dest: '/usr/src/app/'
+          - src: 'libs/shared/**/*.ts'
+            dest: '/usr/src/app/'
+    - image: curioushuman/poke-web
+      context: .
+      docker:
+        dockerfile: apps/web/Dockerfile
+        target: test
+      sync:
+        manual:
+          - src: 'apps/web/src/**/*.ts'
+            dest: '/usr/src/app/'
