@@ -27,10 +27,10 @@ export class JourneysController {
       body,
       this.checkCreateJourneyRequest,
       TE.fromEither,
-      TE.chain((commandDto) =>
+      TE.chain((createJourneyDto) =>
         TE.tryCatch(
           async () => {
-            const command = new CreateJourneyCommand(commandDto);
+            const command = new CreateJourneyCommand(createJourneyDto);
             return await this.commandBus.execute<CreateJourneyCommand>(command);
           },
           (error: Error) => error as Error
@@ -42,12 +42,12 @@ export class JourneysController {
   }
 
   checkCreateJourneyRequest(
-    params: CreateJourneyRequestDto
+    dto: CreateJourneyRequestDto
   ): E.Either<Error, CreateJourneyDto> {
     return E.tryCatch(
       () => {
         return pipe(
-          params,
+          dto,
           CreateJourneyRequestDto.check,
           CreateJourneyMapper.toCommandDto
         );
