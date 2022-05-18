@@ -20,7 +20,7 @@ import { ContactsModule } from './fake.contacts.module';
  * - mimic e2e tests
  */
 
-describe('[Integration] ContactsModule', () => {
+describe('[Unit] ContactsModule', () => {
   let app: INestApplication;
   // disabling no-explicit-any for testing purposes
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
