@@ -68,6 +68,59 @@ You can run some basic manual tests via the `~/apps/api/requests.http` file so l
 
 # Testing
 
+## Approach to testing
+
+### To complete later
+
+- Need to make a decision RE Integration tests
+  - Most of them are independent of third party systems
+    - They use fakes
+    - This allows for rapid and continued testing
+  - Some of them will require integration with third parties
+    - As this is the core of what integration is for
+  - But I would like to be able to run them independently
+    - *.ispec.ts is already my own pattern
+    - It feels like creating another one might be a bit much
+  - DECISION
+    - Anything that mocks/fakes for anything can be considered closer to a unit test
+
+### Quick notes for now
+
+Remember, it all starts with [use cases/features](https://wiki.solidbook.io/13-Features-(use-cases)-are-the-key-193ca4bbb8604c0eada33d1ac86ed517).
+
+**1. Start with failing unit test for complete use case**
+
+- Create your acceptance test using Given, When, Then
+- Write a unit level test that mocks/fakes any third party systems
+  - supertest for http
+  - fake repository
+- Focus on the success/failure of this one use case
+
+This is your *outside in test*.
+
+*1.1. Write minimum amount of code to make it pass*
+
+- This can be either
+  - False pass
+  - Actual code pass
+
+Generally at the use case level you are probably going to start with a false pass. i.e. just return a 200 response so we know the vertical slice is working.
+
+**2. Incrementally add/update code to make the *outside in test* proper pass**
+
+This will be a series of iterations of the Red, Green, Refactor (RGR). i.e.
+
+- Add some code to move towards an **actual** pass of the use case test
+  - During this process your *outside in test* will be in a failed state
+- Use smaller, internal **RGR** loop(s) to create this code
+  - e.g. if you're adding a repository, start with failing tests for the repository
+  - Then make these pass
+- Until your *outside in test* is also passing with this new/updated code in place
+
+**3. Commit the passing code**
+
+Commit often; every time a test passes essentially. Pick and choose what you commit though, so the repo is always in a passing state.
+
 ## All
 
 TBC
