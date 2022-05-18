@@ -40,11 +40,11 @@ describe('[E2E] ContactsModule', () => {
     await app.close();
   });
 
-  describe('Given a specific Contacts is being requested', () => {
+  describe('Given a specific Contact is being requested', () => {
     let response: request.Response;
     let contact: Contact;
 
-    describe('When that Contacts exists, and the request is valid', () => {
+    describe('When that Contact exists, and the request is valid', () => {
       describe('Pikachu definitely exists, and everyone knows how to spell it', () => {
         beforeAll(async () => {
           contact = ContactBuilder().build();
@@ -75,7 +75,7 @@ describe('[E2E] ContactsModule', () => {
       });
     });
 
-    describe('When that Contacts does not exist e.g. Furfligarbabard', () => {
+    describe('When that Contact does not exist e.g. Furfligarbabard', () => {
       beforeAll(async () => {
         const dto = GetContactRequestDtoBuilder().doesntExist().build();
         response = await request(httpServer).get(`/api/contacts/${dto.slug}`);
@@ -87,7 +87,7 @@ describe('[E2E] ContactsModule', () => {
       test.todo('And the request/response is logged');
     });
 
-    describe('When that Contacts exists, but the request is invalid', () => {
+    describe('When that Contact exists, but the request is invalid', () => {
       describe("Farfetch'd, but they forgot to remove the apostrophe", () => {
         beforeAll(async () => {
           contact = ContactBuilder().withApostrophe().build();

@@ -39,7 +39,7 @@ export class ContactsController {
           (error: Error) => error as Error
         )
       ),
-      TE.chain((contacts) => TE.right(GetContactMapper.toResponseDto(contacts)))
+      TE.chain((contact) => TE.right(GetContactMapper.toResponseDto(contact)))
     );
 
     return executeTask(task);
