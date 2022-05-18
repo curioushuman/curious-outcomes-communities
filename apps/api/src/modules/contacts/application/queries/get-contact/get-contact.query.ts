@@ -14,7 +14,7 @@ export class GetContactQuery implements IQuery {
 }
 
 @QueryHandler(GetContactQuery)
-export class GetContactHandler implements IQueryHandler {
+export class GetContactHandler implements IQueryHandler<GetContactQuery> {
   constructor(private readonly contactRepository: ContactRepository) {}
 
   async execute(query: GetContactQuery): Promise<Contact> {
@@ -34,7 +34,7 @@ export class GetContactHandler implements IQueryHandler {
             `Invalid slug "${getContactQueryDto.slug})" supplied in GetContactHandler`
           );
         }
-        return error;
+        return error as Error;
       }
     );
     return executeTask(findOne);
