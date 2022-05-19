@@ -5,9 +5,15 @@ import * as request from 'supertest';
 import { Bootstrap } from '../../../bootstrap/bootstrap';
 // import { Journey } from '../domain/entities/journey';
 // import { JourneyBuilder } from './data-builders/journey.builder';
-import { CreateJourneyRequestDtoBuilder } from './data-builders/create-journey.request.builder';
+import {
+  CreateJourneyRequestDtoBuilder,
+  CreateJourneyFromRequestDtoBuilder,
+} from './data-builders/create-journey.request.builder';
 import { JourneysModule } from './fake.journeys.module';
-import { CreateJourneyRequestDto } from '../infra/dto/create-journey.request.dto';
+import {
+  CreateJourneyFromRequestDto,
+  CreateJourneyRequestDto,
+} from '../infra/dto/create-journey.request.dto';
 
 /**
  * For local integration tests we just want to make sure
@@ -43,17 +49,32 @@ describe('[Unit] JourneysModule', () => {
     await app.close();
   });
 
-  describe('Creating a course', () => {
+  describe('Creating a journey', () => {
     let response: request.Response;
     let createJourneyDto: CreateJourneyRequestDto;
+    let createJourneyFromDto: CreateJourneyFromRequestDto;
 
-    describe('When that Journey does not exist, and the body is valid', () => {
-      describe('Simplest version', () => {
+    describe('When that Journey does NOT exist, and the body is valid', () => {
+      beforeAll(async () => {
+        createJourneyDto = CreateJourneyRequestDtoBuilder().build();
+        response = await request(httpServer)
+          .post(`/api/journeys`)
+          .send(createJourneyDto);
+      });
+      test('Then response status should be 201', () => {
+        expect(response.status).toBe(201);
+      });
+
+      test.todo('And the request/response is logged');
+    });
+
+    describe('When creating FROM external source, that exists', () => {
+      describe('And all data is being drawn from said external source', () => {
         beforeAll(async () => {
-          createJourneyDto = CreateJourneyRequestDtoBuilder().build();
+          createJourneyFromDto = CreateJourneyFromRequestDtoBuilder().build();
           response = await request(httpServer)
-            .post(`/api/journeys`)
-            .send(createJourneyDto);
+            .post(`/api/journeys/from`)
+            .send(createJourneyFromDto);
         });
         test('Then response status should be 201', () => {
           expect(response.status).toBe(201);
