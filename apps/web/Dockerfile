@@ -4,7 +4,7 @@
 # ------
 # Build
 # ------
-FROM node:16-alpine AS build
+FROM node:18-alpine AS build
 
 # https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine
 RUN apk add --no-cache libc6-compat
@@ -24,7 +24,7 @@ RUN npm install
 # ------
 # Build for dev
 # ------
-FROM node:16-alpine AS build-development
+FROM node:18-alpine AS build-development
 
 RUN apk add --no-cache libc6-compat
 
@@ -40,7 +40,7 @@ RUN chmod +x entrypoint.sh
 # ------
 # Dev stage
 # ------
-FROM node:16-alpine AS development
+FROM node:18-alpine AS development
 
 RUN apk add --no-cache libc6-compat
 
@@ -60,7 +60,7 @@ CMD [ "sh", "entrypoint.sh" ]
 # ------
 # Test stage, used for local e2e tests
 # ------
-FROM node:16-alpine AS test
+FROM node:18-alpine AS test
 
 RUN apk add --no-cache libc6-compat
 
@@ -80,7 +80,7 @@ CMD [ "sh", "entrypoint.sh" ]
 # ------
 # Build for production
 # ------
-FROM node:16-alpine AS build-production
+FROM node:18-alpine AS build-production
 
 RUN apk add --no-cache libc6-compat
 

@@ -1,13 +1,13 @@
 apiVersion: skaffold/v2beta27
 kind: Config
 deploy:
-  # kubeContext: "minikube"
-  kubeContext: "docker-desktop"
+  kubeContext: "minikube"
+  # kubeContext: "docker-desktop"
   helm:
     releases:
     # TODO create chart museum and draw from there
     - name: co-api
-      version: ~0.0.3
+      version: ~0.0.1
       chartPath: ../k8s/core/helm/api
       namespace: co-dev
       createNamespace: true
