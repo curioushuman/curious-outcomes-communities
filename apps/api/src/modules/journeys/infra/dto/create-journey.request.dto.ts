@@ -4,9 +4,15 @@ import { Optional, Record, Static, String } from 'runtypes';
  * This is the form of data we expect as input into our API/Request
  */
 
+/**
+ * TODO
+ * - [ ] Remove externalId from the non-From-DTO
+ *       This is a temp. fix for mapper.fromRequestDto
+ */
 export const CreateJourneyRequestDto = Record({
   name: String,
   description: Optional(String),
+  externalId: Optional(String),
 });
 
 export type CreateJourneyRequestDto = Static<typeof CreateJourneyRequestDto>;
@@ -29,3 +35,7 @@ export const CreateJourneyFromRequestDto = fromRequestDto.And(
 export type CreateJourneyFromRequestDto = Static<
   typeof CreateJourneyFromRequestDto
 >;
+
+export type AnyCreateJourneyRequestDto =
+  | CreateJourneyRequestDto
+  | CreateJourneyFromRequestDto;

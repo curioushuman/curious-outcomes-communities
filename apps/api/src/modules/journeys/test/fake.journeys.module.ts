@@ -8,6 +8,8 @@ import { JourneysController } from '../infra/journeys.controller';
 import { CreateJourneyHandler } from '../application/commands/create-journey/create-journey.command';
 import { JourneyRepository } from '../adapter/ports/journey.repository';
 import { FakeJourneyRepository } from '../adapter/implementations/fake/fake.journey.repository';
+import { JourneySourceRepository } from '../adapter/ports/journey-source.repository';
+import { FakeJourneySourceRepository } from '../adapter/implementations/fake/fake.journey-source.repository';
 
 const commandHandlers = [CreateJourneyHandler];
 
@@ -15,6 +17,10 @@ const repositories = [
   {
     provide: JourneyRepository,
     useClass: FakeJourneyRepository,
+  },
+  {
+    provide: JourneySourceRepository,
+    useClass: FakeJourneySourceRepository,
   },
 ];
 

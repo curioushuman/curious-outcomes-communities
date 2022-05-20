@@ -13,6 +13,8 @@ import {
   MongoDbJourney,
   MongoDbJourneySchema,
 } from './adapter/implementations/mongo-db/schema/journey.schema';
+import { JourneySourceRepository } from './adapter/ports/journey-source.repository';
+import { FakeJourneySourceRepository } from './adapter/implementations/fake/fake.journey-source.repository';
 
 const commandHandlers = [CreateJourneyHandler];
 
@@ -20,6 +22,10 @@ const repositories = [
   {
     provide: JourneyRepository,
     useClass: MongoDbJourneyRepository,
+  },
+  {
+    provide: JourneySourceRepository,
+    useClass: FakeJourneySourceRepository,
   },
 ];
 

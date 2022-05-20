@@ -5,10 +5,11 @@ import { Static, String } from 'runtypes';
 
 /**
  * TODO
+ * - [ ] NEEDS REVIEW, too simple but enough to be starting with
  * - [ ] How can we get constraints in here?
  *       Particularly if we use various adapters
  */
 
-export const ExternalId = String.withBrand('ExternalId');
+export const Id = String.withBrand('Id');
 
-export type ExternalId = Static<typeof ExternalId>;
+export type Id = Static<typeof Id>;

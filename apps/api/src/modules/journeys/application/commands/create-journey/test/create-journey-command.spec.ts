@@ -6,6 +6,8 @@ import {
 } from '../create-journey.command';
 import { JourneyRepository } from '../../../../adapter/ports/journey.repository';
 import { FakeJourneyRepository } from '../../../../adapter/implementations/fake/fake.journey.repository';
+import { JourneySourceRepository } from '../../../../adapter/ports/journey-source.repository';
+import { FakeJourneySourceRepository } from '../../../../adapter/implementations/fake/fake.journey-source.repository';
 // import { JourneyBuilder } from '../../../../test/data-builders/journey.builder';
 import { CreateJourneyDtoBuilder } from './data-builders/create-journey.dto.builder';
 import { executeTask } from '../../../../../../shared/utils/execute-task';
@@ -30,6 +32,10 @@ describe('[Unit] Create Journey Command', () => {
       providers: [
         CreateJourneyHandler,
         { provide: JourneyRepository, useClass: FakeJourneyRepository },
+        {
+          provide: JourneySourceRepository,
+          useClass: FakeJourneySourceRepository,
+        },
       ],
     }).compile();
 

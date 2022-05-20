@@ -30,11 +30,6 @@ export class JourneysController {
    * as when it was extracted to a separate method
    * it lost access to the commandBus
    * This could possibly be a Nest issue.
-   *
-   * We don't bother catching `Either` (non-async) errors at this level
-   * as they will be handled by the Nest exception interceptor
-   * All we need to do, is make sure we return the most
-   * relevant HTTP exception
    */
   @Post()
   async create(@Body() body: CreateJourneyRequestDto): Promise<void> {
@@ -64,7 +59,7 @@ export class JourneysController {
         return pipe(
           dto,
           CreateJourneyRequestDto.check,
-          CreateJourneyMapper.toCommandDto
+          CreateJourneyMapper.fromRequestDto
         );
       },
       (error: Error) => new BadRequestException(error.toString())
@@ -73,20 +68,10 @@ export class JourneysController {
 
   @Post('from')
   async createFrom(@Body() body: CreateJourneyFromRequestDto): Promise<void> {
-    // const parsed = this.parseCreateJourneyFrom(body);
-    // console.log(parsed);
     const task = pipe(
       body,
       this.parseCreateJourneyFrom,
       TE.fromEither,
-      TE.chain((createJourneyFromDto) =>
-        TE.tryCatch(
-          async () => {
-            return await this.createJourneyFrom(createJourneyFromDto);
-          },
-          (error: Error) => error as Error
-        )
-      ),
       TE.chain((createJourneyDto) =>
         TE.tryCatch(
           async () => {
@@ -102,20 +87,16 @@ export class JourneysController {
 
   parseCreateJourneyFrom(
     dto: CreateJourneyFromRequestDto
-  ): E.Either<Error, CreateJourneyFromRequestDto> {
+  ): E.Either<Error, CreateJourneyDto> {
     return E.tryCatch(
       () => {
-        return pipe(dto, CreateJourneyFromRequestDto.check);
+        return pipe(
+          dto,
+          CreateJourneyFromRequestDto.check,
+          CreateJourneyMapper.fromRequestDto
+        );
       },
       (error: Error) => new BadRequestException(error.toString())
     );
-  }
-
-  createJourneyFrom(dto: CreateJourneyFromRequestDto): CreateJourneyDto {
-    return {
-      name: 'Some name',
-      slug: 'some-name',
-      externalId: dto.externalId,
-    } as CreateJourneyDto;
   }
 }
