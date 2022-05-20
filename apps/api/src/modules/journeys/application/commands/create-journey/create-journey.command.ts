@@ -64,9 +64,11 @@ export class CreateJourneyHandler
 
     /**
      * This retrieves the source, and parses it into a DTO
-     * AND returns a different error for parseDto
+     * NOTE: returns a different error for parseDto
      * As the source isn't user input, but DB data
-     * So needs to be reported differently
+     *
+     * TODO
+     * - [ ] switch from ID to findSourceDto for latter extensibility
      */
     const journeyFromSource = pipe(
       createJourneyDto,
@@ -87,8 +89,8 @@ export class CreateJourneyHandler
     );
 
     /**
-     * Encapsulating the simple logic of
-     * use the user generated DTO; unless invalid
+     * Encapsulating the simple logic of:
+     * Use the user generated DTO; unless invalid
      * THEN obtain missing values from source
      */
     const journey = pipe(
