@@ -8,7 +8,7 @@ import { Bootstrap } from '../../../bootstrap/bootstrap';
 import {
   CreateJourneyRequestDtoBuilder,
   CreateJourneyFromRequestDtoBuilder,
-} from './data-builders/create-journey.request.builder';
+} from './stubs/create-journey.request.stub';
 import { JourneysModule } from './fake.journeys.module';
 import {
   CreateJourneyFromRequestDto,

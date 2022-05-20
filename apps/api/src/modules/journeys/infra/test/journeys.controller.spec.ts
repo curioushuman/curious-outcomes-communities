@@ -5,7 +5,7 @@ import { LoggableLogger } from '@curioushuman/loggable';
 
 import { JourneysController } from '../journeys.controller';
 import { CreateJourneyRequestDto } from '../dto/create-journey.request.dto';
-import { CreateJourneyRequestDtoBuilder } from '../../test/data-builders/create-journey.request.builder';
+import { CreateJourneyRequestDtoBuilder } from '../../test/stubs/create-journey.request.stub';
 
 const commandBus = {
   execute: jest.fn(),

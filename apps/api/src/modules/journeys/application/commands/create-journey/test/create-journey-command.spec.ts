@@ -9,7 +9,7 @@ import { FakeJourneyRepository } from '../../../../adapter/implementations/fake/
 import { JourneySourceRepository } from '../../../../adapter/ports/journey-source.repository';
 import { FakeJourneySourceRepository } from '../../../../adapter/implementations/fake/fake.journey-source.repository';
 // import { JourneyBuilder } from '../../../../test/data-builders/journey.builder';
-import { CreateJourneyDtoBuilder } from './data-builders/create-journey.dto.builder';
+import { CreateJourneyDtoBuilder } from './stubs/create-journey.dto.stub';
 import { executeTask } from '../../../../../../shared/utils/execute-task';
 
 /**

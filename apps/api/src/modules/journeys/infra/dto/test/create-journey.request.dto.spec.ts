@@ -1,7 +1,7 @@
 import {
   CreateJourneyFromRequestDtoBuilder,
   CreateJourneyRequestDtoBuilder,
-} from '../../../test/data-builders/create-journey.request.builder';
+} from '../../../test/stubs/create-journey.request.stub';
 import {
   CreateJourneyFromRequestDto,
   // CreateJourneyRequestDto,

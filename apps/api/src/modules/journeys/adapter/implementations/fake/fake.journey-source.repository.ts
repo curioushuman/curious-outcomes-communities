@@ -3,7 +3,7 @@ import { TaskEither, tryCatch } from 'fp-ts/lib/TaskEither';
 
 import { JourneySource } from '../../../domain/entities/journey-source';
 import { JourneySourceRepository } from '../../ports/journey-source.repository';
-import { JourneySourceBuilder } from '../../../test/data-builders/journey-source.builder';
+import { JourneySourceBuilder } from '../../../test/stubs/journey-source.stub';
 import { Id } from '../../../domain/value-objects/Id';
 
 @Injectable()

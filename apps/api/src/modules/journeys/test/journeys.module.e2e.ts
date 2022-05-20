@@ -5,7 +5,7 @@ import { Connection } from 'mongoose';
 
 import { Bootstrap } from '../../../bootstrap/bootstrap';
 import { AppModule } from '../../../app/app.module';
-import { CreateJourneyRequestDtoBuilder } from './data-builders/create-journey.request.builder';
+import { CreateJourneyRequestDtoBuilder } from './stubs/create-journey.request.stub';
 import { CreateJourneyRequestDto } from '../infra/dto/create-journey.request.dto';
 import { MongoDbService } from '../../../shared/infra/database/mongo-db/mongo-db.service';
 

@@ -3,7 +3,7 @@ import { TaskEither, tryCatch } from 'fp-ts/lib/TaskEither';
 
 import { Journey } from '../../../domain/entities/journey';
 import { JourneyRepository } from '../../ports/journey.repository';
-import { JourneyBuilder } from '../../../test/data-builders/journey.builder';
+import { JourneyBuilder } from '../../../test/stubs/journey.stub';
 
 @Injectable()
 export class FakeJourneyRepository implements JourneyRepository {
