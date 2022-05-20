@@ -58,6 +58,11 @@ export class CreateJourneyHandler
     const { createJourneyDto } = command;
 
     /**
+     * Simple check of the DTO; if all good, we don't even need the source
+     */
+    const journeyFromDto = pipe(createJourneyDto, this.parseDto, TE.fromEither);
+
+    /**
      * This retrieves the source, and parses it into a DTO
      * AND returns a different error for parseDto
      * As the source isn't user input, but DB data
@@ -80,11 +85,6 @@ export class CreateJourneyHandler
         )
       )
     );
-
-    /**
-     * Simple check of the DTO; if all good, we don't even need the source
-     */
-    const journeyFromDto = pipe(createJourneyDto, this.parseDto, TE.fromEither);
 
     /**
      * Encapsulating the simple logic of
