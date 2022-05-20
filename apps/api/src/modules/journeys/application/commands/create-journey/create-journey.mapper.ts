@@ -23,13 +23,11 @@ export class CreateJourneyMapper {
   }
 
   public static fromSource(journeySource: JourneySource): CreateJourneyDto {
-    // NOTE: we DO NOT check the DTO here
-    // This is handled in the command itself
-    return {
+    return CreateJourneyDto.check({
       name: journeySource.name,
       slug: createSlug(journeySource.name),
       externalId: journeySource.id,
-    } as CreateJourneyDto;
+    });
   }
 
   public static toDomain(dto: CreateJourneyDto): Journey {
