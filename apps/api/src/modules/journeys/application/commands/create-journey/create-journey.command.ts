@@ -66,7 +66,7 @@ export class CreateJourneyHandler
     const journeyFromSource = pipe(
       createJourneyDto,
       this.extractSourceId,
-      TE.chain((externalId) => findSource(externalId)),
+      TE.chain((id) => findSource(id)),
       TE.chain((journeySource) =>
         pipe(this.parseSource(journeySource), TE.fromEither)
       ),
