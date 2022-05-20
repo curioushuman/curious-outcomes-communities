@@ -87,7 +87,7 @@ export class JourneysController {
 
   parseCreateJourneyFrom(
     dto: CreateJourneyFromRequestDto
-  ): E.Either<Error, CreateJourneyDto> {
+  ): E.Either<BadRequestException, CreateJourneyDto> {
     return E.tryCatch(
       () => {
         return pipe(

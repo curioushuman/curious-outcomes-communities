@@ -1,9 +1,12 @@
 import { CommandHandler, ICommandHandler, ICommand } from '@nestjs/cqrs';
-import { InternalServerErrorException } from '@nestjs/common';
+import {
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as E from 'fp-ts/lib/Either';
 import * as O from 'fp-ts/lib/Option';
-import { ValidationError } from 'runtypes';
+import { pipe } from 'fp-ts/lib/function';
 
 import { JourneyRepository } from '../../../adapter/ports/journey.repository';
 import { executeTask } from '../../../../../shared/utils/execute-task';
@@ -12,12 +15,16 @@ import { CreateJourneyMapper } from './create-journey.mapper';
 import { Id } from '../../../domain/value-objects/Id';
 import { JourneySourceRepository } from '../../../adapter/ports/journey-source.repository';
 import { Journey } from '../../../domain/entities/journey';
-import { pipe } from 'fp-ts/lib/function';
 import { JourneySource } from '../../../domain/entities/journey-source';
 
 export class CreateJourneyCommand implements ICommand {
   constructor(public readonly createJourneyDto: CreateJourneyDto) {}
 }
+
+/**
+ * TODO
+ * - [ ] better logging of errors
+ */
 
 @CommandHandler(CreateJourneyCommand)
 export class CreateJourneyHandler
@@ -29,74 +36,69 @@ export class CreateJourneyHandler
   ) {}
 
   async execute(command: CreateJourneyCommand): Promise<void> {
-    const { createJourneyDto } = command;
-
-    // we need to check FIRST if we need to even get from source
-    const fromDtoToDomain = (createJourneyDto: CreateJourneyDto) =>
-      E.tryCatch<Error, Journey>(
-        () => CreateJourneyMapper.toDomain(createJourneyDto),
-        (reason) => new Error(String(reason))
-      );
-
-    const idOrOpt: O.Option<Id> = pipe(
-      createJourneyDto,
-      O.fromNullable,
-      O.map(({ externalId }) => externalId)
-    );
-
+    /**
+     * These are the business functions!!
+     * NOTE: we return whatever error they return
+     */
     const findSource = (id: Id) =>
       TE.tryCatch<Error, JourneySource>(
         async () => await executeTask(this.journeySourceRepository.findOne(id)),
-        (reason) => new Error(String(reason))
+        (error: Error) => error as Error
       );
 
-    const findSourceAndParse = (id: Id) =>
-      pipe(
-        id,
-        findSource,
-        TE.chain((journeySource) =>
-          pipe(
-            journeySource,
-            CreateJourneyMapper.fromSource,
-            fromDtoToDomain,
-            TE.fromEither
-          )
-        )
+    const saveJourney = (journey: Journey) =>
+      TE.tryCatch<Error, void>(
+        async () => await executeTask(this.journeyRepository.save(journey)),
+        (error: Error) => error as Error
       );
-    // const parseFromSource = (journeySource: JourneySource) =>
-    //   TE.tryCatch<Error, Journey>(
-    //     () =>
-    //       pipe(
-    //         journeySource,
-    //         CreateJourneyMapper.fromSource,
-    //         fromDtoToDomain
-    //         // TE.fromEither
-    //       ),
-    //     (reason) => new Error(String(reason))
-    //   );
 
+    /**
+     * Then we set up the smaller steps, to support business time
+     */
+    const { createJourneyDto } = command;
+
+    /**
+     * This retrieves the source, and parses it into a DTO
+     * AND returns a different error for parseDto
+     * As the source isn't user input, but DB data
+     * So needs to be reported differently
+     */
     const journeyFromSource = pipe(
-      idOrOpt,
-      TE.fromOption(() => new Error()),
-      TE.chain((externalId) => findSourceAndParse(externalId))
-    );
-
-    const journeyFromDto = pipe(
       createJourneyDto,
-      fromDtoToDomain,
-      TE.fromEither
+      this.extractSourceId,
+      TE.chain((externalId) => findSource(externalId)),
+      TE.chain((journeySource) =>
+        pipe(this.parseSource(journeySource), TE.fromEither)
+      ),
+      TE.chain((journeyDto) =>
+        pipe(
+          this.parseDto(journeyDto),
+          E.mapLeft(
+            (error: Error) => new InternalServerErrorException(error.toString())
+          ),
+          TE.fromEither
+        )
+      )
     );
 
+    /**
+     * Simple check of the DTO; if all good, we don't even need the source
+     */
+    const journeyFromDto = pipe(createJourneyDto, this.parseDto, TE.fromEither);
+
+    /**
+     * Encapsulating the simple logic of
+     * use the user generated DTO; unless invalid
+     * THEN obtain missing values from source
+     */
     const journey = pipe(
       journeyFromDto,
       TE.alt(() => journeyFromSource)
     );
 
-    const saveJourney = (journey: Journey) =>
-      TE.tryCatch<Error, void>(
-        async () => await executeTask(this.journeyRepository.save(journey)),
-        (reason) => new Error(String(reason))
-      );
+    // TODO - merge the source with the user generated (UG)
+    // UG is the source of truth
+    // you'll need to parse one more time, returning bad request if fails
 
     const task = pipe(
       journey,
@@ -104,5 +106,34 @@ export class CreateJourneyHandler
     );
 
     return executeTask(task);
+  }
+
+  extractSourceId(
+    dto: CreateJourneyDto
+  ): TE.TaskEither<BadRequestException, Id> {
+    return pipe(
+      dto,
+      O.fromNullable,
+      O.map(({ externalId }) => externalId),
+      TE.fromOption(() => new BadRequestException('No externalId'))
+    );
+  }
+
+  parseDto(dto: CreateJourneyDto): E.Either<BadRequestException, Journey> {
+    return E.tryCatch<BadRequestException, Journey>(
+      () => {
+        return pipe(dto, CreateJourneyMapper.toDomain);
+      },
+      (error: Error) => new BadRequestException(error.toString())
+    );
+  }
+
+  parseSource(source: JourneySource): E.Either<BadRequestException, Journey> {
+    return E.tryCatch<BadRequestException, CreateJourneyDto>(
+      () => {
+        return pipe(source, CreateJourneyMapper.fromSource);
+      },
+      (error: Error) => new BadRequestException(error.toString())
+    );
   }
 }
