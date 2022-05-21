@@ -4,7 +4,7 @@ import { TaskEither, tryCatch } from 'fp-ts/lib/TaskEither';
 import { JourneySource } from '../../../domain/entities/journey-source';
 import { JourneySourceRepository } from '../../ports/journey-source.repository';
 import { JourneySourceBuilder } from '../../../test/stubs/journey-source.stub';
-import { Id } from '../../../domain/value-objects/Id';
+import { FindJourneySourceDto } from '../../../application/queries/find-journey-source/find-journey-source.dto';
 
 @Injectable()
 export class FakeJourneySourceRepository implements JourneySourceRepository {
@@ -14,7 +14,8 @@ export class FakeJourneySourceRepository implements JourneySourceRepository {
     this.journeySources.push(JourneySourceBuilder().build());
   }
 
-  public findOne(id: Id): TaskEither<Error, JourneySource> {
+  public findOne(dto: FindJourneySourceDto): TaskEither<Error, JourneySource> {
+    const { id } = dto;
     return tryCatch(
       async () => {
         return this.journeySources.find(

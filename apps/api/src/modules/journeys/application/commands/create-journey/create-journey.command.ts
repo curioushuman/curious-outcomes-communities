@@ -12,10 +12,10 @@ import { JourneyRepository } from '../../../adapter/ports/journey.repository';
 import { executeTask } from '../../../../../shared/utils/execute-task';
 import { CreateJourneyDto } from './create-journey.dto';
 import { CreateJourneyMapper } from './create-journey.mapper';
-import { Id } from '../../../domain/value-objects/Id';
 import { JourneySourceRepository } from '../../../adapter/ports/journey-source.repository';
 import { Journey } from '../../../domain/entities/journey';
 import { JourneySource } from '../../../domain/entities/journey-source';
+import { FindJourneySourceDto } from '../../queries/find-journey-source/find-journey-source.dto';
 
 export class CreateJourneyCommand implements ICommand {
   constructor(public readonly createJourneyDto: CreateJourneyDto) {}
@@ -23,7 +23,7 @@ export class CreateJourneyCommand implements ICommand {
 
 /**
  * TODO
- * - [ ] better logging of errors
+ * - [ ] logging
  */
 
 @CommandHandler(CreateJourneyCommand)
@@ -40,9 +40,10 @@ export class CreateJourneyHandler
      * These are the business functions!!
      * NOTE: we return whatever error they return
      */
-    const findSource = (id: Id) =>
+    const findSource = (dto: FindJourneySourceDto) =>
       TE.tryCatch<Error, JourneySource>(
-        async () => await executeTask(this.journeySourceRepository.findOne(id)),
+        async () =>
+          await executeTask(this.journeySourceRepository.findOne(dto)),
         (error: Error) => error as Error
       );
 
@@ -72,8 +73,8 @@ export class CreateJourneyHandler
      */
     const journeyFromSource = pipe(
       createJourneyDto,
-      this.extractSourceId,
-      TE.chain((id) => findSource(id)),
+      this.findSourceDto,
+      TE.chain((dto) => findSource(dto)),
       TE.chain((journeySource) =>
         pipe(this.parseSource(journeySource), TE.fromEither)
       ),
@@ -93,7 +94,7 @@ export class CreateJourneyHandler
      * Use the user generated DTO; unless invalid
      * THEN obtain missing values from source
      */
-    const journey = pipe(
+    const validateJourney = pipe(
       journeyFromDto,
       TE.alt(() => journeyFromSource)
     );
@@ -103,20 +104,26 @@ export class CreateJourneyHandler
     // you'll need to parse one more time, returning bad request if fails
 
     const task = pipe(
-      journey,
+      validateJourney,
       TE.chain((j) => saveJourney(j))
     );
 
     return executeTask(task);
   }
 
-  extractSourceId(
+  /**
+   * TODO
+   * - [ ] consider moving this to create-journey.mapper
+   */
+  findSourceDto(
     dto: CreateJourneyDto
-  ): TE.TaskEither<BadRequestException, Id> {
+  ): TE.TaskEither<BadRequestException, FindJourneySourceDto> {
     return pipe(
       dto,
       O.fromNullable,
-      O.map(({ externalId }) => externalId),
+      O.map(({ externalId }) => {
+        return { id: externalId } as FindJourneySourceDto;
+      }),
       TE.fromOption(() => new BadRequestException('No externalId'))
     );
   }
