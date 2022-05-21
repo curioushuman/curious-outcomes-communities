@@ -22,9 +22,21 @@ import { executeTask } from '../../../../../../shared/utils/execute-task';
  *   - e.g. you can mock/spy on other commands just to make sure they receive the event
  */
 
+/**
+ * Who is the user of the command?
+ * - other devs
+ *
+ * What BEHAVIOURS does this command fulfil?
+ * - TBC
+ * - is this where our user acceptance tests go?
+ * - or at least some of them?
+ *
+ * This is all we need to test here
+ */
+
 let repository: FakeJourneyRepository;
 
-describe('[Unit] Create Journey Command', () => {
+describe('[Unit][Command] Create Journey', () => {
   let handler: CreateJourneyHandler;
 
   beforeEach(async () => {
@@ -61,5 +73,9 @@ describe('[Unit] Create Journey Command', () => {
       expect(result).toEqual(undefined);
       expect(journeysAfter).toEqual(journeysBefore + 1);
     });
+  });
+
+  describe('When ALL input is valid', () => {
+    test.todo('Then it should return a journey');
   });
 });

@@ -44,10 +44,9 @@ describe('[E2E] JourneysModule', () => {
     await app.close();
   });
 
-  describe('Given a journey is being created', () => {
+  describe('[COMMAND] Create Journey', () => {
     let response: request.Response;
     let createJourneyDto: CreateJourneyRequestDto;
-
     describe('When that Journey does not exist, and the body is valid', () => {
       describe('Simplest version', () => {
         beforeAll(async () => {

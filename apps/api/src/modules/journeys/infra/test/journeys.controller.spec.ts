@@ -11,6 +11,18 @@ const commandBus = {
   execute: jest.fn(),
 };
 
+/**
+ * Who is the user of the controller?
+ * - other devs
+ *
+ * What BEHAVIOURS does a controller fulfil?
+ * - validates input
+ * - transforms input
+ * - calls the command/query
+ *
+ * This is all we need to test here
+ */
+
 describe('[Unit] JourneysController', () => {
   let controller: JourneysController;
 
@@ -28,7 +40,7 @@ describe('[Unit] JourneysController', () => {
     jest.clearAllMocks();
   });
 
-  describe('POST /', () => {
+  describe('[COMMAND] Create Journey', () => {
     let executeSpy: jest.SpyInstance;
     let createJourneyDto: CreateJourneyRequestDto;
 

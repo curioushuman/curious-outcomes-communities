@@ -24,13 +24,6 @@ export class JourneysController {
     this.logger.setContext('JourneysController');
   }
 
-  /**
-   * Notes
-   * The anonymous function that calls the command has been left in
-   * as when it was extracted to a separate method
-   * it lost access to the commandBus
-   * This could possibly be a Nest issue.
-   */
   @Post()
   async create(@Body() body: CreateJourneyRequestDto): Promise<void> {
     const task = pipe(
@@ -93,7 +86,7 @@ export class JourneysController {
         return pipe(
           dto,
           CreateJourneyFromRequestDto.check,
-          CreateJourneyMapper.fromRequestDto
+          CreateJourneyMapper.fromFromRequestDto
         );
       },
       (error: Error) => new BadRequestException(error.toString())

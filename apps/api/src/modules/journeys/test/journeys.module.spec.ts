@@ -19,8 +19,11 @@ import {
  * For local integration tests we just want to make sure
  * - endpoints behave how they should
  *
- * We ignore some of the additional elements such as:
+ * We ignore some of the higher elements such as:
  * - authentication/authorisation/access
+ *
+ * We also ignore some of the lower elements such as:
+ * - logging
  *
  * We use mocks/fakes to focus on the subject under test (SUT)
  *
@@ -49,23 +52,23 @@ describe('[Unit] JourneysModule', () => {
     await app.close();
   });
 
-  describe('Creating a journey', () => {
+  describe('[COMMAND] Create Journey', () => {
     let response: request.Response;
     let createJourneyDto: CreateJourneyRequestDto;
     let createJourneyFromDto: CreateJourneyFromRequestDto;
 
-    describe('When that Journey does NOT exist, and the body is valid', () => {
-      beforeAll(async () => {
-        createJourneyDto = CreateJourneyRequestDtoBuilder().build();
-        response = await request(httpServer)
-          .post(`/api/journeys`)
-          .send(createJourneyDto);
+    describe('When that Journey does NOT exist in our DB', () => {
+      describe('And the body is valid', () => {
+        beforeAll(async () => {
+          createJourneyDto = CreateJourneyRequestDtoBuilder().build();
+          response = await request(httpServer)
+            .post(`/api/journeys`)
+            .send(createJourneyDto);
+        });
+        test('Then response status should be 201', () => {
+          expect(response.status).toBe(201);
+        });
       });
-      test('Then response status should be 201', () => {
-        expect(response.status).toBe(201);
-      });
-
-      test.todo('And the request/response is logged');
     });
 
     describe('When creating FROM external source, that exists', () => {
@@ -79,8 +82,6 @@ describe('[Unit] JourneysModule', () => {
         test('Then response status should be 201', () => {
           expect(response.status).toBe(201);
         });
-
-        test.todo('And the request/response is logged');
       });
     });
   });
