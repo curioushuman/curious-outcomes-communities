@@ -7,6 +7,13 @@ Scenario: Successfully creating a course
   # And the returned source populates a valid course
   # And the source does not already exist in our DB
   When I create a course
-  # Then a new record should have been created in the repository
+  Then a new record should have been created
   # And no result is returned
-  Then the command should be called via the command bus
+
+Scenario: Fail; Invalid request
+  # Given an object exists in Source repository
+  Given the request is invalid
+  When I attempt to create a course
+  # Then I should receive a RequestInvalidError
+  Then I should receive a BadRequestException
+  # And no result is returned

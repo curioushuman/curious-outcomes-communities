@@ -24,11 +24,23 @@ export const CreateCourseRequestDtoBuilder = () => {
       return this;
     },
 
+    emptyExternalId() {
+      delete defaultProperties.externalId;
+      delete overrides.externalId;
+      return this;
+    },
+
     build(): CreateCourseRequestDto {
       return CreateCourseRequestDto.check({
         ...defaultProperties,
         ...overrides,
       });
+    },
+    buildNoCheck(): CreateCourseRequestDto {
+      return {
+        ...defaultProperties,
+        ...overrides,
+      } as CreateCourseRequestDto;
     },
   };
 };

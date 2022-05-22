@@ -7,6 +7,8 @@ import { LoggableLogger } from '@curioushuman/loggable';
 import { CoursesController } from '../../courses.controller';
 import { CreateCourseRequestDto } from '../../dto/create-course.request.dto';
 import { CreateCourseRequestDtoBuilder } from '../../../test/stubs/create-course.request.stub';
+import { BadRequestException } from '@nestjs/common';
+import { RequestInvalidError } from '../../../domain/errors/request-invalid.error';
 
 const feature = loadFeature('./create-course-command.feature', {
   loadRelativePath: true,
@@ -18,11 +20,7 @@ const commandBus = {
 
 defineFeature(feature, (test) => {
   let controller: CoursesController;
-  let executeSpy: jest.SpyInstance;
   let createCourseRequestDto: CreateCourseRequestDto;
-  // disabling no-explicit-any for testing purposes
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  // let result: any;
 
   beforeEach(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
@@ -39,6 +37,8 @@ defineFeature(feature, (test) => {
   });
 
   test('Successfully creating a course', ({ given, when, then }) => {
+    let executeSpy: jest.SpyInstance;
+
     beforeAll(async () => {
       executeSpy = jest.spyOn(commandBus, 'execute');
     });
@@ -53,8 +53,34 @@ defineFeature(feature, (test) => {
       await controller.create(createCourseRequestDto);
     });
 
-    then('the command should be called via the command bus', () => {
+    then('a new record should have been created', () => {
       expect(executeSpy).toHaveBeenCalled();
+    });
+  });
+
+  test('Fail; Invalid request', ({ given, when, then }) => {
+    // disabling no-explicit-any for testing purposes
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let error: any;
+
+    given('the request is invalid', () => {
+      createCourseRequestDto = CreateCourseRequestDtoBuilder()
+        .noExternalId()
+        .buildNoCheck();
+    });
+
+    when('I attempt to create a course', async () => {
+      try {
+        await controller.create(createCourseRequestDto);
+      } catch (err) {
+        error = err;
+      }
+    });
+
+    then('I should receive a BadRequestException', () => {
+      // Nest will return the exception, rather than the error
+      // expect(error).toBeInstanceOf(RequestInvalidError);
+      expect(error).toBeInstanceOf(BadRequestException);
     });
   });
 });

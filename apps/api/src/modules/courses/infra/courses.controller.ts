@@ -1,4 +1,4 @@
-import { BadRequestException, Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { pipe } from 'fp-ts/lib/function';
@@ -11,6 +11,7 @@ import { CreateCourseRequestDto } from './dto/create-course.request.dto';
 import { CreateCourseDto } from '../application/commands/create-course/create-course.dto';
 import { CreateCourseMapper } from '../application/commands/create-course/create-course.mapper';
 import { CreateCourseCommand } from '../application/commands/create-course/create-course.command';
+import { RequestInvalidError } from '../domain/errors/request-invalid.error';
 
 @Controller('courses')
 export class CoursesController {
@@ -43,7 +44,7 @@ export class CoursesController {
 
   parseCreateCourse(
     dto: CreateCourseRequestDto
-  ): E.Either<BadRequestException, CreateCourseDto> {
+  ): E.Either<RequestInvalidError, CreateCourseDto> {
     return E.tryCatch(
       () => {
         return pipe(
@@ -52,7 +53,7 @@ export class CoursesController {
           CreateCourseMapper.fromRequestDto
         );
       },
-      (error: Error) => new BadRequestException(error.toString())
+      (error: Error) => new RequestInvalidError(error.toString())
     );
   }
 }
