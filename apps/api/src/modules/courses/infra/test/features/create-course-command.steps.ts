@@ -1,14 +1,22 @@
-import { loadFeature, defineFeature } from 'jest-cucumber';
+import { BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CqrsModule, CommandBus } from '@nestjs/cqrs';
+import { loadFeature, defineFeature } from 'jest-cucumber';
 
 import { LoggableLogger } from '@curioushuman/loggable';
 
 import { CoursesController } from '../../courses.controller';
 import { CreateCourseRequestDto } from '../../dto/create-course.request.dto';
 import { CreateCourseRequestDtoBuilder } from '../../../test/stubs/create-course.request.stub';
-import { BadRequestException } from '@nestjs/common';
-import { RequestInvalidError } from '../../../domain/errors/request-invalid.error';
+
+/**
+ * SUT = the controller
+ *
+ * Scope for controller
+ * - validation of request
+ * - transformation of request
+ * - calling the command/query
+ */
 
 const feature = loadFeature('./create-course-command.feature', {
   loadRelativePath: true,
@@ -49,7 +57,7 @@ defineFeature(feature, (test) => {
       createCourseRequestDto = CreateCourseRequestDtoBuilder().build();
     });
 
-    when('I create a course', async () => {
+    when('I attempt to create a course', async () => {
       await controller.create(createCourseRequestDto);
     });
 
@@ -58,12 +66,38 @@ defineFeature(feature, (test) => {
     });
   });
 
-  test('Fail; Invalid request', ({ given, when, then }) => {
+  test('Fail; Invalid request, invalid data', ({ given, when, then }) => {
     // disabling no-explicit-any for testing purposes
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let error: any;
 
-    given('the request is invalid', () => {
+    given('the request contains invalid data', () => {
+      createCourseRequestDto = CreateCourseRequestDtoBuilder()
+        .emptyExternalId()
+        .buildNoCheck();
+    });
+
+    when('I attempt to create a course', async () => {
+      try {
+        await controller.create(createCourseRequestDto);
+      } catch (err) {
+        error = err;
+      }
+    });
+
+    then('I should receive a BadRequestException', () => {
+      // Nest will return the exception, rather than the error
+      // expect(error).toBeInstanceOf(RequestInvalidError);
+      expect(error).toBeInstanceOf(BadRequestException);
+    });
+  });
+
+  test('Fail; Invalid request, missing data', ({ given, when, then }) => {
+    // disabling no-explicit-any for testing purposes
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let error: any;
+
+    given('the request contains missing data', () => {
       createCourseRequestDto = CreateCourseRequestDtoBuilder()
         .noExternalId()
         .buildNoCheck();

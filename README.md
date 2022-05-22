@@ -209,6 +209,10 @@ TBC
 
 At the moment they piggyback on runtypes (which I love) but are not super Type safe nor OO. For now they do the job (well) but in the future this needs revisiting.
 
+### Runtypes validation errors returning better messages
+
+Currently they're a little verbose. Just need to trim them down a little bit to make them more readable while still being useful.
+
 ## Inspiration
 
 ### Domain Driven Development (DDD)
