@@ -1,5 +1,6 @@
 module.exports = {
-  displayName: 'api',
+  displayName: 'api-steps',
+  collectCoverage: false,
   preset: '../../jest.preset.js',
   globals: {
     'ts-jest': {
@@ -11,9 +12,5 @@ module.exports = {
     '^.+\\.[tj]s$': 'ts-jest',
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
-  coverageDirectory: '../../coverage/apps/api',
-  testMatch: [
-    '**/__tests__/**/*.[jt]s?(x)',
-    '**/?(*.)+(spec|ispec|test|steps).[jt]s?(x)',
-  ],
+  testMatch: ['**/?(*.)+(steps).[jt]s?(x)'],
 };

@@ -64,6 +64,14 @@
         "passWithNoTests": true
       }
     },
+    "test-steps": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/api"],
+      "options": {
+        "jestConfig": "apps/api/jest.config-steps.js",
+        "passWithNoTests": true
+      }
+    },
     "pre-test": {
       "executor": "@nrwl/workspace:run-commands",
       "outputs": [],

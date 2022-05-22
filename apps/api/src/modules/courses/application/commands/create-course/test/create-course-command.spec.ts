@@ -8,7 +8,6 @@ import { CourseRepository } from '../../../../adapter/ports/course.repository';
 import { FakeCourseRepository } from '../../../../adapter/implementations/fake/fake.course.repository';
 import { CourseSourceRepository } from '../../../../adapter/ports/course-source.repository';
 import { FakeCourseSourceRepository } from '../../../../adapter/implementations/fake/fake.course-source.repository';
-// import { CourseBuilder } from '../../../../test/data-builders/course.builder';
 import { CreateCourseDtoBuilder } from './stubs/create-course.dto.stub';
 import { executeTask } from '../../../../../../shared/utils/execute-task';
 

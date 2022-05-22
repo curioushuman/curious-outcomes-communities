@@ -12,6 +12,7 @@ export class FakeCourseSourceRepository implements CourseSourceRepository {
 
   constructor() {
     this.courseSources.push(CourseSourceBuilder().build());
+    this.courseSources.push(CourseSourceBuilder().testNewValid().build());
   }
 
   public findOne(dto: FindCourseSourceDto): TaskEither<Error, CourseSource> {

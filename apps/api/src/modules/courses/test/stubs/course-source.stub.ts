@@ -1,3 +1,4 @@
+import { CreateCourseDtoBuilder } from '../../application/commands/create-course/test/stubs/create-course.dto.stub';
 import { CourseSource } from '../../domain/entities/course-source';
 
 /**
@@ -14,6 +15,12 @@ export const CourseSourceBuilder = () => {
   };
 
   return {
+    testNewValid() {
+      overrides.id = CreateCourseDtoBuilder().newValid().build().externalId;
+      overrides.name = 'Dance, the hard way';
+      return this;
+    },
+
     build(): CourseSource {
       return CourseSource.check({
         ...defaultProperties,
