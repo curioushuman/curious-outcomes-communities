@@ -71,7 +71,7 @@ export class CreateCourseHandler
     return executeTask(task);
   }
 
-  parseDto(
+  private parseDto(
     dto: CreateCourseDto
   ): E.Either<BadRequestException, FindCourseSourceDto> {
     return E.tryCatch<BadRequestException, FindCourseSourceDto>(
@@ -82,7 +82,9 @@ export class CreateCourseHandler
     );
   }
 
-  parseSource(source: CourseSource): E.Either<BadRequestException, Course> {
+  private parseSource(
+    source: CourseSource
+  ): E.Either<BadRequestException, Course> {
     return E.tryCatch<BadRequestException, Course>(
       () => {
         return pipe(source, CreateCourseMapper.fromSourceToCourse);

@@ -8,11 +8,12 @@ import { LoggableLogger } from '@curioushuman/loggable';
 import { CoursesController } from '../../courses.controller';
 import { CreateCourseRequestDto } from '../../dto/create-course.request.dto';
 import { CreateCourseRequestDtoBuilder } from '../../../test/stubs/create-course.request.stub';
+import { RequestInvalidError } from '../../../../../shared/domain/errors/request-invalid.error';
 
 /**
  * SUT = the controller
  *
- * Scope for controller
+ * Scope
  * - validation of request
  * - transformation of request
  * - calling the command/query
@@ -29,6 +30,9 @@ const commandBus = {
 defineFeature(feature, (test) => {
   let controller: CoursesController;
   let createCourseRequestDto: CreateCourseRequestDto;
+  // disabling no-explicit-any for testing purposes
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let error: any;
 
   beforeEach(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
@@ -67,10 +71,6 @@ defineFeature(feature, (test) => {
   });
 
   test('Fail; Invalid request, invalid data', ({ given, when, then }) => {
-    // disabling no-explicit-any for testing purposes
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let error: any;
-
     given('the request contains invalid data', () => {
       createCourseRequestDto = CreateCourseRequestDtoBuilder()
         .emptyExternalId()
@@ -85,18 +85,13 @@ defineFeature(feature, (test) => {
       }
     });
 
-    then('I should receive a BadRequestException', () => {
-      // Nest will return the exception, rather than the error
-      // expect(error).toBeInstanceOf(RequestInvalidError);
+    then('I should receive a RequestInvalidError', () => {
       expect(error).toBeInstanceOf(BadRequestException);
+      expect(error.message).toContain(RequestInvalidError.baseMessage());
     });
   });
 
   test('Fail; Invalid request, missing data', ({ given, when, then }) => {
-    // disabling no-explicit-any for testing purposes
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let error: any;
-
     given('the request contains missing data', () => {
       createCourseRequestDto = CreateCourseRequestDtoBuilder()
         .noExternalId()
@@ -111,10 +106,9 @@ defineFeature(feature, (test) => {
       }
     });
 
-    then('I should receive a BadRequestException', () => {
-      // Nest will return the exception, rather than the error
-      // expect(error).toBeInstanceOf(RequestInvalidError);
+    then('I should receive a RequestInvalidError', () => {
       expect(error).toBeInstanceOf(BadRequestException);
+      expect(error.message).toContain(RequestInvalidError.baseMessage());
     });
   });
 });

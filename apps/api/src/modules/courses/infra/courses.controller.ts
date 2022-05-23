@@ -11,7 +11,7 @@ import { CreateCourseRequestDto } from './dto/create-course.request.dto';
 import { CreateCourseDto } from '../application/commands/create-course/create-course.dto';
 import { CreateCourseMapper } from '../application/commands/create-course/create-course.mapper';
 import { CreateCourseCommand } from '../application/commands/create-course/create-course.command';
-import { RequestInvalidError } from '../domain/errors/request-invalid.error';
+import { RequestInvalidError } from '../../../shared/domain/errors/request-invalid.error';
 
 @Controller('courses')
 export class CoursesController {

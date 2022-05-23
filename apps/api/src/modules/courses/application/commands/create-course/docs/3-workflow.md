@@ -62,22 +62,22 @@ Else
 
 #### Output: Fail
 
-- SourceAuthenticationError
+- RepositoryAuthenticationError
   - Extends UnauthorizedException
-- SourceNotFoundError
+- RepositoryItemNotFoundError
   - Extends NotFoundException
-- SourceServerError
+- RepositoryServerError
   - Extends InternalServerException
 
 #### Steps (pseudocode)
 
 ```
 If Unable to authenticate
-  return SourceAuthenticationError
+  return RepositoryAuthenticationError
 If Not found
-  return SourceNotFoundError
+  return RepositoryItemNotFoundError
 If Other
-  return SourceServerError
+  return RepositoryServerError
 Else
   return CourseSource
 ```
@@ -93,7 +93,7 @@ Else
 
 #### Output: Fail
 
-- SourceInvalidError
+- CourseInvalidError
   - Extends BadRequestException
 - CourseConflictError
   - Extends ConflictException
@@ -102,7 +102,7 @@ Else
 
 ```
 If Invalid
-  return SourceInvalidError
+  return CourseInvalidError
 If Exists
   return CourseConflictError
 Else
@@ -120,7 +120,7 @@ Else
 
 #### Output: Fail
 
-- CourseRepositoryError
+- RepositoryServerError
   - Extends InternalServerException
 
 #### Steps (pseudocode)
@@ -128,7 +128,7 @@ Else
 ```
 Save Course
 If Fails
-  return CourseRepositoryError
+  return RepositoryServerError
 Else
   return SavedCourse
 ```

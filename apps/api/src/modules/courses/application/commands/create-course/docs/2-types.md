@@ -43,24 +43,23 @@ Extends Course
 - RequestInvalidError
   - Extends: BadRequestException
   - Message: Invalid request, please review
-- SourceAuthenticationError
+- RepositoryAuthenticationError
   - Extends: UnauthorizedException
-  - Message: Error authenticating with Course source <`SourceRepo.Name`>, please re-authenticate
-- SourceNotFoundError
+  - Message: Error authenticating with Course source <`ApiRepository.Name`>, please re-authenticate
+- RepositoryItemNotFoundError
   - Extends: NotFoundException
   - Message: A source could not be found for ID <`ExternalId`>, please check your Course source for this ID
-- SourceServerError
+- RepositoryServerError
   - Extends: InternalServerException
-  - Message: Error connecting to Course source <`SourceRepo.Name`>, please try again or contact system administrator
-- SourceInvalidError
+  - RESOLVE THE BELOW, which message? Templated?
+  - Message: Error connecting to Course source <`ApiRepository.Name`>, please try again or contact system administrator
+  - Message: Error saving new Course for Source with ID <`ExternalId`>, please try again or contact system administrator
+- CourseInvalidError
   - Extends: BadRequestException
   - Message: Source with ID <`ExternalId`> contains insufficient or invalid data to create a new Course
 - CourseConflictError
   - Extends: ConflictException
   - Message: Source with ID <`ExternalId`> already exists within our DB. No action required.
-- CourseRepositoryError
-  - Extends: InternalServerException
-  - Message: Error saving new Course for Source with ID <`ExternalId`>, please try again or contact system administrator
 - NotificationFailedToSendError
   - Extends: InternalServerException
   - Message: Error sending Notification, contact your system administrator

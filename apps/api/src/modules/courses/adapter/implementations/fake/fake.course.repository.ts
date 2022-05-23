@@ -4,12 +4,16 @@ import { TaskEither, tryCatch } from 'fp-ts/lib/TaskEither';
 import { Course } from '../../../domain/entities/course';
 import { CourseRepository } from '../../ports/course.repository';
 import { CourseBuilder } from '../../../test/stubs/course.stub';
+import { FakeRepositoryErrorFactory } from '../../../../../shared/adapter/fake-repository.error-factory';
+import { ErrorFactory } from '../../../../../shared/domain/errors/error-factory';
 
 @Injectable()
 export class FakeCourseRepository implements CourseRepository {
   private courses: Course[] = [];
+  errorFactory: ErrorFactory;
 
   constructor() {
+    this.errorFactory = new FakeRepositoryErrorFactory();
     this.courses.push(CourseBuilder().build());
     this.courses.push(CourseBuilder().withFunkyChars().build());
   }

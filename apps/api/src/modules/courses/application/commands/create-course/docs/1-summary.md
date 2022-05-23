@@ -19,12 +19,17 @@
 
 ### Failure (1+):
 
+#### Domain
+
+- CourseInvalidError
+- CourseConflictError
+
+#### Other
+
 - RequestInvalidError
-- SourceAuthenticationError
-- SourceNotFoundError
-- SourceServerError
-- SourceInvalidError
-- CourseRepositoryError
+- RepositoryAuthenticationError
+- RepositoryItemNotFoundError
+- RepositoryServerError
 - NotificationFailedToSendError
 - EventFailedToEmitError
 
