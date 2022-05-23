@@ -15,6 +15,7 @@ import { executeTask } from '../../../../../../shared/utils/execute-task';
 import { CreateCourseRequestDto } from '../../../../infra/dto/create-course.request.dto';
 import { Course } from '../../../../domain/entities/course';
 import { RepositoryItemNotFoundError } from '../../../../../../shared/domain/errors/repository/item-not-found.error';
+import { CourseInvalidError } from '../../../../domain/errors/course-invalid.error';
 
 /**
  * SUT = the command & command handler
@@ -33,8 +34,6 @@ defineFeature(feature, (test) => {
   let repository: FakeCourseRepository;
   let handler: CreateCourseHandler;
   let createCourseDto: CreateCourseRequestDto;
-  let courses: Course[];
-  let coursesBefore: number;
   // disabling no-explicit-any for testing purposes
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let result: any;
@@ -60,9 +59,11 @@ defineFeature(feature, (test) => {
   });
 
   test('Successfully creating a course', ({ given, and, when, then }) => {
+    let courses: Course[];
+    let coursesBefore: number;
+
     given('a matching record is found at the source', () => {
-      // we test request validity in controller
-      // here we assume it is valid, and has been transformed into valid command dto
+      // we know this to exist in our fake repo
       createCourseDto = CreateCourseDtoBuilder().newValid().build();
     });
 
@@ -108,6 +109,33 @@ defineFeature(feature, (test) => {
       expect(error.message).toContain(
         RepositoryItemNotFoundError.baseMessage()
       );
+    });
+  });
+
+  test('Fail; Source does not translate into a valid Course', ({
+    given,
+    and,
+    when,
+    then,
+  }) => {
+    given('a matching record is found at the source', () => {
+      createCourseDto = CreateCourseDtoBuilder().newInvalid().build();
+    });
+
+    and('the returned source does not populate a valid Course', () => {
+      // this occurs during
+    });
+
+    when('I attempt to create a course', async () => {
+      try {
+        await handler.execute(new CreateCourseCommand(createCourseDto));
+      } catch (err) {
+        error = err;
+      }
+    });
+
+    then('I should receive a CourseInvalidError', () => {
+      expect(error).toBeInstanceOf(CourseInvalidError);
     });
   });
 });

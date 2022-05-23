@@ -22,6 +22,11 @@ export const CreateCourseDtoBuilder = () => {
       return this;
     },
 
+    newInvalid() {
+      overrides.externalId = 'AlsoNotARealId';
+      return this;
+    },
+
     noExternalId() {
       delete defaultProperties.externalId;
       delete overrides.externalId;

@@ -21,6 +21,12 @@ export const CourseSourceBuilder = () => {
       return this;
     },
 
+    testNewInvalid() {
+      overrides.id = CreateCourseDtoBuilder().newInvalid().build().externalId;
+      overrides.name = '';
+      return this;
+    },
+
     build(): CourseSource {
       return CourseSource.check({
         ...defaultProperties,

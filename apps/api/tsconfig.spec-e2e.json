@@ -9,6 +9,7 @@
     "**/*.test.ts",
     "**/*.spec.ts",
     "**/*.ispec.ts",
+    "**/*.steps.ts",
     "**/*.e2e.ts",
     "**/*.d.ts",
     "**/__mocks__/**/*.ts",

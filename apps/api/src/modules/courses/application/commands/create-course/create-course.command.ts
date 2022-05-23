@@ -12,6 +12,8 @@ import { CourseSourceRepository } from '../../../adapter/ports/course-source.rep
 import { Course } from '../../../domain/entities/course';
 import { CourseSource } from '../../../domain/entities/course-source';
 import { FindCourseSourceDto } from '../../queries/find-course-source/find-course-source.dto';
+import { CourseInvalidError } from '../../../domain/errors/course-invalid.error';
+import { RequestInvalidError } from 'apps/api/src/shared/domain/errors/request-invalid.error';
 
 export class CreateCourseCommand implements ICommand {
   constructor(public readonly createCourseDto: CreateCourseDto) {}
@@ -78,7 +80,7 @@ export class CreateCourseHandler
       () => {
         return pipe(dto, CreateCourseMapper.toFindCourseSourceDto);
       },
-      (error: Error) => new BadRequestException(error.toString())
+      (error: Error) => new RequestInvalidError(error.toString())
     );
   }
 
@@ -89,7 +91,7 @@ export class CreateCourseHandler
       () => {
         return pipe(source, CreateCourseMapper.fromSourceToCourse);
       },
-      (error: Error) => new BadRequestException(error.toString())
+      (error: Error) => new CourseInvalidError(error.toString())
     );
   }
 }
