@@ -10,7 +10,7 @@ import { ErrorFactory } from '../../../../../shared/domain/errors/error-factory'
 @Injectable()
 export class FakeCourseRepository implements CourseRepository {
   private courses: Course[] = [];
-  errorFactory: ErrorFactory;
+  public errorFactory: ErrorFactory;
 
   constructor() {
     this.errorFactory = new FakeRepositoryErrorFactory();
