@@ -15,6 +15,8 @@ import {
 } from './adapter/implementations/mongo-db/schema/course.schema';
 import { CourseSourceRepository } from './adapter/ports/course-source.repository';
 import { FakeCourseSourceRepository } from './adapter/implementations/fake/fake.course-source.repository';
+import { ErrorFactory } from '../../shared/domain/errors/error-factory';
+import { FakeRepositoryErrorFactory } from '../../shared/adapter/fake-repository.error-factory';
 
 const commandHandlers = [CreateCourseHandler];
 
@@ -26,6 +28,13 @@ const repositories = [
   {
     provide: CourseSourceRepository,
     useClass: FakeCourseSourceRepository,
+  },
+];
+
+const services = [
+  {
+    provide: ErrorFactory,
+    useClass: FakeRepositoryErrorFactory,
   },
 ];
 
@@ -47,7 +56,7 @@ const repositories = [
     ]),
   ],
   controllers: [CoursesController],
-  providers: [...commandHandlers, ...repositories],
+  providers: [...commandHandlers, ...repositories, ...services],
   exports: [],
 })
 export class CoursesModule {}

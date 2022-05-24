@@ -7,16 +7,13 @@ import { CourseSource } from '../../../domain/entities/course-source';
 import { CourseSourceRepository } from '../../ports/course-source.repository';
 import { CourseSourceBuilder } from '../../../test/stubs/course-source.stub';
 import { FindCourseSourceDto } from '../../../application/queries/find-course-source/find-course-source.dto';
-import { FakeRepositoryErrorFactory } from '../../../../../shared/adapter/fake-repository.error-factory';
 import { ErrorFactory } from '../../../../../shared/domain/errors/error-factory';
 
 @Injectable()
 export class FakeCourseSourceRepository implements CourseSourceRepository {
   private courseSources: CourseSource[] = [];
-  public errorFactory: ErrorFactory;
 
-  constructor() {
-    this.errorFactory = new FakeRepositoryErrorFactory();
+  constructor(private readonly errorFactory: ErrorFactory) {
     this.courseSources.push(CourseSourceBuilder().build());
     this.courseSources.push(CourseSourceBuilder().testNewValid().build());
     this.courseSources.push(CourseSourceBuilder().testNewInvalid().build());
@@ -32,6 +29,7 @@ export class FakeCourseSourceRepository implements CourseSourceRepository {
           O.fromNullable,
           O.fold(
             () => {
+              // this mimics an API or DB call throwing an error
               throw new NotFoundException(
                 `Course source with id ${id} not found`
               );

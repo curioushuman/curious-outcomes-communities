@@ -10,6 +10,8 @@ import { CourseRepository } from '../adapter/ports/course.repository';
 import { FakeCourseRepository } from '../adapter/implementations/fake/fake.course.repository';
 import { CourseSourceRepository } from '../adapter/ports/course-source.repository';
 import { FakeCourseSourceRepository } from '../adapter/implementations/fake/fake.course-source.repository';
+import { ErrorFactory } from '../../../shared/domain/errors/error-factory';
+import { FakeRepositoryErrorFactory } from '../../../shared/adapter/fake-repository.error-factory';
 
 const commandHandlers = [CreateCourseHandler];
 
@@ -24,10 +26,17 @@ const repositories = [
   },
 ];
 
+const services = [
+  {
+    provide: ErrorFactory,
+    useClass: FakeRepositoryErrorFactory,
+  },
+];
+
 @Module({
   imports: [CqrsModule, HttpModule, LoggableModule],
   controllers: [CoursesController],
-  providers: [...commandHandlers, ...repositories],
+  providers: [...commandHandlers, ...repositories, ...services],
   exports: [],
 })
 export class CoursesModule {}
