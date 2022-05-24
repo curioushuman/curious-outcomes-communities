@@ -4,6 +4,7 @@ import { FindCourseSourceDto } from '../../queries/find-course-source/find-cours
 import { CourseSource } from '../../../domain/entities/course-source';
 import { Course } from '../../../domain/entities/course';
 import { createSlug } from '../../../domain/value-objects/slug';
+import { FindCourseDto } from '../../queries/find-course/find-course.dto';
 
 /**
  * TODO
@@ -34,6 +35,16 @@ export class CreateCourseMapper {
       externalId: source.id,
       name: source.name,
       slug,
+    });
+  }
+
+  /**
+   * TODO
+   * - [ ] move this to a better home
+   */
+  public static fromCourseToFindCourseDto(course: Course): FindCourseDto {
+    return FindCourseDto.check({
+      externalId: course.externalId,
     });
   }
 }

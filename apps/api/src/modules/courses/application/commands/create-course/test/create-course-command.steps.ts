@@ -16,6 +16,9 @@ import { CreateCourseRequestDto } from '../../../../infra/dto/create-course.requ
 import { Course } from '../../../../domain/entities/course';
 import { RepositoryItemNotFoundError } from '../../../../../../shared/domain/errors/repository/item-not-found.error';
 import { CourseInvalidError } from '../../../../domain/errors/course-invalid.error';
+import { CourseConflictError } from '../../../../domain/errors/course-conflict.error';
+import { ErrorFactory } from '../../../../../../shared/domain/errors/error-factory';
+import { FakeRepositoryErrorFactory } from '../../../../../../shared/adapter/fake-repository.error-factory';
 
 /**
  * SUT = the command & command handler
@@ -36,8 +39,6 @@ defineFeature(feature, (test) => {
   let createCourseDto: CreateCourseRequestDto;
   // disabling no-explicit-any for testing purposes
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let result: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let error: any;
 
   beforeEach(async () => {
@@ -48,6 +49,10 @@ defineFeature(feature, (test) => {
         {
           provide: CourseSourceRepository,
           useClass: FakeCourseSourceRepository,
+        },
+        {
+          provide: ErrorFactory,
+          useClass: FakeRepositoryErrorFactory,
         },
       ],
     }).compile();
@@ -61,6 +66,9 @@ defineFeature(feature, (test) => {
   test('Successfully creating a course', ({ given, and, when, then }) => {
     let courses: Course[];
     let coursesBefore: number;
+    // disabling no-explicit-any for testing purposes
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let result: any;
 
     given('a matching record is found at the source', () => {
       // we know this to exist in our fake repo
@@ -136,6 +144,40 @@ defineFeature(feature, (test) => {
 
     then('I should receive a CourseInvalidError', () => {
       expect(error).toBeInstanceOf(CourseInvalidError);
+    });
+  });
+
+  test('Fail; Source already exists in our DB', ({
+    given,
+    and,
+    when,
+    then,
+  }) => {
+    given('a matching record is found at the source', () => {
+      // confirmed
+    });
+
+    and('the returned source populates a valid course', () => {
+      // known
+    });
+
+    and('the source DOES already exist in our DB', () => {
+      // added above, in first test
+      createCourseDto = CreateCourseDtoBuilder().exists().build();
+    });
+
+    when('I attempt to create a course', async () => {
+      try {
+        const blkah = await handler.execute(
+          new CreateCourseCommand(createCourseDto)
+        );
+      } catch (err) {
+        error = err;
+      }
+    });
+
+    then('I should receive a CourseConflictError', () => {
+      expect(error).toBeInstanceOf(CourseConflictError);
     });
   });
 });

@@ -22,6 +22,11 @@ export const CourseBuilder = () => {
       return this;
     },
 
+    noMatchingObject() {
+      overrides.externalId = 'ShhhImNotActuallyARealId';
+      return this;
+    },
+
     build(): Course {
       return Course.check({
         ...defaultProperties,

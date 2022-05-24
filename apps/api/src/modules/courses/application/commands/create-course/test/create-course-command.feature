@@ -18,3 +18,12 @@ Scenario: Fail; Source does not translate into a valid Course
   And the returned source does not populate a valid Course
   When I attempt to create a course
   Then I should receive a CourseInvalidError
+
+# check for CourseId at source
+
+Scenario: Fail; Source already exists in our DB
+  Given a matching record is found at the source
+  And the returned source populates a valid course
+  And the source DOES already exist in our DB
+  When I attempt to create a course
+  Then I should receive a CourseConflictError

@@ -27,6 +27,11 @@ export const CreateCourseDtoBuilder = () => {
       return this;
     },
 
+    exists() {
+      overrides.externalId = '5000K00002O2GEYQA3';
+      return this;
+    },
+
     noExternalId() {
       delete defaultProperties.externalId;
       delete overrides.externalId;

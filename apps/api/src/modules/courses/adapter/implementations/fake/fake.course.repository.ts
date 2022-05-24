@@ -1,47 +1,58 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { TaskEither, tryCatch } from 'fp-ts/lib/TaskEither';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import * as TE from 'fp-ts/lib/TaskEither';
+import * as O from 'fp-ts/lib/Option';
+import { pipe } from 'fp-ts/lib/function';
 
 import { Course } from '../../../domain/entities/course';
 import { CourseRepository } from '../../ports/course.repository';
 import { CourseBuilder } from '../../../test/stubs/course.stub';
-import { FakeRepositoryErrorFactory } from '../../../../../shared/adapter/fake-repository.error-factory';
+import { FindCourseDto } from '../../../application/queries/find-course/find-course.dto';
 import { ErrorFactory } from '../../../../../shared/domain/errors/error-factory';
 
 @Injectable()
 export class FakeCourseRepository implements CourseRepository {
   private courses: Course[] = [];
-  public errorFactory: ErrorFactory;
 
-  constructor() {
-    this.errorFactory = new FakeRepositoryErrorFactory();
+  constructor(private readonly errorFactory: ErrorFactory) {
     this.courses.push(CourseBuilder().build());
     this.courses.push(CourseBuilder().withFunkyChars().build());
   }
 
-  // public findOne(slug: string): TaskEither<Error, Course> {
-  //   return tryCatch(
-  //     async () => {
-  //       return this.courses.find((courses) => courses.slug === slug);
-  //     },
-  //     (reason: unknown) => new InternalServerErrorException(reason)
-  //   );
-  // }
-
-  public save(course: Course): TaskEither<Error, void> {
-    return tryCatch(
+  public findOne(dto: FindCourseDto): TE.TaskEither<Error, Course> {
+    const { externalId } = dto;
+    return TE.tryCatch(
       async () => {
-        this.courses.push(course);
+        const course = this.courses.find((cs) => cs.externalId === externalId);
+        return pipe(
+          course,
+          O.fromNullable,
+          O.fold(
+            () => {
+              // this mimics an API or DB call throwing an error
+              throw new NotFoundException(
+                `Course with externalId ${externalId} not found`
+              );
+            },
+            (course) => course
+          )
+        );
       },
-      (reason: unknown) => new InternalServerErrorException(reason)
+      // (error: Error) => error as Error
+      (error: Error) => this.errorFactory.error(error)
     );
   }
 
-  all = (): TaskEither<Error, Course[]> => {
-    return tryCatch(
+  public save(course: Course): TE.TaskEither<Error, void> {
+    return TE.tryCatch(
       async () => {
-        return this.courses;
+        this.courses.push(course);
       },
-      (reason: unknown) => new InternalServerErrorException(reason)
+      // (error: Error) => error as Error
+      (error: Error) => this.errorFactory.error(error)
     );
+  }
+
+  all = (): TE.TaskEither<Error, Course[]> => {
+    return TE.right(this.courses);
   };
 }
