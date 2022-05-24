@@ -12,14 +12,14 @@ import * as O from 'fp-ts/lib/Option';
  *       while retaining the extension of Nest-specific HTTP exceptions
  */
 export class UnknownException extends InternalServerErrorException {
-  constructor(reason?: string) {
-    super(UnknownException.initMessage(reason));
+  constructor(postscript?: string) {
+    super(UnknownException.initMessage(postscript));
   }
 
-  public static initMessage(reason: string): string {
+  public static initMessage(postscript: string): string {
     const baseMessage = UnknownException.baseMessage();
     return pipe(
-      reason,
+      postscript,
       O.fromNullable,
       O.fold(
         () => baseMessage,

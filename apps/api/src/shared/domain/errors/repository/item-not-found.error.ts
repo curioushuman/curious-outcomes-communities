@@ -6,14 +6,14 @@ import * as O from 'fp-ts/lib/Option';
  * Error manifested as exception
  */
 export class RepositoryItemNotFoundError extends NotFoundException {
-  constructor(reason?: string) {
-    super(RepositoryItemNotFoundError.initMessage(reason));
+  constructor(postscript?: string) {
+    super(RepositoryItemNotFoundError.initMessage(postscript));
   }
 
-  public static initMessage(reason: string): string {
+  public static initMessage(postscript: string): string {
     const baseMessage = RepositoryItemNotFoundError.baseMessage();
     return pipe(
-      reason,
+      postscript,
       O.fromNullable,
       O.fold(
         () => baseMessage,

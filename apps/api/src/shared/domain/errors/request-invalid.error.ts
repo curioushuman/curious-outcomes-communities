@@ -10,14 +10,14 @@ import * as O from 'fp-ts/lib/Option';
  * as HTTP exception
  */
 export class RequestInvalidError extends BadRequestException {
-  constructor(reason?: string) {
-    super(RequestInvalidError.initMessage(reason));
+  constructor(postscript?: string) {
+    super(RequestInvalidError.initMessage(postscript));
   }
 
-  public static initMessage(reason: string): string {
+  public static initMessage(postscript: string): string {
     const baseMessage = RequestInvalidError.baseMessage();
     return pipe(
-      reason,
+      postscript,
       O.fromNullable,
       O.fold(
         () => baseMessage,
