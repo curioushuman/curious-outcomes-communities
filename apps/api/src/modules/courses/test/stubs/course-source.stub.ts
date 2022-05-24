@@ -8,10 +8,12 @@ export const CourseSourceBuilder = () => {
   const defaultProperties = {
     id: '5000K00002O2GEYQA3',
     name: 'Learn to be a dancer',
+    courseId: '',
   };
   const overrides = {
     id: '5000K00002O2GEYQA3',
     name: 'Learn to be a dancer',
+    courseId: '',
   };
 
   return {
@@ -24,6 +26,15 @@ export const CourseSourceBuilder = () => {
     testNewInvalid() {
       overrides.id = CreateCourseDtoBuilder().newInvalid().build().externalId;
       overrides.name = '';
+      return this;
+    },
+
+    testNewHasCourseId() {
+      overrides.id = CreateCourseDtoBuilder()
+        .newHasCourseId()
+        .build().externalId;
+      overrides.name = 'Already associated';
+      overrides.courseId = 'JustAnyOldCourseIdForNow';
       return this;
     },
 

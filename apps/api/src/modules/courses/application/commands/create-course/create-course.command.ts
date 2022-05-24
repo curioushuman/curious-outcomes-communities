@@ -9,7 +9,10 @@ import { CreateCourseDto } from './create-course.dto';
 import { CreateCourseMapper } from './create-course.mapper';
 import { CourseSourceRepository } from '../../../adapter/ports/course-source.repository';
 import { Course } from '../../../domain/entities/course';
-import { CourseSource } from '../../../domain/entities/course-source';
+import {
+  CourseSource,
+  CourseSourceForCreate,
+} from '../../../domain/entities/course-source';
 import { FindCourseSourceDto } from '../../queries/find-course-source/find-course-source.dto';
 import { CourseInvalidError } from '../../../domain/errors/course-invalid.error';
 import { RequestInvalidError } from '../../../../../shared/domain/errors/request-invalid.error';
@@ -71,10 +74,6 @@ export class CreateCourseHandler
 
     /**
      * Then we set up the smaller steps, to support business time
-     *
-     * TODO
-     * - [ ] check source already has a courseId associated with it
-     * - [*] check if we already have that externalId in our DB
      */
     const { createCourseDto } = command;
 
@@ -122,7 +121,11 @@ export class CreateCourseHandler
   ): E.Either<CourseInvalidError, Course> {
     return E.tryCatch<CourseInvalidError, Course>(
       () => {
-        return pipe(source, CreateCourseMapper.fromSourceToCourse);
+        return pipe(
+          source,
+          CourseSourceForCreate.check,
+          CreateCourseMapper.fromSourceToCourse
+        );
       },
       (error: Error) => new CourseInvalidError(error.toString())
     );

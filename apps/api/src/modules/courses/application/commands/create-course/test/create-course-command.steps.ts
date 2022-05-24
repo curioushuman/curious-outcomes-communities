@@ -37,9 +37,6 @@ defineFeature(feature, (test) => {
   let repository: FakeCourseRepository;
   let handler: CreateCourseHandler;
   let createCourseDto: CreateCourseRequestDto;
-  // disabling no-explicit-any for testing purposes
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let error: any;
 
   beforeEach(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
@@ -100,6 +97,9 @@ defineFeature(feature, (test) => {
   });
 
   test('Fail; Source not found for ID provided', ({ given, when, then }) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let error: any;
+
     given('no record exists that matches our request', () => {
       createCourseDto = CreateCourseDtoBuilder().noMatchingObject().build();
     });
@@ -126,6 +126,9 @@ defineFeature(feature, (test) => {
     when,
     then,
   }) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let error: any;
+
     given('a matching record is found at the source', () => {
       createCourseDto = CreateCourseDtoBuilder().newInvalid().build();
     });
@@ -153,6 +156,9 @@ defineFeature(feature, (test) => {
     when,
     then,
   }) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let error: any;
+
     given('a matching record is found at the source', () => {
       // confirmed
     });
@@ -168,9 +174,7 @@ defineFeature(feature, (test) => {
 
     when('I attempt to create a course', async () => {
       try {
-        const blkah = await handler.execute(
-          new CreateCourseCommand(createCourseDto)
-        );
+        await handler.execute(new CreateCourseCommand(createCourseDto));
       } catch (err) {
         error = err;
       }
@@ -178,6 +182,36 @@ defineFeature(feature, (test) => {
 
     then('I should receive a CourseConflictError', () => {
       expect(error).toBeInstanceOf(CourseConflictError);
+    });
+  });
+
+  test('Fail; Source is already associated with a Course', ({
+    given,
+    and,
+    when,
+    then,
+  }) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let error: any;
+
+    given('a matching record is found at the source', () => {
+      // we know this
+    });
+
+    and('the returned source is already associated with a Course', () => {
+      createCourseDto = CreateCourseDtoBuilder().newHasCourseId().build();
+    });
+
+    when('I attempt to create a course', async () => {
+      try {
+        await handler.execute(new CreateCourseCommand(createCourseDto));
+      } catch (err) {
+        error = err;
+      }
+    });
+
+    then('I should receive a CourseInvalidError', () => {
+      expect(error).toBeInstanceOf(CourseInvalidError);
     });
   });
 });

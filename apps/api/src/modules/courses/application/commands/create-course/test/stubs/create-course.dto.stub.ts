@@ -27,6 +27,11 @@ export const CreateCourseDtoBuilder = () => {
       return this;
     },
 
+    newHasCourseId() {
+      overrides.externalId = 'AnotherNotRealId';
+      return this;
+    },
+
     exists() {
       overrides.externalId = '5000K00002O2GEYQA3';
       return this;

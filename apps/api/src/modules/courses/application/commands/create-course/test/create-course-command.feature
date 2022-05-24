@@ -19,6 +19,12 @@ Scenario: Fail; Source does not translate into a valid Course
   When I attempt to create a course
   Then I should receive a CourseInvalidError
 
+Scenario: Fail; Source is already associated with a Course
+  Given a matching record is found at the source
+  And the returned source is already associated with a Course
+  When I attempt to create a course
+  Then I should receive a CourseInvalidError
+
 # check for CourseId at source
 
 Scenario: Fail; Source already exists in our DB
