@@ -64,4 +64,13 @@ export class SalesforceApiCourseSourceRepository
       (error: Error) => this.errorFactory.error(error)
     );
   }
+
+  public authorise(): TE.TaskEither<Error, boolean> {
+    return TE.tryCatch(
+      async () => {
+        return true;
+      },
+      (error: Error) => this.errorFactory.error(error)
+    );
+  }
 }

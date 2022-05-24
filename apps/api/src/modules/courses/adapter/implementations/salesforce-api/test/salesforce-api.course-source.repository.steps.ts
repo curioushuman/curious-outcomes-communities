@@ -68,4 +68,36 @@ defineFeature(feature, (test) => {
       expect(result).toBe(true);
     });
   });
+
+  test('Successful authorisation with repository', ({
+    given,
+    and,
+    when,
+    then,
+  }) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let result: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let error: any;
+
+    given('the repository is live', () => {
+      // assumed
+    });
+
+    and('I am authorised to access the source', () => {
+      // assumed
+    });
+
+    when('I attempt attempt to authorise', async () => {
+      try {
+        result = await executeTask(repository.authorise());
+      } catch (err) {
+        error = err;
+      }
+    });
+
+    then('I should receive a positive result', () => {
+      expect(result).toBe(true);
+    });
+  });
 });
