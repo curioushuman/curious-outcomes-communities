@@ -68,7 +68,7 @@ export class CreateCourseHandler
      *
      * TODO
      * - [ ] check source already has a courseId associated with it
-     * - [ ] check if we already have that externalId in our DB
+     * - [*] check if we already have that externalId in our DB
      */
     const { createCourseDto } = command;
 
