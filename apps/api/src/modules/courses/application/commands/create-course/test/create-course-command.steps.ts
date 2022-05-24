@@ -18,7 +18,7 @@ import { RepositoryItemNotFoundError } from '../../../../../../shared/domain/err
 import { CourseInvalidError } from '../../../../domain/errors/course-invalid.error';
 import { CourseConflictError } from '../../../../domain/errors/course-conflict.error';
 import { ErrorFactory } from '../../../../../../shared/domain/errors/error-factory';
-import { FakeRepositoryErrorFactory } from '../../../../../../shared/adapter/fake-repository.error-factory';
+import { FakeRepositoryErrorFactory } from '../../../../../../shared/adapter/fake.repository.error-factory';
 
 /**
  * SUT = the command & command handler

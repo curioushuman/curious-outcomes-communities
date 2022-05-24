@@ -16,7 +16,7 @@ import {
 import { CourseSourceRepository } from './adapter/ports/course-source.repository';
 import { FakeCourseSourceRepository } from './adapter/implementations/fake/fake.course-source.repository';
 import { ErrorFactory } from '../../shared/domain/errors/error-factory';
-import { FakeRepositoryErrorFactory } from '../../shared/adapter/fake-repository.error-factory';
+import { FakeRepositoryErrorFactory } from '../../shared/adapter/fake.repository.error-factory';
 
 const commandHandlers = [CreateCourseHandler];
 
