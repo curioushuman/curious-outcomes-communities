@@ -33,6 +33,12 @@ export class CreateCourseHandler
     private readonly courseSourceRepository: CourseSourceRepository
   ) {}
 
+  /**
+   * Creates a course, via a series of steps
+   *
+   * TODO
+   * - [ ] refactor and make simpler
+   */
   async execute(command: CreateCourseCommand): Promise<void> {
     /**
      * These are the business functions!!
@@ -119,34 +125,6 @@ export class CreateCourseHandler
         return pipe(source, CreateCourseMapper.fromSourceToCourse);
       },
       (error: Error) => new CourseInvalidError(error.toString())
-    );
-  }
-
-  /**
-   * We've broadened the scope of Left to Error
-   * As other issues may occur during the repo.findOne
-   *
-   * NOTE: the TE.fold looks like it is in reversed order
-   * This is on purpose, if we are successful in our find
-   * we need to return an error
-   */
-  private checkForDuplicatedSource(
-    course: Course
-  ): TE.TaskEither<Error, Course> {
-    return TE.tryCatch<Error, Course>(
-      async () => {
-        const task = pipe(
-          course,
-          CreateCourseMapper.fromCourseToFindCourseDto,
-          this.courseRepository.findOne,
-          TE.fold(
-            () => TE.right(course),
-            () => TE.left(new CourseConflictError())
-          )
-        );
-        return executeTask(task);
-      },
-      (error: Error) => error as Error
     );
   }
 }
