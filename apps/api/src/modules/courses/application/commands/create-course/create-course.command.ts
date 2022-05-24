@@ -26,6 +26,8 @@ export class CreateCourseCommand implements ICommand {
  * Command handler for create course
  * TODO
  * - [ ] logging
+ * - [ ] better associated course check
+ *       e.g. check against local IDs rather than just existence of courseId
  */
 @CommandHandler(CreateCourseCommand)
 export class CreateCourseHandler
