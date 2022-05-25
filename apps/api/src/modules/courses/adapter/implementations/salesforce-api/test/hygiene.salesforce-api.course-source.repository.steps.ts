@@ -21,7 +21,7 @@ import { RepositoryAuthenticationError } from '../../../../../../shared/domain/e
  * - handling of their various responses/errors
  */
 
-const feature = loadFeature('./create-course-command.feature', {
+const feature = loadFeature('./hygiene.feature', {
   loadRelativePath: true,
 });
 
