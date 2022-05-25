@@ -6,4 +6,7 @@ export class FakeRepositoryErrorFactory extends ErrorFactory {
   public errorStatusCode(error: HttpException): number {
     return error.getStatus();
   }
+  public errorDescription(error: HttpException): string {
+    return error.message;
+  }
 }
