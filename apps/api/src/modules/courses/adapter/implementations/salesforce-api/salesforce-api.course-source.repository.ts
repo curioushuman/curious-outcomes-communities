@@ -4,12 +4,19 @@ import { firstValueFrom } from 'rxjs';
 import * as TE from 'fp-ts/lib/TaskEither';
 import * as O from 'fp-ts/lib/Option';
 import { pipe } from 'fp-ts/lib/function';
+import * as jwt from 'jsonwebtoken';
 
 import { CourseSource } from '../../../domain/entities/course-source';
 import { CourseSourceRepository } from '../../ports/course-source.repository';
 import { CourseSourceBuilder } from '../../../test/stubs/course-source.stub';
 import { FindCourseSourceDto } from '../../../application/queries/find-course-source/find-course-source.dto';
 import { ErrorFactory } from '../../../../../shared/domain/errors/error-factory';
+
+interface SalesforceApiResponseAuth {
+  data: {
+    access_token: string;
+  };
+}
 
 @Injectable()
 export class SalesforceApiCourseSourceRepository
@@ -19,7 +26,7 @@ export class SalesforceApiCourseSourceRepository
 
   constructor(
     private httpService: HttpService,
-    private readonly errorFactory: ErrorFactory
+    private errorFactory: ErrorFactory
   ) {
     this.courseSources.push(CourseSourceBuilder().build());
     this.courseSources.push(CourseSourceBuilder().testNewValid().build());
@@ -46,7 +53,7 @@ export class SalesforceApiCourseSourceRepository
           )
         );
       },
-      (error: Error) => this.errorFactory.error(error)
+      (error: Error) => this.errorFactory.newError(error)
     );
   }
 
@@ -61,16 +68,65 @@ export class SalesforceApiCourseSourceRepository
         // if a value is received, without an error we're good
         return true;
       },
-      (error: Error) => this.errorFactory.error(error)
+      (error: Error) => this.errorFactory.newError(error)
     );
   }
 
+  /**
+   * TODO
+   * - [ ] return this error as RepoAuthError, rather than errorFactory
+   *       use errorFactory to obtain the message though
+   * - [ ] env variables somewhere better for dev
+   * - [ ] env in sealed secrets for K8s
+   * - [ ] store token somewhere
+   */
   public authorise(): TE.TaskEither<Error, boolean> {
     return TE.tryCatch(
       async () => {
+        const body = new URLSearchParams({
+          grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+          assertion: this.prepareJwt(),
+        });
+        const request$ = this.httpService.post(
+          `${this.tmpDomain}/services/oauth2/token`,
+          body.toString()
+        );
+        const response: SalesforceApiResponseAuth = await firstValueFrom(
+          request$
+        );
+        if (response.data?.access_token === undefined) {
+          return false;
+        }
         return true;
       },
-      (error: Error) => this.errorFactory.error(error)
+      (error: Error) => this.errorFactory.newError(error)
     );
   }
+
+  private prepareJwt(): string {
+    // prettier-ignore
+    const private_key = this.tmpCertKey.replace(/\\n/gm, "\n");
+    return jwt.sign(
+      {
+        iss: this.tmpConsumerKey,
+        sub: 'api@asiapacificforum.net.202206',
+        aud: this.tmpDomain,
+      },
+      private_key,
+      {
+        algorithm: 'RS256',
+        expiresIn: '1h',
+        header: {
+          alg: 'RS256',
+          typ: 'JWT',
+        },
+      }
+    );
+  }
+
+  // private tmpDomain = 'https://login.salesforce.com';
+  private tmpDomain = 'https://test.salesforce.com';
+
+  private tmpCertKey = 'notRealSecret';
+  private tmpConsumerKey = 'notRealKey';
 }

@@ -6,7 +6,7 @@ import { SalesforceApiCourseSourceRepository } from '../salesforce-api.course-so
 import { CourseSourceRepository } from '../../../ports/course-source.repository';
 import { executeTask } from '../../../../../../shared/utils/execute-task';
 import { ErrorFactory } from '../../../../../../shared/domain/errors/error-factory';
-import { FakeRepositoryErrorFactory } from '../../../../../../shared/adapter/fake.repository.error-factory';
+import { SalesforceApiRepositoryErrorFactory } from '../salesforce-api.repository.error-factory';
 
 /**
  * SUT = the repository
@@ -37,7 +37,7 @@ defineFeature(feature, (test) => {
         },
         {
           provide: ErrorFactory,
-          useClass: FakeRepositoryErrorFactory,
+          useClass: SalesforceApiRepositoryErrorFactory,
         },
       ],
     }).compile();
@@ -61,6 +61,7 @@ defineFeature(feature, (test) => {
         result = await executeTask(repository.livenessProbe());
       } catch (err) {
         error = err;
+        expect(error).toBeUndefined();
       }
     });
 

@@ -203,6 +203,38 @@ TBC
 
 # Appendix
 
+## Connecting to third party APIs
+
+### Salesforce
+
+For machine to machine communication you need to use the OAuth 2.0 JWT Bearer Flow. Official (rubbish) docs:
+
+- https://help.salesforce.com/s/articleView?id=sf.remoteaccess_oauth_jwt_flow.htm&type=5
+
+A better instructions can be found at either of the following:
+
+- https://medium.com/@salesforce.notes/salesforce-oauth-jwt-bearer-flow-cc70bfc626c2
+- https://gist.github.com/booleangate/30d345ecf0617db0ea19c54c7a44d06f
+
+The above includes all the steps required e.g. setting up a connected app in Salesforce. One of the most important, and easily overlooked steps is to authorise a specific user by visiting the link below. Once there, login using the Salesforce user account you want to use in your code. **NOTE:** this may not be your own personal user.
+
+```
+# Template
+https://<your_salesforce_url/services/oauth2/authorize?response_type=token&client_id=<consumer key>&redirect_uri=<your_callback>
+
+# Staging example
+https://asiapacificforum--sandboxname.lightning.force.com/services/oauth2/authorize?response_type=token&client_id=3MVG9e2-this-sdsdf-is-kjnsdfsdf-not-a-sdsdfsdf-real-key&redirect_uri=sfdc://oauth/jwt/success
+
+# Production example
+https://asiapacificforum.lightning.force.com/services/oauth2/authorize?response_type=token&client_id=3MVG9e2-this-sdsdf-is-kjnsdfsdf-not-a-sdsdfsdf-real-key&redirect_uri=sfdc://oauth/jwt/success
+
+```
+
+***Important notes***
+
+- When requesting the access token (within your code) you must use test.salesforce.com / login.salesforce.com rather than your custom URL
+- When sending the body it DOES INDEED NEED TO BE stringified
+
 ## TODO
 
 ### Value Objects being more OO
