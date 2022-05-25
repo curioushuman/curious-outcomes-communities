@@ -30,7 +30,7 @@ export class CreateCourseMapper {
    * - [ ] move this to a better home
    */
   public static fromSourceToCourse(source: CourseSource): Course {
-    const slug = source.name ? createSlug(source.name) : undefined;
+    const slug = source.slug ? source.slug : createSlug(source.name);
     return Course.check({
       externalId: source.id,
       name: source.name,

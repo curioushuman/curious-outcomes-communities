@@ -1,16 +1,22 @@
-import { Optional, Record, Static, String } from 'runtypes';
+import { Null, Optional, Static, String } from 'runtypes';
+import { SalesforceApiResponseRecord } from './course-source-response';
 
 /**
  * TODO
  * - [ ] description
  */
 
-export const SalesforceApiCourseSource = Record({
+/**
+ * This represents data we expect from Salesforce
+ * - some fields may be empty
+ * - Salesforce generally loves to return them as Null
+ */
+export const SalesforceApiCourseSource = SalesforceApiResponseRecord.extend({
   Id: String,
   Summary_quick_year__c: String,
   Slug__c: String,
-  Date_start__c: Optional(String),
-  Date_end__c: Optional(String),
+  Date_start__c: Optional(String.Or(Null)),
+  Date_end__c: Optional(String.Or(Null)),
 });
 
 export const salesforceApiCourseSourceFields = [

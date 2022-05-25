@@ -211,7 +211,7 @@ For machine to machine communication you need to use the OAuth 2.0 JWT Bearer Fl
 
 - https://help.salesforce.com/s/articleView?id=sf.remoteaccess_oauth_jwt_flow.htm&type=5
 
-A better instructions can be found at either of the following:
+Better instructions can be found at either of the following:
 
 - https://medium.com/@salesforce.notes/salesforce-oauth-jwt-bearer-flow-cc70bfc626c2
 - https://gist.github.com/booleangate/30d345ecf0617db0ea19c54c7a44d06f

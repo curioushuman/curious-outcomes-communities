@@ -3,6 +3,7 @@ import { CourseId } from '../value-objects/course-id';
 
 import { ExternalId } from '../value-objects/external-id';
 import { Name } from '../value-objects/name';
+import { Slug } from '../value-objects/slug';
 
 /**
  * TODO
@@ -14,6 +15,7 @@ import { Name } from '../value-objects/name';
 export const CourseSource = Record({
   id: ExternalId,
   name: Name,
+  slug: Optional(Slug),
   courseId: Optional(CourseId),
 });
 

@@ -19,14 +19,14 @@ import {
   SalesforceApiCourseSourceResponse,
   SalesforceApiResponseAuth,
 } from './types/course-source-response';
-import { executeTask } from 'apps/api/src/shared/utils/execute-task';
+import { executeTask } from '../../../../../shared/utils/execute-task';
 
 @Injectable()
 export class SalesforceApiCourseSourceRepository
   implements CourseSourceRepository
 {
-  private uriData: string;
-  private uriToken: string;
+  private baseURL: string;
+  private authURL: string;
   private sourceName: string;
   private fieldsString: string;
 
@@ -34,11 +34,30 @@ export class SalesforceApiCourseSourceRepository
     private httpService: HttpService,
     private errorFactory: ErrorFactory
   ) {
-    this.uriData = `${process.env.SALESFORCE_DOMAIN_DATA}/`;
-    this.uriData += `${process.env.SALESFORCE_DOMAIN_DATA_VERSION}/`;
-    this.uriToken = `${process.env.SALESFORCE_DOMAIN_TOKEN}/services/oauth2/token`;
+    this.baseURL = `${process.env.SALESFORCE_DOMAIN_DATA}/`;
+    this.baseURL += `${process.env.SALESFORCE_DOMAIN_DATA_VERSION}/`;
+    this.authURL = `${process.env.SALESFORCE_DOMAIN_TOKEN}/services/oauth2/token`;
     this.sourceName = 'Case';
     this.fieldsString = salesforceApiCourseSourceFields.join(', ');
+  }
+
+  /**
+   * TODO
+   * - [ ] find a useful SF endpoint for this
+   */
+  public livenessProbe(): TE.TaskEither<Error, boolean> {
+    return TE.tryCatch(
+      async () => {
+        // TODO: extract this into a httpService wrapper or similar
+        const request$ = this.httpService.get(
+          `https://pokeapi.co/api/v2/language/en`
+        );
+        await firstValueFrom(request$);
+        // if a value is received, without an error we're good
+        return true;
+      },
+      (error: Error) => this.errorFactory.newError(error)
+    );
   }
 
   public findOne(dto: FindCourseSourceDto): TE.TaskEither<Error, CourseSource> {
@@ -54,7 +73,7 @@ export class SalesforceApiCourseSourceRepository
         const token = await executeTask(this.authorise());
         const request$ =
           this.httpService.get<SalesforceApiCourseSourceResponse>(
-            `${this.uriData}/query`,
+            `${this.baseURL}/query`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -81,25 +100,6 @@ export class SalesforceApiCourseSourceRepository
 
   /**
    * TODO
-   * - [ ] find a useful SF endpoint for this
-   */
-  public livenessProbe(): TE.TaskEither<Error, boolean> {
-    return TE.tryCatch(
-      async () => {
-        // TODO: extract this into a httpService wrapper or similar
-        const request$ = this.httpService.get(
-          `https://pokeapi.co/api/v2/language/en`
-        );
-        await firstValueFrom(request$);
-        // if a value is received, without an error we're good
-        return true;
-      },
-      (error: Error) => this.errorFactory.newError(error)
-    );
-  }
-
-  /**
-   * TODO
    * - [ ] store token somewhere
    * - [ ] throw error if access_token not actually present
    * - [ ] env variables somewhere better for dev
@@ -113,7 +113,7 @@ export class SalesforceApiCourseSourceRepository
           assertion: this.prepareJwt(),
         });
         const request$ = this.httpService.post<SalesforceApiResponseAuth>(
-          this.uriToken,
+          this.authURL,
           body.toString()
         );
         const response = await firstValueFrom(request$);

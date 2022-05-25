@@ -15,7 +15,7 @@ import * as slug from 'slug';
  * TODO: should this be more OO? e.g. createSlug
  */
 
-export const SlugRegex = /^[a-z-]+$/;
+export const SlugRegex = /^[0-9a-z-_]+$/;
 
 export const Slug = String.withBrand('Slug').withConstraint(
   (maybeSlug) => SlugRegex.test(maybeSlug) || 'Invalid Contact slug'
