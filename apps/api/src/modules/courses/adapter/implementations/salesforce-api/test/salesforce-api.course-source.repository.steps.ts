@@ -7,6 +7,7 @@ import { CourseSourceRepository } from '../../../ports/course-source.repository'
 import { executeTask } from '../../../../../../shared/utils/execute-task';
 import { ErrorFactory } from '../../../../../../shared/domain/errors/error-factory';
 import { SalesforceApiRepositoryErrorFactory } from '../salesforce-api.repository.error-factory';
+import { RepositoryAuthenticationError } from '../../../../../../shared/domain/errors/repository/authentication.error';
 
 /**
  * SUT = the repository
@@ -99,6 +100,42 @@ defineFeature(feature, (test) => {
 
     then('I should receive a positive result', () => {
       expect(result).toBe(true);
+    });
+  });
+
+  test('Fail; Unable to authenticate with source repository', ({
+    given,
+    and,
+    when,
+    then,
+  }) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let result: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let error: any;
+
+    given('the repository is live', () => {
+      // assumed
+    });
+
+    and('I am NOT authorised to access the source repository', () => {
+      repository.testDisableAuth();
+    });
+
+    when('I attempt to access the source', async () => {
+      try {
+        result = await executeTask(repository.authorise());
+      } catch (err) {
+        error = err;
+      }
+    });
+
+    then('I should receive a RepositoryAuthenticationError', () => {
+      expect(error).toBeInstanceOf(RepositoryAuthenticationError);
+    });
+
+    and('no result is returned', () => {
+      expect(result).toBeUndefined();
     });
   });
 });

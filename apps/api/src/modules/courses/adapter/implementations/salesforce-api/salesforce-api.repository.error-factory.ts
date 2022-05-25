@@ -23,14 +23,4 @@ export class SalesforceApiRepositoryErrorFactory extends ErrorFactory {
       ? error.message
       : error.response.data.error_description;
   }
-
-  public errorCompleteDescription(error: SalesforceApiRepositoryError): string {
-    const {
-      response: {
-        status,
-        data: { error_description },
-      },
-    } = error;
-    return `${status}: ${error_description}`;
-  }
 }

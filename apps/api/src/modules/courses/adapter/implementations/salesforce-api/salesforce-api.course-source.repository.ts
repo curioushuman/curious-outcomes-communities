@@ -11,6 +11,7 @@ import { CourseSourceRepository } from '../../ports/course-source.repository';
 import { CourseSourceBuilder } from '../../../test/stubs/course-source.stub';
 import { FindCourseSourceDto } from '../../../application/queries/find-course-source/find-course-source.dto';
 import { ErrorFactory } from '../../../../../shared/domain/errors/error-factory';
+import { RepositoryAuthenticationError } from '../../../../../shared/domain/errors/repository/authentication.error';
 
 interface SalesforceApiResponseAuth {
   data: {
@@ -99,7 +100,10 @@ export class SalesforceApiCourseSourceRepository
         }
         return true;
       },
-      (error: Error) => this.errorFactory.newError(error)
+      (error: Error) =>
+        new RepositoryAuthenticationError(
+          this.errorFactory.errorAsString(error)
+        )
     );
   }
 
@@ -124,9 +128,13 @@ export class SalesforceApiCourseSourceRepository
     );
   }
 
+  public testDisableAuth(): void {
+    this.tmpDomain = 'DISABLED';
+  }
+
   // private tmpDomain = 'https://login.salesforce.com';
   private tmpDomain = 'https://test.salesforce.com';
 
-  private tmpCertKey = 'notRealSecret';
-  private tmpConsumerKey = 'notRealKey';
+  private tmpCertKey = 'tmp';
+  private tmpConsumerKey = 'tmp';
 }

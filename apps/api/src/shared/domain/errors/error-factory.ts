@@ -32,4 +32,10 @@ export abstract class ErrorFactory {
 
   abstract errorStatusCode(error: Error): number;
   abstract errorDescription(error: Error): string;
+
+  public errorAsString(error: Error): string {
+    const status = this.errorStatusCode(error);
+    const description = this.errorDescription(error);
+    return `${status}: ${description}`;
+  }
 }
