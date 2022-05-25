@@ -75,11 +75,12 @@ export class SalesforceApiCourseSourceRepository
 
   /**
    * TODO
-   * - [ ] return this error as RepoAuthError, rather than errorFactory
+   * - [*] return this error as RepoAuthError, rather than errorFactory
    *       use errorFactory to obtain the message though
+   * - [ ] store token somewhere
+   * - [ ] throw error if access_token not actually present
    * - [ ] env variables somewhere better for dev
    * - [ ] env in sealed secrets for K8s
-   * - [ ] store token somewhere
    */
   public authorise(): TE.TaskEither<Error, boolean> {
     return TE.tryCatch(
@@ -89,13 +90,14 @@ export class SalesforceApiCourseSourceRepository
           assertion: this.prepareJwt(),
         });
         const request$ = this.httpService.post(
-          `${this.tmpDomain}/services/oauth2/token`,
+          `${process.env.SALESFORCE_DOMAIN}/services/oauth2/token`,
           body.toString()
         );
         const response: SalesforceApiResponseAuth = await firstValueFrom(
           request$
         );
         if (response.data?.access_token === undefined) {
+          // TODO throw an error when you come back and store the access token
           return false;
         }
         return true;
@@ -107,16 +109,16 @@ export class SalesforceApiCourseSourceRepository
     );
   }
 
+  // UP TO TESTING THESE ON BY ONE
+
   private prepareJwt(): string {
-    // prettier-ignore
-    const private_key = this.tmpCertKey.replace(/\\n/gm, "\n");
     return jwt.sign(
       {
-        iss: this.tmpConsumerKey,
-        sub: 'api@asiapacificforum.net.202206',
-        aud: this.tmpDomain,
+        iss: process.env.SALESFORCE_CONSUMER_KEY,
+        sub: process.env.SALESFORCE_USER,
+        aud: process.env.SALESFORCE_DOMAIN,
       },
-      private_key,
+      process.env.SALESFORCE_CERTIFICATE_KEY,
       {
         algorithm: 'RS256',
         expiresIn: '1h',
@@ -129,12 +131,6 @@ export class SalesforceApiCourseSourceRepository
   }
 
   public testDisableAuth(): void {
-    this.tmpDomain = 'DISABLED';
+    process.env.SALESFORCE_DOMAIN = 'DISABLED';
   }
-
-  // private tmpDomain = 'https://login.salesforce.com';
-  private tmpDomain = 'https://test.salesforce.com';
-
-  private tmpCertKey = 'tmp';
-  private tmpConsumerKey = 'tmp';
 }

@@ -12,6 +12,9 @@ module.exports = {
     },
   },
   testEnvironment: 'node',
+  testEnvironmentOptions: {
+    '--require': 'dotenv/config',
+  },
   transform: {
     '^.+\\.[tj]s$': 'ts-jest',
   },
