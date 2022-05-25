@@ -50,8 +50,7 @@ defineFeature(feature, (test) => {
   test('Successful connection to repository', ({ given, when, then }) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let result: any;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let error: any;
+    let error: Error;
 
     given('the repository is live', () => {
       // what we are testing
@@ -79,8 +78,7 @@ defineFeature(feature, (test) => {
   }) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let result: any;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let error: any;
+    let error: Error;
 
     given('the repository is live', () => {
       // assumed
@@ -99,7 +97,7 @@ defineFeature(feature, (test) => {
     });
 
     then('I should receive a positive result', () => {
-      expect(result).toBe(true);
+      expect(result).toBeDefined();
     });
   });
 
@@ -111,8 +109,7 @@ defineFeature(feature, (test) => {
   }) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let result: any;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let error: any;
+    let error: Error;
 
     given('the repository is live', () => {
       // assumed

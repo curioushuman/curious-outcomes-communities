@@ -1,63 +1,88 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import * as TE from 'fp-ts/lib/TaskEither';
-import * as O from 'fp-ts/lib/Option';
-import { pipe } from 'fp-ts/lib/function';
 import * as jwt from 'jsonwebtoken';
 
 import { CourseSource } from '../../../domain/entities/course-source';
 import { CourseSourceRepository } from '../../ports/course-source.repository';
-import { CourseSourceBuilder } from '../../../test/stubs/course-source.stub';
 import { FindCourseSourceDto } from '../../../application/queries/find-course-source/find-course-source.dto';
 import { ErrorFactory } from '../../../../../shared/domain/errors/error-factory';
 import { RepositoryAuthenticationError } from '../../../../../shared/domain/errors/repository/authentication.error';
-
-interface SalesforceApiResponseAuth {
-  data: {
-    access_token: string;
-  };
-}
+import { RequestInvalidError } from '../../../../../shared/domain/errors/request-invalid.error';
+import { SalesforceApiCourseSourceMapper } from './salesforce-api-course-source.mapper';
+import {
+  SalesforceApiCourseSource,
+  salesforceApiCourseSourceFields,
+} from './types/course-source';
+import {
+  SalesforceApiCourseSourceResponse,
+  SalesforceApiResponseAuth,
+} from './types/course-source-response';
+import { executeTask } from 'apps/api/src/shared/utils/execute-task';
 
 @Injectable()
 export class SalesforceApiCourseSourceRepository
   implements CourseSourceRepository
 {
-  private courseSources: CourseSource[] = [];
+  private uriData: string;
+  private uriToken: string;
+  private sourceName: string;
+  private fieldsString: string;
 
   constructor(
     private httpService: HttpService,
     private errorFactory: ErrorFactory
   ) {
-    this.courseSources.push(CourseSourceBuilder().build());
-    this.courseSources.push(CourseSourceBuilder().testNewValid().build());
-    this.courseSources.push(CourseSourceBuilder().testNewInvalid().build());
-    this.courseSources.push(CourseSourceBuilder().testNewHasCourseId().build());
+    this.uriData = `${process.env.SALESFORCE_DOMAIN_DATA}/`;
+    this.uriData += `${process.env.SALESFORCE_DOMAIN_DATA_VERSION}/`;
+    this.uriToken = `${process.env.SALESFORCE_DOMAIN_TOKEN}/services/oauth2/token`;
+    this.sourceName = 'Case';
+    this.fieldsString = salesforceApiCourseSourceFields.join(', ');
   }
 
   public findOne(dto: FindCourseSourceDto): TE.TaskEither<Error, CourseSource> {
     const { id } = dto;
     return TE.tryCatch(
       async () => {
-        const courseSource = this.courseSources.find((cs) => cs.id === id);
-        return pipe(
-          courseSource,
-          O.fromNullable,
-          O.fold(
-            () => {
-              // this mimics an API or DB call throwing an error
-              throw new NotFoundException(
-                `Course source with id ${id} not found`
-              );
-            },
-            (source) => source
-          )
+        if (!id) {
+          throw new RequestInvalidError(
+            'Invalid ID supplied to findOne() in SalesforceApi'
+          );
+        }
+        const query = `SELECT ${this.fieldsString} FROM ${this.sourceName} WHERE Id = '${id}'`;
+        const token = await executeTask(this.authorise());
+        const request$ =
+          this.httpService.get<SalesforceApiCourseSourceResponse>(
+            `${this.uriData}/query`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+              params: {
+                q: query,
+              },
+            }
+          );
+        const response = await firstValueFrom(request$);
+        // TODO - improve this
+        const salesforceApiCourseSource = SalesforceApiCourseSource.check(
+          response.data.records[0]
+        );
+
+        // could this similarly be in a serialisation decorator?
+        return SalesforceApiCourseSourceMapper.toDomain(
+          salesforceApiCourseSource
         );
       },
       (error: Error) => this.errorFactory.newError(error)
     );
   }
 
+  /**
+   * TODO
+   * - [ ] find a useful SF endpoint for this
+   */
   public livenessProbe(): TE.TaskEither<Error, boolean> {
     return TE.tryCatch(
       async () => {
@@ -80,25 +105,22 @@ export class SalesforceApiCourseSourceRepository
    * - [ ] env variables somewhere better for dev
    * - [ ] env in sealed secrets for K8s
    */
-  public authorise(): TE.TaskEither<Error, boolean> {
+  public authorise(): TE.TaskEither<Error, string> {
     return TE.tryCatch(
       async () => {
         const body = new URLSearchParams({
           grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
           assertion: this.prepareJwt(),
         });
-        const request$ = this.httpService.post(
-          `${process.env.SALESFORCE_DOMAIN}/services/oauth2/token`,
+        const request$ = this.httpService.post<SalesforceApiResponseAuth>(
+          this.uriToken,
           body.toString()
         );
-        const response: SalesforceApiResponseAuth = await firstValueFrom(
-          request$
-        );
+        const response = await firstValueFrom(request$);
         if (response.data?.access_token === undefined) {
-          // TODO throw an error when you come back and store the access token
-          return false;
+          throw new RepositoryAuthenticationError('No access token returned');
         }
-        return true;
+        return response.data.access_token;
       },
       (error: Error) =>
         new RepositoryAuthenticationError(
@@ -112,7 +134,7 @@ export class SalesforceApiCourseSourceRepository
       {
         iss: process.env.SALESFORCE_CONSUMER_KEY,
         sub: process.env.SALESFORCE_USER,
-        aud: process.env.SALESFORCE_DOMAIN,
+        aud: process.env.SALESFORCE_DOMAIN_TOKEN,
       },
       process.env.SALESFORCE_CERTIFICATE_KEY,
       {
@@ -127,6 +149,6 @@ export class SalesforceApiCourseSourceRepository
   }
 
   public testDisableAuth(): void {
-    process.env.SALESFORCE_DOMAIN = 'DISABLED';
+    process.env.SALESFORCE_DOMAIN_TOKEN = 'DISABLED';
   }
 }

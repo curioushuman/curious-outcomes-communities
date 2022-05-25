@@ -2,12 +2,14 @@ import {
   BadRequestException,
   InternalServerErrorException,
 } from '@nestjs/common';
+import { RepositoryAuthenticationError } from './repository/authentication.error';
 import { RepositoryItemNotFoundError } from './repository/item-not-found.error';
 import { UnknownException } from './unknown.error';
 
 const errorMap = {
-  404: RepositoryItemNotFoundError,
   400: BadRequestException,
+  401: RepositoryAuthenticationError,
+  404: RepositoryItemNotFoundError,
   500: InternalServerErrorException,
   0: UnknownException,
   1: Error,

@@ -1,4 +1,4 @@
-Feature: Hygiene
+Feature: Course Source Hygiene
 
 Scenario: Successful connection to repository
 Given the repository is live
