@@ -75,8 +75,6 @@ export class SalesforceApiCourseSourceRepository
 
   /**
    * TODO
-   * - [*] return this error as RepoAuthError, rather than errorFactory
-   *       use errorFactory to obtain the message though
    * - [ ] store token somewhere
    * - [ ] throw error if access_token not actually present
    * - [ ] env variables somewhere better for dev
@@ -108,8 +106,6 @@ export class SalesforceApiCourseSourceRepository
         )
     );
   }
-
-  // UP TO TESTING THESE ON BY ONE
 
   private prepareJwt(): string {
     return jwt.sign(
