@@ -7,7 +7,7 @@ import { LoggableLogger } from '@curioushuman/loggable';
 
 import { CoursesController } from '../../courses.controller';
 import { CreateCourseRequestDto } from '../../dto/create-course.request.dto';
-import { CreateCourseRequestDtoBuilder } from '../../../test/stubs/create-course.request.stub';
+import { CreateCourseRequestDtoBuilder } from '../../../test/builders/create-course.request.builder';
 import { RequestInvalidError } from '../../../../../shared/domain/errors/request-invalid.error';
 
 /**

@@ -5,7 +5,7 @@ import { Connection } from 'mongoose';
 
 import { Bootstrap } from '../../../bootstrap/bootstrap';
 import { AppModule } from '../../../app/app.module';
-import { CreateCourseRequestDtoBuilder } from './stubs/create-course.request.stub';
+import { CreateCourseRequestDtoBuilder } from './builders/create-course.request.builder';
 import { CreateCourseRequestDto } from '../infra/dto/create-course.request.dto';
 import { MongoDbService } from '../../../shared/infra/database/mongo-db/mongo-db.service';
 

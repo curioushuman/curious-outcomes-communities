@@ -12,7 +12,7 @@ import { CourseRepository } from '../../../../adapter/ports/course.repository';
 import { FakeCourseRepository } from '../../../../adapter/implementations/fake/fake.course.repository';
 import { CourseSourceRepository } from '../../../../adapter/ports/course-source.repository';
 import { FakeCourseSourceRepository } from '../../../../adapter/implementations/fake/fake.course-source.repository';
-import { CreateCourseDtoBuilder } from './stubs/create-course.dto.stub';
+import { CreateCourseDtoBuilder } from './builders/create-course.dto.builder';
 import { executeTask } from '../../../../../../shared/utils/execute-task';
 import { CreateCourseRequestDto } from '../../../../infra/dto/create-course.request.dto';
 import { Course } from '../../../../domain/entities/course';
@@ -31,7 +31,7 @@ import { FakeRepositoryErrorFactory } from '../../../../../../shared/adapter/fak
  * - repository access issues
  */
 
-const feature = loadFeature('./create-course-command.feature', {
+const feature = loadFeature('./create-course.feature', {
   loadRelativePath: true,
 });
 

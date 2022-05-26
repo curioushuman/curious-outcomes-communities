@@ -5,7 +5,7 @@ import * as request from 'supertest';
 import { Bootstrap } from '../../../bootstrap/bootstrap';
 // import { Course } from '../domain/entities/course';
 // import { CourseBuilder } from './data-builders/course.builder';
-import { CreateCourseRequestDtoBuilder } from './stubs/create-course.request.stub';
+import { CreateCourseRequestDtoBuilder } from './builders/create-course.request.builder';
 import { CoursesModule } from './fake.courses.module';
 import { CreateCourseRequestDto } from '../infra/dto/create-course.request.dto';
 

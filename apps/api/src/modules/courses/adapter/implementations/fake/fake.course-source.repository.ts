@@ -5,7 +5,7 @@ import { pipe } from 'fp-ts/lib/function';
 
 import { CourseSource } from '../../../domain/entities/course-source';
 import { CourseSourceRepository } from '../../ports/course-source.repository';
-import { CourseSourceBuilder } from '../../../test/stubs/course-source.stub';
+import { CourseSourceBuilder } from '../../../test/builders/course-source.builder';
 import { FindCourseSourceDto } from '../../../application/queries/find-course-source/find-course-source.dto';
 import { ErrorFactory } from '../../../../../shared/domain/errors/error-factory';
 

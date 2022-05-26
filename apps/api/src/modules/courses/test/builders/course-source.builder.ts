@@ -1,4 +1,4 @@
-import { CreateCourseDtoBuilder } from '../../application/commands/create-course/test/stubs/create-course.dto.stub';
+import { CreateCourseDtoBuilder } from '../../application/commands/create-course/test/builders/create-course.dto.builder';
 import { CourseSource } from '../../domain/entities/course-source';
 
 /**

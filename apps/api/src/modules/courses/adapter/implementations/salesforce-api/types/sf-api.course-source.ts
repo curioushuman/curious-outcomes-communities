@@ -1,5 +1,5 @@
-import { Null, Optional, Static, String } from 'runtypes';
-import { SalesforceApiResponseRecord } from './sf-api-response';
+import { Array, Null, Optional, Record, Static, String } from 'runtypes';
+import { SalesforceApiResponseRecord } from './sf-api.response';
 
 /**
  * TODO
@@ -19,6 +19,10 @@ export const SalesforceApiCourseSource = SalesforceApiResponseRecord.extend({
   Date_end__c: Optional(String.Or(Null)),
 });
 
+/**
+ * We use this list in our queries and requests
+ * TODO: make this dynamic, from the above
+ */
 export const salesforceApiCourseSourceFields = [
   'Id',
   'Summary_quick_year__c',
@@ -29,4 +33,12 @@ export const salesforceApiCourseSourceFields = [
 
 export type SalesforceApiCourseSource = Static<
   typeof SalesforceApiCourseSource
+>;
+
+export const SalesforceApiCourseSourceResponse = Record({
+  records: Array(SalesforceApiCourseSource),
+});
+
+export type SalesforceApiCourseSourceResponse = Static<
+  typeof SalesforceApiCourseSourceResponse
 >;

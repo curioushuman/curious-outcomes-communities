@@ -5,7 +5,7 @@ import * as TE from 'fp-ts/lib/TaskEither';
 import * as jwt from 'jsonwebtoken';
 
 import { executeTask } from '../../../../../shared/utils/execute-task';
-import { SalesforceApiResponseAuth } from './types/sf-api-response';
+import { SalesforceApiResponseAuth } from './types/sf-api.response';
 import { RepositoryAuthenticationError } from '../../../../../shared/domain/errors/repository/authentication.error';
 
 /**

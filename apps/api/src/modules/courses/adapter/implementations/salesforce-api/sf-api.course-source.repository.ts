@@ -12,8 +12,8 @@ import { SalesforceApiCourseSourceMapper } from './sf-api-course-source.mapper';
 import {
   SalesforceApiCourseSource,
   salesforceApiCourseSourceFields,
-} from './types/course-source';
-import { SalesforceApiCourseSourceResponse } from './types/sf-api-response';
+} from './types/sf-api.course-source';
+import { SalesforceApiCourseSourceResponse } from './types/sf-api.course-source';
 import { RepositoryItemNotFoundError } from '../../../../../shared/domain/errors/repository/item-not-found.error';
 
 @Injectable()
