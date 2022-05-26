@@ -1,5 +1,5 @@
 import { Null, Optional, Static, String } from 'runtypes';
-import { SalesforceApiResponseRecord } from './course-source-response';
+import { SalesforceApiResponseRecord } from './sf-api-response';
 
 /**
  * TODO

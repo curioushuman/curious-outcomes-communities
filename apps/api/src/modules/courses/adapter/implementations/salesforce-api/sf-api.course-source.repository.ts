@@ -8,12 +8,12 @@ import { CourseSourceRepository } from '../../ports/course-source.repository';
 import { FindCourseSourceDto } from '../../../application/queries/find-course-source/find-course-source.dto';
 import { ErrorFactory } from '../../../../../shared/domain/errors/error-factory';
 import { RequestInvalidError } from '../../../../../shared/domain/errors/request-invalid.error';
-import { SalesforceApiCourseSourceMapper } from './salesforce-api-course-source.mapper';
+import { SalesforceApiCourseSourceMapper } from './sf-api-course-source.mapper';
 import {
   SalesforceApiCourseSource,
   salesforceApiCourseSourceFields,
 } from './types/course-source';
-import { SalesforceApiCourseSourceResponse } from './types/course-source-response';
+import { SalesforceApiCourseSourceResponse } from './types/sf-api-response';
 import { RepositoryItemNotFoundError } from '../../../../../shared/domain/errors/repository/item-not-found.error';
 
 @Injectable()

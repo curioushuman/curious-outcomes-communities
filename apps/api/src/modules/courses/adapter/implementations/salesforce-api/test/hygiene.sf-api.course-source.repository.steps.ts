@@ -4,13 +4,13 @@ import { HttpModule } from '@nestjs/axios';
 
 import { LoggableLogger } from '@curioushuman/loggable';
 
-import { SalesforceApiCourseSourceRepository } from '../salesforce-api.course-source.repository';
+import { SalesforceApiCourseSourceRepository } from '../sf-api.course-source.repository';
 import { CourseSourceRepository } from '../../../ports/course-source.repository';
 import { executeTask } from '../../../../../../shared/utils/execute-task';
 import { ErrorFactory } from '../../../../../../shared/domain/errors/error-factory';
-import { SalesforceApiRepositoryErrorFactory } from '../salesforce-api.repository.error-factory';
+import { SalesforceApiRepositoryErrorFactory } from '../sf-api.repository.error-factory';
 import { RepositoryAuthenticationError } from '../../../../../../shared/domain/errors/repository/authentication.error';
-import { SalesforceApiHttpConfigService } from '../salesforce-api.http-config.service';
+import { SalesforceApiHttpConfigService } from '../sf-api.http-config.service';
 
 /**
  * SUT = the repository
