@@ -19,6 +19,8 @@ export const CourseSourceBuilder = () => {
 
   return {
     noMatchingObject() {
+      // a slightly incorrect ID
+      // but still conforms to SF ID validity
       overrides.id = '5000K01232O2GEYQA3';
       return this;
     },
