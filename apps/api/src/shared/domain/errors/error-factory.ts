@@ -15,7 +15,6 @@ const errorMap = {
   401: RepositoryAuthenticationError,
   404: RepositoryItemNotFoundError,
   500: InternalServerErrorException,
-  0: UnknownException,
   1: typeof Error,
 };
 type errorKeys = keyof typeof errorMap;
@@ -40,17 +39,33 @@ export abstract class ErrorFactory {
     return err;
   }
 
-  public newError(error: Error): ExtractInstanceType<errorTypes> {
+  private newError(error: Error): ExtractInstanceType<errorTypes> {
+    return this.isCataloged(error)
+      ? this.newCatalogedError(error)
+      : this.newUnknownError(error);
+  }
+
+  private isKnown(error: Error): boolean {
+    const knownError = Object.keys(errorMap).find(
+      (k) => errorMap[k].name === error.name
+    );
+    return 'response' in error && 'status' in error && knownError !== undefined;
+  }
+
+  private isCataloged(error: Error): boolean {
+    return Object.keys(errorMap).includes(
+      this.errorStatusCode(error).toString()
+    );
+  }
+
+  private newCatalogedError(error: Error): ExtractInstanceType<errorTypes> {
     return new errorMap[this.errorStatusCode(error)](
       this.errorDescription(error)
     );
   }
 
-  public isKnown(error: Error): boolean {
-    const knownError = Object.keys(errorMap).find(
-      (k) => errorMap[k].name === error.name
-    );
-    return 'response' in error && 'status' in error && knownError !== undefined;
+  private newUnknownError(error: Error): ExtractInstanceType<errorTypes> {
+    return new UnknownException(this.errorDescription(error));
   }
 
   public errorAsString(error: Error): string {
