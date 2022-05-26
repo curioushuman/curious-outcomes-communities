@@ -1,14 +1,24 @@
 import { Injectable } from '@nestjs/common';
 import { ErrorFactory } from '../../../../../shared/domain/errors/error-factory';
 
+interface SalesforceApiRepositoryErrorDataObject {
+  error?: string;
+  error_description?: string;
+  message?: string;
+}
+
+type SalesforceApiRepositoryErrorDataArray =
+  SalesforceApiRepositoryErrorDataObject[];
+
+type SalesforceApiRepositoryErrorData =
+  | SalesforceApiRepositoryErrorDataObject
+  | SalesforceApiRepositoryErrorDataArray;
+
 interface SalesforceApiRepositoryError extends Error {
   response?: {
     status: number;
     statusText: string;
-    data: {
-      error: string;
-      error_description: string;
-    };
+    data: SalesforceApiRepositoryErrorData;
   };
 }
 
@@ -21,6 +31,14 @@ export class SalesforceApiRepositoryErrorFactory extends ErrorFactory {
   public errorDescription(error: SalesforceApiRepositoryError): string {
     return error.response === undefined
       ? error.message
+      : this.errorDescriptionFromData(error);
+  }
+
+  public errorDescriptionFromData(error: SalesforceApiRepositoryError): string {
+    const description = Array.isArray(error.response.data)
+      ? error.response.data.map((d) => d.message).join('\n')
       : error.response.data.error_description;
+    this.logger.debug(description);
+    return description;
   }
 }

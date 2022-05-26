@@ -1,7 +1,11 @@
 import {
   BadRequestException,
+  Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
+
+import { LoggableLogger } from '@curioushuman/loggable';
+
 import { RepositoryAuthenticationError } from './repository/authentication.error';
 import { RepositoryItemNotFoundError } from './repository/item-not-found.error';
 import { UnknownException } from './unknown.error';
@@ -24,10 +28,16 @@ type ExtractInstanceType<T> = T extends new () => infer R ? R : never;
  * - [ ] use a constructor, rather than setting error in newError
  *       NOTE: doing so resulted in some Nest dependency injection issues
  */
+@Injectable()
 export abstract class ErrorFactory {
+  constructor(protected logger: LoggableLogger) {
+    this.logger.setContext('ErrorFactory');
+  }
+
   public error(error: Error): Error {
-    // return error as Error;
-    return this.isKnown(error) ? error : this.newError(error);
+    const err = this.isKnown(error) ? error : this.newError(error);
+    this.logger.debug(err);
+    return err;
   }
 
   public newError(error: Error): ExtractInstanceType<errorTypes> {
@@ -36,8 +46,11 @@ export abstract class ErrorFactory {
     );
   }
 
-  public isKnown(error: unknown): boolean {
-    return Object.values(errorMap).includes(typeof error);
+  public isKnown(error: Error): boolean {
+    const knownError = Object.keys(errorMap).find(
+      (k) => errorMap[k].name === error.name
+    );
+    return 'response' in error && 'status' in error && knownError !== undefined;
   }
 
   public errorAsString(error: Error): string {

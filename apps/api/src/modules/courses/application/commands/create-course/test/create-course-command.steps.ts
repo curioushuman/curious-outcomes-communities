@@ -2,6 +2,8 @@ import { NotFoundException } from '@nestjs/common';
 import { loadFeature, defineFeature } from 'jest-cucumber';
 import { Test, TestingModule } from '@nestjs/testing';
 
+import { LoggableLogger } from '@curioushuman/loggable';
+
 import {
   CreateCourseCommand,
   CreateCourseHandler,
@@ -42,6 +44,7 @@ defineFeature(feature, (test) => {
     const moduleRef: TestingModule = await Test.createTestingModule({
       providers: [
         CreateCourseHandler,
+        LoggableLogger,
         { provide: CourseRepository, useClass: FakeCourseRepository },
         {
           provide: CourseSourceRepository,

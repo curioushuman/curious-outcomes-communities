@@ -2,6 +2,8 @@ import { loadFeature, defineFeature } from 'jest-cucumber';
 import { Test } from '@nestjs/testing';
 import { HttpModule } from '@nestjs/axios';
 
+import { LoggableLogger } from '@curioushuman/loggable';
+
 import { SalesforceApiCourseSourceRepository } from '../salesforce-api.course-source.repository';
 import { CourseSourceRepository } from '../../../ports/course-source.repository';
 import { executeTask } from '../../../../../../shared/utils/execute-task';
@@ -37,6 +39,7 @@ defineFeature(feature, (test) => {
         }),
       ],
       providers: [
+        LoggableLogger,
         {
           provide: CourseSourceRepository,
           useClass: SalesforceApiCourseSourceRepository,
