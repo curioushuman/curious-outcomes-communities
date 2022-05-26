@@ -39,7 +39,7 @@ export class FakeCourseSourceRepository implements CourseSourceRepository {
           )
         );
       },
-      (error: Error) => this.errorFactory.newError(error)
+      (error: Error) => this.errorFactory.error(error)
     );
   }
 }

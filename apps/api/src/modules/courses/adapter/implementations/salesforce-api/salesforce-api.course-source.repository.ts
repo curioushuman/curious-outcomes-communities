@@ -14,6 +14,7 @@ import {
   salesforceApiCourseSourceFields,
 } from './types/course-source';
 import { SalesforceApiCourseSourceResponse } from './types/course-source-response';
+import { RepositoryItemNotFoundError } from '../../../../../shared/domain/errors/repository/item-not-found.error';
 
 @Injectable()
 export class SalesforceApiCourseSourceRepository
@@ -44,7 +45,7 @@ export class SalesforceApiCourseSourceRepository
         // if a value is received, without an error we're good
         return true;
       },
-      (error: Error) => this.errorFactory.newError(error)
+      (error: Error) => this.errorFactory.error(error)
     );
   }
 
@@ -57,14 +58,17 @@ export class SalesforceApiCourseSourceRepository
             'Invalid ID supplied to findOne() in SalesforceApi'
           );
         }
-        const query = `SELECT ${this.fieldsString} FROM ${this.sourceName} WHERE Id = '${id}'`;
+        const q = `SELECT ${this.fieldsString} FROM ${this.sourceName} WHERE Id = '${id}'`;
         const request$ =
           this.httpService.get<SalesforceApiCourseSourceResponse>(`query`, {
             params: {
-              q: query,
+              q,
             },
           });
         const response = await firstValueFrom(request$);
+        if (response.data.records.length === 0) {
+          throw new RepositoryItemNotFoundError();
+        }
         // TODO - improve this
         const salesforceApiCourseSource = SalesforceApiCourseSource.check(
           response.data.records[0]
@@ -75,7 +79,7 @@ export class SalesforceApiCourseSourceRepository
           salesforceApiCourseSource
         );
       },
-      (error: Error) => this.errorFactory.newError(error)
+      (error: Error) => this.errorFactory.error(error)
     );
   }
 }

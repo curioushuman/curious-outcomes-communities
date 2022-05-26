@@ -37,7 +37,7 @@ export class SalesforceApiHttpConfigService
   }
 
   /**
-   * Implement caching of token
+   * TODO - Implement caching of token
    * Create a ternary or similar and look for cache first
    */
   public token(): TE.TaskEither<Error, string> {
@@ -59,7 +59,7 @@ export class SalesforceApiHttpConfigService
         if (response.data?.access_token === undefined) {
           throw new RepositoryAuthenticationError('No access token returned');
         }
-        return response.data?.access_token;
+        return response.data.access_token;
       },
       (error: Error) =>
         new RepositoryAuthenticationError(

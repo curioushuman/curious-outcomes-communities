@@ -38,7 +38,7 @@ export class FakeCourseRepository implements CourseRepository {
         );
       },
       // (error: Error) => error as Error
-      (error: Error) => this.errorFactory.newError(error)
+      (error: Error) => this.errorFactory.error(error)
     );
   }
 
@@ -48,7 +48,7 @@ export class FakeCourseRepository implements CourseRepository {
         this.courses.push(course);
       },
       // (error: Error) => error as Error
-      (error: Error) => this.errorFactory.newError(error)
+      (error: Error) => this.errorFactory.error(error)
     );
   }
 
