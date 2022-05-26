@@ -2,6 +2,8 @@ import { loadFeature, defineFeature } from 'jest-cucumber';
 import { Test } from '@nestjs/testing';
 import { HttpModule } from '@nestjs/axios';
 
+import { LoggableLogger } from '@curioushuman/loggable';
+
 import { SalesforceApiCourseSourceRepository } from '../salesforce-api.course-source.repository';
 import { CourseSourceRepository } from '../../../ports/course-source.repository';
 import { executeTask } from '../../../../../../shared/utils/execute-task';
@@ -12,6 +14,7 @@ import { FindCourseSourceDto } from '../../../../application/queries/find-course
 import { CourseSourceBuilder } from './builders/course-source.builder';
 import { RepositoryAuthenticationError } from '../../../../../../shared/domain/errors/repository/authentication.error';
 import { SalesforceApiHttpConfigService } from '../salesforce-api.http-config.service';
+import { RepositoryItemNotFoundError } from '../../../../../../shared/domain/errors/repository/item-not-found.error';
 
 /**
  * SUT = the repository
@@ -42,6 +45,7 @@ defineFeature(feature, (test) => {
         }),
       ],
       providers: [
+        LoggableLogger,
         {
           provide: CourseSourceRepository,
           useClass: SalesforceApiCourseSourceRepository,
@@ -83,7 +87,7 @@ defineFeature(feature, (test) => {
         result = await executeTask(repository.findOne(findCourseSourceDto));
       } catch (err) {
         error = err;
-        console.log(error);
+        expect(error).toBeUndefined();
       }
     });
 
@@ -119,6 +123,44 @@ defineFeature(feature, (test) => {
 
     then('I should receive a RepositoryAuthenticationError', () => {
       expect(error).toBeInstanceOf(RepositoryAuthenticationError);
+    });
+
+    and('no result is returned', () => {
+      expect(result).toBeUndefined();
+    });
+  });
+
+  test('Fail; Source not found for ID provided', ({
+    given,
+    and,
+    when,
+    then,
+  }) => {
+    let absentCourseSource: CourseSource;
+    let result: CourseSource;
+    let error: Error;
+
+    given('I am authorised to access the source', () => {
+      // assumed
+    });
+
+    and('a matching record DOES NOT exist at the source', () => {
+      absentCourseSource = CourseSourceBuilder().noMatchingObject().build();
+      findCourseSourceDto = {
+        id: absentCourseSource.id,
+      };
+    });
+
+    when('I request the source by ID', async () => {
+      try {
+        result = await executeTask(repository.findOne(findCourseSourceDto));
+      } catch (err) {
+        error = err;
+      }
+    });
+
+    then('I should receive a RepositoryItemNotFoundError', () => {
+      expect(error).toBeInstanceOf(RepositoryItemNotFoundError);
     });
 
     and('no result is returned', () => {
