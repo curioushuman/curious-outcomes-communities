@@ -50,8 +50,6 @@ defineFeature(feature, (test) => {
     let response: request.Response;
 
     given('the request is valid', () => {
-      // we test request validity in controller
-      // here we assume it is valid, and has been transformed into valid command dto
       createCourseRequestDto = CreateCourseRequestDtoBuilder()
         .newValid()
         .build();
@@ -68,26 +66,25 @@ defineFeature(feature, (test) => {
     });
   });
 
-  // test('Fail; Invalid request, invalid data', ({ given, when, then }) => {
-  //   given('the request contains invalid data', () => {
-  //     createCourseRequestDto = CreateCourseRequestDtoBuilder()
-  //       .emptyExternalId()
-  //       .buildNoCheck();
-  //   });
+  test('Fail; Invalid request', ({ given, when, then }) => {
+    let response: request.Response;
 
-  //   when('I attempt to create a course', async () => {
-  //     try {
-  //       await controller.create(createCourseRequestDto);
-  //     } catch (err) {
-  //       error = err;
-  //     }
-  //   });
+    given('the request contains invalid data', () => {
+      createCourseRequestDto = CreateCourseRequestDtoBuilder()
+        .emptyExternalId()
+        .buildNoCheck();
+    });
 
-  //   then('I should receive a RequestInvalidError', () => {
-  //     expect(error).toBeInstanceOf(BadRequestException);
-  //     expect(error.message).toContain(RequestInvalidError.baseMessage());
-  //   });
-  // });
+    when('I attempt to create a course', async () => {
+      response = await request(httpServer)
+        .post(`/api/courses`)
+        .send(createCourseRequestDto);
+    });
+
+    then('I should receive a RequestInvalidError/BadRequestException', () => {
+      expect(response.status).toBe(400);
+    });
+  });
 
   // test('Fail; Invalid request, missing data', ({ given, when, then }) => {
   //   given('the request contains missing data', () => {
