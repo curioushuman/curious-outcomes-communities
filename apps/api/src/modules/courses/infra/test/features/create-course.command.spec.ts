@@ -20,7 +20,7 @@ import { RequestInvalidError } from '../../../../../shared/domain/errors/request
  * - calling the command/query
  */
 
-const feature = loadFeature('./create-course-command.feature', {
+const feature = loadFeature('./create-course.command.feature', {
   loadRelativePath: true,
 });
 
@@ -31,9 +31,6 @@ const commandBus = {
 defineFeature(feature, (test) => {
   let controller: CoursesController;
   let createCourseRequestDto: CreateCourseRequestDto;
-  // disabling no-explicit-any for testing purposes
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let error: any;
 
   beforeEach(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
@@ -72,6 +69,8 @@ defineFeature(feature, (test) => {
   });
 
   test('Fail; Invalid request, invalid data', ({ given, when, then }) => {
+    let error: Error;
+
     given('the request contains invalid data', () => {
       createCourseRequestDto = CreateCourseRequestDtoBuilder()
         .emptyExternalId()
@@ -93,6 +92,8 @@ defineFeature(feature, (test) => {
   });
 
   test('Fail; Invalid request, missing data', ({ given, when, then }) => {
+    let error: Error;
+
     given('the request contains missing data', () => {
       createCourseRequestDto = CreateCourseRequestDtoBuilder()
         .noExternalId()
