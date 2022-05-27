@@ -54,6 +54,6 @@ Scenario: Fail; Source already exists in our DB
   And a matching record is found at the source
   And the returned source populates a valid course
   And the source DOES already exist in our DB
-  When I create a course
+  When I attempt to create a course
   Then I should receive a CourseConflictError
   And no result is returned

@@ -86,24 +86,105 @@ defineFeature(feature, (test) => {
     });
   });
 
-  // test('Fail; Invalid request, missing data', ({ given, when, then }) => {
-  //   given('the request contains missing data', () => {
-  //     createCourseRequestDto = CreateCourseRequestDtoBuilder()
-  //       .noExternalId()
-  //       .buildNoCheck();
-  //   });
+  test('Fail; Source not found for ID provided', ({
+    given,
+    and,
+    when,
+    then,
+  }) => {
+    let response: request.Response;
 
-  //   when('I attempt to create a course', async () => {
-  //     try {
-  //       await controller.create(createCourseRequestDto);
-  //     } catch (err) {
-  //       error = err;
-  //     }
-  //   });
+    given('the request is valid', () => {
+      // true
+    });
 
-  //   then('I should receive a RequestInvalidError', () => {
-  //     expect(error).toBeInstanceOf(BadRequestException);
-  //     expect(error.message).toContain(RequestInvalidError.baseMessage());
-  //   });
-  // });
+    and('no record exists that matches our request', () => {
+      createCourseRequestDto = CreateCourseRequestDtoBuilder()
+        .noMatchingObject()
+        .buildNoCheck();
+    });
+
+    when('I attempt to create a course', async () => {
+      response = await request(httpServer)
+        .post(`/api/courses`)
+        .send(createCourseRequestDto);
+    });
+
+    then(
+      'I should receive a RepositoryItemNotFoundError/NotFoundException',
+      () => {
+        expect(response.status).toBe(404);
+      }
+    );
+  });
+
+  test('Fail; Source does not translate into a valid Course', ({
+    given,
+    and,
+    when,
+    then,
+  }) => {
+    let response: request.Response;
+
+    given('the request is valid', () => {
+      // true
+    });
+
+    and('a matching record is found at the source', () => {
+      // true
+    });
+
+    and('the returned source does not populate a valid Course', () => {
+      createCourseRequestDto = CreateCourseRequestDtoBuilder()
+        .newInvalid()
+        .buildNoCheck();
+    });
+
+    when('I attempt to create a course', async () => {
+      response = await request(httpServer)
+        .post(`/api/courses`)
+        .send(createCourseRequestDto);
+    });
+
+    then('I should receive a CourseInvalidError/BadRequestException', () => {
+      expect(response.status).toBe(400);
+    });
+  });
+
+  test('Fail; Source already exists in our DB', ({
+    given,
+    and,
+    when,
+    then,
+  }) => {
+    let response: request.Response;
+
+    given('the request is valid', () => {
+      // true
+    });
+
+    and('a matching record is found at the source', () => {
+      // true
+    });
+
+    and('the returned source populates a valid course', () => {
+      // true
+    });
+
+    and('the source DOES already exist in our DB', () => {
+      createCourseRequestDto = CreateCourseRequestDtoBuilder()
+        .exists()
+        .buildNoCheck();
+    });
+
+    when('I attempt to create a course', async () => {
+      response = await request(httpServer)
+        .post(`/api/courses`)
+        .send(createCourseRequestDto);
+    });
+
+    then('I should receive a CourseConflictError/ConflictException', () => {
+      expect(response.status).toBe(409);
+    });
+  });
 });

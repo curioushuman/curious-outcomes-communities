@@ -38,6 +38,20 @@ export const CreateCourseRequestDtoBuilder = () => {
       return this;
     },
 
+    newInvalid() {
+      overrides.externalId = CreateCourseDtoBuilder()
+        .newInvalid()
+        .build().externalId;
+      return this;
+    },
+
+    exists() {
+      overrides.externalId = CreateCourseDtoBuilder()
+        .exists()
+        .build().externalId;
+      return this;
+    },
+
     build(): CreateCourseRequestDto {
       return CreateCourseRequestDto.check({
         ...defaultProperties,
