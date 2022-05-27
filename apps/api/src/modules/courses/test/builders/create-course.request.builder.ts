@@ -1,3 +1,4 @@
+import { CreateCourseDtoBuilder } from '../../application/commands/create-course/test/builders/create-course.dto.builder';
 import { CreateCourseRequestDto } from '../../infra/dto/create-course.request.dto';
 
 /**
@@ -27,6 +28,13 @@ export const CreateCourseRequestDtoBuilder = () => {
     emptyExternalId() {
       delete defaultProperties.externalId;
       delete overrides.externalId;
+      return this;
+    },
+
+    newValid() {
+      overrides.externalId = CreateCourseDtoBuilder()
+        .newValid()
+        .build().externalId;
       return this;
     },
 
