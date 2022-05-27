@@ -70,35 +70,31 @@ You can run some basic manual tests via the `~/apps/api/requests.http` file so l
 
 ## Approach to testing
 
-### To complete later
+After you have done your Event Storming or similar, and you have your list of commands/queries, the following is our approach to testing on a **per command basis**. This is heavily based on the amazing book by Khalil Stemmler (links below in DDD section); remember, it all starts with [use cases/features](https://wiki.solidbook.io/13-Features-(use-cases)-are-the-key-193ca4bbb8604c0eada33d1ac86ed517).
 
-- Need to make a decision RE Integration tests
-  - Most of them are independent of third party systems
-    - They use fakes
-    - This allows for rapid and continued testing
-  - Some of them will require integration with third parties
-    - As this is the core of what integration is for
-  - But I would like to be able to run them independently
-    - *.ispec.ts is already my own pattern
-    - It feels like creating another one might be a bit much
-  - DECISION
-    - Anything that mocks/fakes for anything can be considered closer to a unit test
+### 1. Write out the docs for the Feature
 
-### Quick notes for now
+1. Feature summary
+2. Data types
+3. Feature workflow
 
-Remember, it all starts with [use cases/features](https://wiki.solidbook.io/13-Features-(use-cases)-are-the-key-193ca4bbb8604c0eada33d1ac86ed517).
+### 2. Create high level acceptance tests
 
-**1. Start with failing unit test for complete use case**
+The success path, and the various failure paths determined during workflow. All subsequent tests are largely derived from these acceptance tests; with the occasional exception for specific corners of the system e.g. repository authentication.
 
-- Create your acceptance test using Given, When, Then
-- Write a unit level test that mocks/fakes any third party systems
+### 3. Use BDD and TDD to come from outside in, and inside out
+
+**3.1. Start with failing unit test for complete use case**
+
+- Based on your acceptance test using Given, When, Then
+- Write a unit test at the use case level that mocks/fakes any third party systems
   - supertest for http
   - fake repository
 - Focus on the success/failure of this one use case
 
 This is your *outside in test*.
 
-*1.1. Write minimum amount of code to make it pass*
+*3.1.1. Write minimum amount of code to make it pass*
 
 - This can be either
   - False pass
@@ -106,7 +102,7 @@ This is your *outside in test*.
 
 Generally at the use case level you are probably going to start with a false pass. i.e. just return a 200 response so we know the vertical slice is working.
 
-**2. Incrementally add/update code to make the *outside in test* proper pass**
+**3.2. Incrementally add/update code to make the *outside in test* proper pass**
 
 This will be a series of iterations of the Red, Green, Refactor (RGR). i.e.
 
@@ -117,56 +113,118 @@ This will be a series of iterations of the Red, Green, Refactor (RGR). i.e.
   - Then make these pass
 - Until your *outside in test* is also passing with this new/updated code in place
 
-**3. Commit the passing code**
+**Note:** it is during this step you will notice that the tests you write for your internal RGR loops should mostly be derivatives of your over-arching acceptance tests; albeit with some conditions missing.
+
+e.g. when testing the controller it's only responsibilities are validating the request, calling the command bus, and returning the response. Therefore a complete acceptance test such as:
+
+```cucumber
+Scenario: Successfully creating a course
+  Given the request is valid
+  And I am authorised to access the source
+  And a matching record is found at the source
+  And the returned source populates a valid course
+  And the source does not already exist in our DB
+  When I create a course
+  Then a new record should have been created in the repository
+  And no result is returned
+```
+
+Might simply be:
+
+```cucumber
+Scenario: Successfully creating a course
+  Given the request is valid
+  When I attempt to create a course
+  Then a new record should have been created
+```
+
+The other situation that might arise is tests required that do not fall under one of the over-arching acceptance tests; but are no less important. e.g. authenticating with an external API based repository. To keep things consistent I've kept the Given, When, Then pattern.
+
+```cucumber
+Scenario: Successful authentication with repository
+Given the repository is live
+  And I am authorised to access the source
+  When I attempt attempt to authenticate
+  Then I should receive a positive result
+```
+
+**3.3. Commit the passing code**
 
 Commit often; every time a test passes essentially. Pick and choose what you commit though, so the repo is always in a passing state.
 
-## All
+## Technologies employed
 
-TBC
+- Jest
+  - Included/recommended by Nest.js
+- jest-cucumber
+  - A fantastic addition that allows us to write our tests files using Given, When Then
+  - Which maps directly to our acceptance tests
 
-## API (only)
+## Levels/breakdown of testing
+
+We have our unit, integration, and e2e testing like everyone else. In this instance I would like to clarify further what we mean by, and how we approach each. What kind of developer experience we have baked in based on this.
+
+### 1. Reliant on nothing; faked/mocked
+
+These tests have no external dependencies, they are:
+
+- Supported with fakes/mocks (where appropriate)
+- Are very quick to run
+- Intended to be **watch**ed as you work
+- Designed to make sure independent **unit**'s work
+- As well as the **integration** of OUR various layers
+  - e.g. controller, CQRS, repository, etc
+
+As it sounds, this involves a combination of **unit** and **integration** tests.
+
+### 2. Integrations with third parties
+
+These are the various APIs we'll be working with. They do not require our infrastructure to be in place to be tested, so we can run them without spinning up our K8s. They can be run using Nx from the command line, you could in fact have these running alongside level 1 as you work.
+
+These will all be considered **integration** tests as they test how our system *integrates* with another.
+
+### 3. Reliant on K8s infrastructure
+
+This is our databases, caching, and potentially any microservices we eventually might include. These will require a manual step to run; which should occur both during local development, and as an automated step during deployment.
+
+These will be a combination of **integration** (e.g. testing DB repositories) and **e2e** tests (e.g. from authentication, to response, through all the layers).
+
+# Running tests
+
+## API
 
 ### Manual tests
+
+This method is an alternative to something like Postman. Either honestly does a great job, this is just for quick and dirty and is handy because it's available within VS Code.
 
 - Install [REST Client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client)
 - Open [~/apps/api/requests.http](apps/api/requests.http)
 - Use the available tests
 - OR add your own
 
-### Unit tests
-
-Handled *outside of k8s* via Jest, managed by Nx.
-
-```bash
-$ nx run api:test-unit
-# To leave it running
-$ nx run api:test-unit --watch
-```
-
-Matches files using Jest [standard testMatch pattern](https://jestjs.io/docs/configuration#testmatch-arraystring).
-
-### Integration tests
-
-Handled *outside of k8s* via Jest, managed by Nx.
-
-```bash
-$ nx run api:test-integration
-```
-
-Matches files with the file pattern `*.ispec.ts`.
-
-### Unit + Integration
+### Level 1; reliant on nothing
 
 Handled *outside of k8s* via Jest, managed by Nx.
 
 ```bash
 $ nx run api:test
+# To leave it running
+$ nx run api:test --watch
 ```
 
-Matches both of the above patterns.
+Matches files with the file pattern `*.steps.ts`.
 
-### E2E tests
+### Level 2; reliant on third parties
+
+Possible *outside of k8s* via Jest, managed by Nx. Also will be run within K8s during development (outlined below), and during automated tests.
+
+```bash
+$ nx run api:test-external
+```
+
+Matches files with the file pattern `*.ext.steps.ts`.
+
+### Level 3: reliant on infrastructure (K8s)
 
 Handled **INSIDE of k8s** via Jest, supported by Nx, enabled via Skaffold.
 
@@ -177,7 +235,7 @@ $ nx run api:pre-test
 $ skaffold dev
 ```
 
-Matches files with the file pattern `*.e2e.ts`.
+Matches files with the file pattern `*.k8s.steps.ts`.
 
 ### Manual testing within Kubernetes
 
@@ -195,9 +253,13 @@ This will spin up the k8s cluster, and start Nest with:
 - hot reloading
 - watch
 
-**Note:** you only have to run pre-dev if you've previously been running e2e tests.
+**Note:** you only have to run pre-dev if you've previously been running level 3 tests.
 
 ## App
+
+TBC
+
+## All
 
 TBC
 

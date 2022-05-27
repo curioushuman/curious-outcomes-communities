@@ -60,12 +60,28 @@ Extends Course
 - CourseConflictError
   - Extends: ConflictException
   - Message: Source with ID <`ExternalId`> already exists within our DB. No action required.
-- NotificationFailedToSendError
+- NotificationFailedError
   - Extends: InternalServerException
   - Message: Error sending Notification, contact your system administrator
-- EventFailedToEmitError
+- EventFailedError
   - Extends: InternalServerException
   - Message: Error emitting event, contact your system administrator
+
+### By Exception extended
+
+- BadRequestException
+  - RequestInvalidError
+  - CourseInvalidError
+- UnauthorizedException
+  - RepositoryAuthenticationError
+- NotFoundException
+  - RepositoryItemNotFoundError
+- InternalServerException
+  - RepositoryServerError
+  - NotificationFailedError
+  - EventFailedError
+- ConflictException
+  - CourseConflictError
 
 ## Events
 

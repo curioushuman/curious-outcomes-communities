@@ -11,6 +11,7 @@ import { CreateCourseRequestDtoBuilder } from '../../../test/builders/create-cou
 import { RequestInvalidError } from '../../../../../shared/domain/errors/request-invalid.error';
 
 /**
+ * UNIT TEST
  * SUT = the controller
  *
  * Scope

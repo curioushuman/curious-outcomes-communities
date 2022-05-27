@@ -13,15 +13,17 @@ import { RepositoryAuthenticationError } from '../../../../../../shared/domain/e
 import { SalesforceApiHttpConfigService } from '../sf-api.http-config.service';
 
 /**
- * SUT = the repository
+ * INTEGRATION TEST
+ * SUT = an external repository
+ * i.e. are we actually connecting with SF
  *
  * Scope
  * - repository connection
  * - repository authorisation
  * - repository access issues
- * - repository functions and behaviours
- * - changes to API/data structure
  * - handling of their various responses/errors
+ *
+ * NOTE: repository functions and behaviours handled in separate tests
  */
 
 const feature = loadFeature('./hygiene.feature', {
@@ -78,7 +80,7 @@ defineFeature(feature, (test) => {
     });
   });
 
-  test('Successful authorisation with repository', ({
+  test('Successful authentication with repository', ({
     given,
     and,
     when,
@@ -96,7 +98,7 @@ defineFeature(feature, (test) => {
       // assumed
     });
 
-    when('I attempt attempt to authorise', async () => {
+    when('I attempt attempt to authenticate', async () => {
       // UPDATE: authorization has been moved to the HttpConfigService
       // TODO: determine another actual test to put here
       // Potential solution: export SalesforceApiHttpConfigService

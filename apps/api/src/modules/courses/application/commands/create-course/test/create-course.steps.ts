@@ -23,6 +23,7 @@ import { ErrorFactory } from '../../../../../../shared/domain/errors/error-facto
 import { FakeRepositoryErrorFactory } from '../../../../../../shared/adapter/fake.repository.error-factory';
 
 /**
+ * UNIT TEST
  * SUT = the command & command handler
  *
  * Out of scope

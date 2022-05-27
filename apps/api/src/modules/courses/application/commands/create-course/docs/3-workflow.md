@@ -144,7 +144,7 @@ Else
 
 #### Output: Fail
 
-- NotificationFailedToSendError
+- NotificationFailedError
   - Extends InternalServerException
 
 #### Steps (pseudocode)
@@ -152,7 +152,7 @@ Else
 ```
 Send CourseCreatedNotification
 If Fails
-  return NotificationFailedToSendError
+  return NotificationFailedError
 Else
   return
 ```
@@ -168,7 +168,7 @@ Else
 
 #### Output: Fail
 
-- EventFailedToEmitError
+- EventFailedError
   - Extends InternalServerException
 
 #### Steps (pseudocode)
@@ -176,7 +176,7 @@ Else
 ```
 Emit CourseCreatedEvent
 If Fails
-  return EventFailedToEmitError
+  return EventFailedError
 Else
   return
 ```

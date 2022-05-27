@@ -5,10 +5,10 @@ Given the repository is live
   When I attempt attempt to check live status
   Then I should receive a positive result
 
-Scenario: Successful authorisation with repository
+Scenario: Successful authentication with repository
 Given the repository is live
   And I am authorised to access the source
-  When I attempt attempt to authorise
+  When I attempt attempt to authenticate
   Then I should receive a positive result
 
 Scenario: Fail; Unable to authenticate with source repository

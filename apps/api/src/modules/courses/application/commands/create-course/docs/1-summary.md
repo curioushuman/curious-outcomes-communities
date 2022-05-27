@@ -30,14 +30,14 @@
 - RepositoryAuthenticationError
 - RepositoryItemNotFoundError
 - RepositoryServerError
-- NotificationFailedToSendError
-- EventFailedToEmitError
+- NotificationFailedError
+- EventFailedError
 
 ## 3. Behaviour
 
 ### Triggered by
 - Event: External record saved in external system
-- Role involved in event: Admin only
+- Role: Admin only
 
 ### Side-effects
 - Course created
@@ -54,7 +54,7 @@ This isn't in Khalil's structure, but I want to record it here as it is part of 
   - updateCourseSource
 
 ## 4. Decisions
-- We only support external systems for now
+- We only support (creation of courses in) external systems for now
   - In the future we might expand to allow them to use our own
 - External record info not updatable from custom admin
 - NO extra data administer-able from our admin

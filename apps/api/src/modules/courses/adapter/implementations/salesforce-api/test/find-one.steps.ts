@@ -17,12 +17,11 @@ import { SalesforceApiHttpConfigService } from '../sf-api.http-config.service';
 import { RepositoryItemNotFoundError } from '../../../../../../shared/domain/errors/repository/item-not-found.error';
 
 /**
- * SUT = the repository
+ * INTEGRATION TEST
+ * SUT = the findOne function OF an external repository
+ * i.e. are we actually connecting with and getting data from SF
  *
  * Scope
- * - repository connection
- * - repository authorisation
- * - repository access issues
  * - repository functions and behaviours
  * - changes to API/data structure
  * - handling of their various responses/errors
