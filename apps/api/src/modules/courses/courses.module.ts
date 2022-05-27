@@ -14,9 +14,9 @@ import {
   MongoDbCourseSchema,
 } from './adapter/implementations/mongo-db/schema/course.schema';
 import { CourseSourceRepository } from './adapter/ports/course-source.repository';
-import { FakeCourseSourceRepository } from './adapter/implementations/fake/fake.course-source.repository';
 import { ErrorFactory } from '../../shared/domain/errors/error-factory';
-import { FakeRepositoryErrorFactory } from '../../shared/adapter/fake.repository.error-factory';
+import { SalesforceApiCourseSourceRepository } from './adapter/implementations/salesforce-api/sf-api.course-source.repository';
+import { SalesforceApiRepositoryErrorFactory } from './adapter/implementations/salesforce-api/sf-api.repository.error-factory';
 
 const commandHandlers = [CreateCourseHandler];
 
@@ -27,14 +27,14 @@ const repositories = [
   },
   {
     provide: CourseSourceRepository,
-    useClass: FakeCourseSourceRepository,
+    useClass: SalesforceApiCourseSourceRepository,
   },
 ];
 
 const services = [
   {
     provide: ErrorFactory,
-    useClass: FakeRepositoryErrorFactory,
+    useClass: SalesforceApiRepositoryErrorFactory,
   },
 ];
 
