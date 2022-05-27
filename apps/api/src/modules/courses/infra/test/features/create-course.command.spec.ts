@@ -32,7 +32,7 @@ defineFeature(feature, (test) => {
   let controller: CoursesController;
   let createCourseRequestDto: CreateCourseRequestDto;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
       imports: [CqrsModule],
       controllers: [CoursesController],

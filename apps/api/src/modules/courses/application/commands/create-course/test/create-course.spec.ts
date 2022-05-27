@@ -41,7 +41,7 @@ defineFeature(feature, (test) => {
   let handler: CreateCourseHandler;
   let createCourseDto: CreateCourseRequestDto;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
       providers: [
         CreateCourseHandler,

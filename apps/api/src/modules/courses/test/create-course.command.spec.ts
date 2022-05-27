@@ -4,11 +4,13 @@ import * as request from 'supertest';
 import { loadFeature, defineFeature } from 'jest-cucumber';
 
 import { Bootstrap } from '../../../bootstrap/bootstrap';
-// import { Course } from '../domain/entities/course';
-// import { CourseBuilder } from './data-builders/course.builder';
 import { CreateCourseRequestDtoBuilder } from './builders/create-course.request.builder';
 import { CoursesModule } from './fake.courses.module';
 import { CreateCourseRequestDto } from '../infra/dto/create-course.request.dto';
+import { FakeCourseRepository } from '../adapter/implementations/fake/fake.course.repository';
+import { CourseRepository } from '../adapter/ports/course.repository';
+import { Course } from '../domain/entities/course';
+import { executeTask } from '../../../shared/utils/execute-task';
 
 /**
  * INTEGRATION TEST
@@ -16,7 +18,7 @@ import { CreateCourseRequestDto } from '../infra/dto/create-course.request.dto';
  * Without worrying about third parties
  *
  * Scope
- * - validation of request
+ * - sending request
  * - receiving response
  */
 
@@ -26,12 +28,13 @@ const feature = loadFeature('./create-course.command.feature', {
 
 defineFeature(feature, (test) => {
   let app: INestApplication;
+  let repository: FakeCourseRepository;
   let createCourseRequestDto: CreateCourseRequestDto;
   // disabling no-explicit-any for testing purposes
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let httpServer: any;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [CoursesModule],
     }).compile();
@@ -40,14 +43,24 @@ defineFeature(feature, (test) => {
     Bootstrap.useGlobalSettings(app);
     await app.init();
     httpServer = app.getHttpServer();
+    repository = moduleRef.get<CourseRepository>(
+      CourseRepository
+    ) as FakeCourseRepository;
   });
 
   afterAll(async () => {
     await app.close();
   });
 
-  test('Successfully creating a course', ({ given, when, then }) => {
+  test('Successfully creating a course', ({ given, and, when, then }) => {
     let response: request.Response;
+    let courses: Course[];
+    let coursesBefore: number;
+
+    beforeAll(async () => {
+      courses = await executeTask(repository.all());
+      coursesBefore = courses.length;
+    });
 
     given('the request is valid', () => {
       createCourseRequestDto = CreateCourseRequestDtoBuilder()
@@ -61,7 +74,12 @@ defineFeature(feature, (test) => {
         .send(createCourseRequestDto);
     });
 
-    then('a new record should have been created', () => {
+    then('a new record should have been created', async () => {
+      courses = await executeTask(repository.all());
+      expect(courses.length).toEqual(coursesBefore + 1);
+    });
+
+    and('a positive response received', () => {
       expect(response.status).toBe(201);
     });
   });

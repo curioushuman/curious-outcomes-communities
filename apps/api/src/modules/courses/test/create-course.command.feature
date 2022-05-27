@@ -4,6 +4,7 @@ Scenario: Successfully creating a course
   Given the request is valid
   When I attempt to create a course
   Then a new record should have been created
+  And a positive response received
 
 Scenario: Fail; Invalid request
   Given the request contains invalid data
