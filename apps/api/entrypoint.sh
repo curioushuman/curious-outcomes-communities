@@ -7,7 +7,7 @@ if [ $NODE_ENV == "production" ]; then
 elif [ $NODE_ENV == "test" ]; then
   echo "Running tests..."
   sleep 5
-  node_modules/.bin/jest --config /usr/src/app/jest.config-e2e.js --watchAll
+  node_modules/.bin/jest --config /usr/src/app/jest.config-k8s.js --watchAll
 else
   echo "Running in development..."
   sleep 5

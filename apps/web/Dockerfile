@@ -68,7 +68,7 @@ WORKDIR /usr/src/app
 COPY --from=build-development /usr/src/app ./
 
 # We do our e2e tests in k8s
-COPY ./apps/api/tsconfig.spec-e2e.json ./tsconfig.spec.json
+COPY ./apps/api/tsconfig.spec-k8s.json ./tsconfig.spec.json
 
 ARG NODE_ENV=test
 ENV NODE_ENV=${NODE_ENV}

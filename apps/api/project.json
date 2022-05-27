@@ -48,27 +48,11 @@
         "passWithNoTests": true
       }
     },
-    "test-unit": {
+    "test-ext": {
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/apps/api"],
       "options": {
-        "jestConfig": "apps/api/jest.config-unit.js",
-        "passWithNoTests": true
-      }
-    },
-    "test-integration": {
-      "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/apps/api"],
-      "options": {
-        "jestConfig": "apps/api/jest.config-integration.js",
-        "passWithNoTests": true
-      }
-    },
-    "test-steps": {
-      "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/apps/api"],
-      "options": {
-        "jestConfig": "apps/api/jest.config-steps.js",
+        "jestConfig": "apps/api/jest.config-ext.js",
         "passWithNoTests": true
       }
     },

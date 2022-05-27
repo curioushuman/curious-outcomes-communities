@@ -160,6 +160,8 @@ Commit often; every time a test passes essentially. Pick and choose what you com
   - A fantastic addition that allows us to write our tests files using Given, When Then
   - Which maps directly to our acceptance tests
 
+**NOTE:** we still use vanilla Jest occasionally for super simple tests e.g. value-objects.
+
 ## Levels/breakdown of testing
 
 We have our unit, integration, and e2e testing like everyone else. In this instance I would like to clarify further what we mean by, and how we approach each. What kind of developer experience we have baked in based on this.
@@ -195,7 +197,7 @@ These will be a combination of **integration** (e.g. testing DB repositories) an
 
 ### Manual tests
 
-This method is an alternative to something like Postman. Either honestly does a great job, this is just for quick and dirty and is handy because it's available within VS Code.
+This method is an alternative to something like Postman. Either honestly does a great job, this is just for quick and dirty manual testing and is handy because it's available within VS Code.
 
 - Install [REST Client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client)
 - Open [~/apps/api/requests.http](apps/api/requests.http)
@@ -212,17 +214,17 @@ $ nx run api:test
 $ nx run api:test --watch
 ```
 
-Matches files with the file pattern `*.steps.ts`.
+Matches files with the regular jest pattern matching e.g. `*.(test|spec).ts`.
 
 ### Level 2; reliant on third parties
 
 Possible *outside of k8s* via Jest, managed by Nx. Also will be run within K8s during development (outlined below), and during automated tests.
 
 ```bash
-$ nx run api:test-external
+$ nx run api:test-ext
 ```
 
-Matches files with the file pattern `*.ext.steps.ts`.
+Matches files with the file pattern `*.ext-spec.ts`.
 
 ### Level 3: reliant on infrastructure (K8s)
 
@@ -235,7 +237,9 @@ $ nx run api:pre-test
 $ skaffold dev
 ```
 
-Matches files with the file pattern `*.k8s.steps.ts`.
+Matches files with the file pattern `*.k8s-spec.ts`.
+
+**NOTE:** all tests will be run within K8s when tests are run in this way.
 
 ### Manual testing within Kubernetes
 

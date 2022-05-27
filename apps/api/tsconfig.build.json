@@ -11,9 +11,8 @@
   "exclude": [
     "**/*.test.ts",
     "**/*.spec.ts",
-    "**/*.ispec.ts",
-    "**/*.steps.ts",
-    "**/*.e2e.ts",
+    "**/*.ext-spec.ts",
+    "**/*.k8s-spec.ts",
     "**/__mocks__/**/*.ts",
     "**/*.mock.ts"
   ],

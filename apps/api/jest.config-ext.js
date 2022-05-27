@@ -15,5 +15,5 @@ module.exports = {
     '^.+\\.[tj]s$': 'ts-jest',
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
-  testMatch: ['**/?(*.)+(ispec).[jt]s?(x)'],
+  testMatch: ['**/?(*.)+(ext-spec).[jt]s?(x)'],
 };

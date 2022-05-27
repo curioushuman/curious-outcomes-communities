@@ -42,7 +42,7 @@ COPY [ \
   "./jest.preset.js", \
   "./apps/api/entrypoint.sh", \
   "./apps/api/nest-cli.json", \
-  "./apps/api/jest.config-e2e.js", \
+  "./apps/api/jest.config-k8s.js", \
   "./" \
   ]
 
@@ -75,7 +75,7 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /usr/src/app
 COPY --from=build-development /usr/src/app ./
 
-COPY ./apps/api/tsconfig.spec-e2e.json ./tsconfig.spec.json
+COPY ./apps/api/tsconfig.spec-k8s.json ./tsconfig.spec.json
 
 ARG NODE_ENV=test
 ENV NODE_ENV=${NODE_ENV}

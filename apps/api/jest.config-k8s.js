@@ -1,5 +1,5 @@
 module.exports = {
-  displayName: 'api-unit',
+  displayName: 'api-steps',
   collectCoverage: false,
   preset: '../../jest.preset.js',
   globals: {
@@ -15,4 +15,8 @@ module.exports = {
     '^.+\\.[tj]s$': 'ts-jest',
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
+  testMatch: [
+    '**/__tests__/**/*.[jt]s?(x)',
+    '**/?(*.)+(spec|test|ext-spec|k8s-spec).[jt]s?(x)',
+  ],
 };
