@@ -9,6 +9,8 @@ import { CoursesController } from '../../courses.controller';
 import { CreateCourseRequestDto } from '../../dto/create-course.request.dto';
 import { CreateCourseRequestDtoBuilder } from '../../../test/builders/create-course.request.builder';
 import { RequestInvalidError } from '../../../../../shared/domain/errors/request-invalid.error';
+import { ErrorFactory } from '../../../../../shared/domain/errors/error-factory';
+import { FakeRepositoryErrorFactory } from '../../../../../shared/adapter/fake.repository.error-factory';
 
 /**
  * UNIT TEST
@@ -39,6 +41,10 @@ defineFeature(feature, (test) => {
       providers: [
         LoggableLogger,
         { provide: CommandBus, useValue: commandBus },
+        {
+          provide: ErrorFactory,
+          useClass: FakeRepositoryErrorFactory,
+        },
       ],
     }).compile();
 

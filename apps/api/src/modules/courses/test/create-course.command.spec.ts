@@ -164,9 +164,12 @@ defineFeature(feature, (test) => {
         .send(createCourseRequestDto);
     });
 
-    then('I should receive a CourseInvalidError/BadRequestException', () => {
-      expect(response.status).toBe(400);
-    });
+    then(
+      'I should receive a SourceInvalidError/InternalServerErrorException',
+      () => {
+        expect(response.status).toBe(500);
+      }
+    );
   });
 
   test('Fail; Source already exists in our DB', ({
@@ -201,7 +204,7 @@ defineFeature(feature, (test) => {
         .send(createCourseRequestDto);
     });
 
-    then('I should receive a CourseConflictError/ConflictException', () => {
+    then('I should receive a ItemConflictError/ConflictException', () => {
       expect(response.status).toBe(409);
     });
   });

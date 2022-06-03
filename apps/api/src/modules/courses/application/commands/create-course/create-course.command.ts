@@ -35,7 +35,9 @@ export class CreateCourseHandler
     private readonly courseSourceRepository: CourseSourceRepository,
     private logger: LoggableLogger,
     private errorFactory: ErrorFactory
-  ) {}
+  ) {
+    this.logger.setContext(CreateCourseHandler.name);
+  }
 
   async execute(command: CreateCourseCommand): Promise<void> {
     const { createCourseDto } = command;
@@ -91,14 +93,14 @@ export class CreateCourseHandler
             this.logger,
             `find course from source: ${source.id}`
           ),
-          TE.chain((courseAlreadyExists) => {
-            throw new ItemConflictError(courseAlreadyExists.name);
+          TE.chain((existingCourse) => {
+            throw new ItemConflictError(existingCourse.name);
           }),
           TE.alt(() => TE.right(courseFromSource))
         )
       ),
 
-      // #5. create the course
+      // #5. create the course, from the source
       TE.chain((course) =>
         performAction(
           course,

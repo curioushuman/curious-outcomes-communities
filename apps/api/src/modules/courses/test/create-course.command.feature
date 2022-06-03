@@ -22,7 +22,7 @@ Scenario: Fail; Source does not translate into a valid Course
   And a matching record is found at the source
   And the returned source does not populate a valid Course
   When I attempt to create a course
-  Then I should receive a SourceInvalidError/BadRequestException
+  Then I should receive a SourceInvalidError/InternalServerErrorException
 
 Scenario: Fail; Source already exists in our DB
   Given the request is valid
