@@ -5,8 +5,6 @@ import { TaskEither } from 'fp-ts/lib/TaskEither';
 /**
  * Full credit to VincentJouanne
  * - https://github.com/VincentJouanne/nest-clean-architecture
- *
- * I am starting my journey into fp-ts with TaskEither and this code will help immensely
  */
 
 /**

@@ -1,22 +1,20 @@
 import { CommandHandler, ICommandHandler, ICommand } from '@nestjs/cqrs';
 import * as TE from 'fp-ts/lib/TaskEither';
-import * as E from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
+import { sequenceT } from 'fp-ts/lib/Apply';
+
+import { LoggableLogger } from '@curioushuman/loggable';
 
 import { CourseRepository } from '../../../adapter/ports/course.repository';
 import { executeTask } from '../../../../../shared/utils/execute-task';
 import { CreateCourseDto } from './create-course.dto';
 import { CreateCourseMapper } from './create-course.mapper';
 import { CourseSourceRepository } from '../../../adapter/ports/course-source.repository';
-import { Course } from '../../../domain/entities/course';
-import {
-  CourseSource,
-  CourseSourceForCreate,
-} from '../../../domain/entities/course-source';
-import { FindCourseSourceDto } from '../../queries/find-course-source/find-course-source.dto';
-import { CourseInvalidError } from '../../../domain/errors/course-invalid.error';
-import { RequestInvalidError } from '../../../../../shared/domain/errors/request-invalid.error';
+import { CourseSourceForCreate } from '../../../domain/entities/course-source';
 import { CourseConflictError } from '../../../domain/errors/course-conflict.error';
+import { performAction } from '../../../../../shared/utils/perform-action';
+import { parseActionData } from '../../../../../shared/utils/parse-action-data';
+// import { ErrorFactory } from '../../../../../shared/domain/errors/error-factory';
 
 export class CreateCourseCommand implements ICommand {
   constructor(public readonly createCourseDto: CreateCourseDto) {}
@@ -25,7 +23,6 @@ export class CreateCourseCommand implements ICommand {
 /**
  * Command handler for create course
  * TODO
- * - [ ] logging
  * - [ ] better associated course check
  *       e.g. check against local IDs rather than just existence of courseId
  */
@@ -35,101 +32,66 @@ export class CreateCourseHandler
 {
   constructor(
     private readonly courseRepository: CourseRepository,
-    private readonly courseSourceRepository: CourseSourceRepository
+    private readonly courseSourceRepository: CourseSourceRepository,
+    private logger: LoggableLogger // private errorFactory: ErrorFactory
   ) {}
 
-  /**
-   * Creates a course, via a series of steps
-   *
-   * TODO
-   * - [ ] refactor and make simpler
-   */
   async execute(command: CreateCourseCommand): Promise<void> {
-    /**
-     * These are the business functions!!
-     * NOTE: repository errors/exceptions are handled in the repository itself
-     * therefore we let them pass on through to be caught by Nest and returned as
-     * the relevant exception
-     */
-    const findSource = (dto: FindCourseSourceDto) =>
-      TE.tryCatch<Error, CourseSource>(
-        async () => await executeTask(this.courseSourceRepository.findOne(dto)),
-        (error: Error) => error as Error
-      );
-
-    const saveCourse = (course: Course) =>
-      TE.tryCatch<Error, void>(
-        async () => await executeTask(this.courseRepository.save(course)),
-        (error: Error) => error as Error
-      );
-
-    const findCourseFromCourse = (course: Course) =>
-      TE.tryCatch<Error, Course>(
-        async () =>
-          await executeTask(
-            this.courseRepository.findOne(
-              CreateCourseMapper.fromCourseToFindCourseDto(course)
-            )
-          ),
-        (error: Error) => error as Error
-      );
-
-    /**
-     * Then we set up the smaller steps, to support business time
-     */
     const { createCourseDto } = command;
 
     const task = pipe(
+      // #1. parse the dto
       createCourseDto,
-      this.parseDto,
-      TE.fromEither,
-      TE.chain((dto) => findSource(dto)),
-      TE.chain((courseSource) =>
-        pipe(courseSource, this.parseSource, TE.fromEither)
-      ),
-      TE.chain((course) =>
-        pipe(
-          course,
-          findCourseFromCourse,
-          TE.chain((courseFound) => {
-            // this works, but doesn't feel right
-            // need to read the FP book
-            throw new CourseConflictError(courseFound.name);
-            // this feels more right, but doesn't work
-            // return TE.left(new CourseConflictError(courseFound.name));
-          }),
-          TE.alt(() => TE.right(course))
+      parseActionData(CreateCourseMapper.toFindCourseSourceDto),
+
+      // #2. find the source
+      TE.chain((findSourceDto) =>
+        performAction(
+          findSourceDto,
+          this.courseSourceRepository.findOne,
+          this.logger,
+          'find course source'
         )
       ),
-      TE.chain((course) => saveCourse(course))
+
+      // #3. parse the source
+      TE.chain((courseSource) =>
+        sequenceT(TE.ApplySeq)(
+          parseActionData(CourseSourceForCreate.check)(courseSource),
+          parseActionData(CreateCourseMapper.fromSourceToFindCourseDto)(
+            courseSource
+          ),
+          parseActionData(CreateCourseMapper.fromSourceToCourse)(courseSource)
+        )
+      ),
+
+      // #4. check for conflict
+      TE.chain(([source, findCourseDto, courseFromSource]) =>
+        pipe(
+          performAction(
+            findCourseDto,
+            this.courseRepository.findOne,
+            this.logger,
+            `find course from source: ${source.id}`
+          ),
+          TE.chain((courseAlreadyExists) => {
+            throw new CourseConflictError(courseAlreadyExists.name);
+          }),
+          TE.alt(() => TE.right(courseFromSource))
+        )
+      ),
+
+      // #5. create the course
+      TE.chain((course) =>
+        performAction(
+          course,
+          this.courseRepository.save,
+          this.logger,
+          `save course from source`
+        )
+      )
     );
 
     return executeTask(task);
-  }
-
-  private parseDto(
-    dto: CreateCourseDto
-  ): E.Either<RequestInvalidError, FindCourseSourceDto> {
-    return E.tryCatch<RequestInvalidError, FindCourseSourceDto>(
-      () => {
-        return pipe(dto, CreateCourseMapper.toFindCourseSourceDto);
-      },
-      (error: Error) => new RequestInvalidError(error.toString())
-    );
-  }
-
-  private parseSource(
-    source: CourseSource
-  ): E.Either<CourseInvalidError, Course> {
-    return E.tryCatch<CourseInvalidError, Course>(
-      () => {
-        return pipe(
-          source,
-          CourseSourceForCreate.check,
-          CreateCourseMapper.fromSourceToCourse
-        );
-      },
-      (error: Error) => new CourseInvalidError(error.toString())
-    );
   }
 }

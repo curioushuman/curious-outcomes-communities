@@ -38,13 +38,9 @@ export class CreateCourseMapper {
     });
   }
 
-  /**
-   * TODO
-   * - [ ] move this to a better home
-   */
-  public static fromCourseToFindCourseDto(course: Course): FindCourseDto {
+  public static fromSourceToFindCourseDto(source: CourseSource): FindCourseDto {
     return FindCourseDto.check({
-      externalId: course.externalId,
+      externalId: source.id,
     });
   }
 }
