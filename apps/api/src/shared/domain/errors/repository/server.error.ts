@@ -1,19 +1,19 @@
-import { UnauthorizedException } from '@nestjs/common';
+import { InternalServerErrorException } from '@nestjs/common';
 import { pipe } from 'fp-ts/lib/function';
 import * as O from 'fp-ts/lib/Option';
 
 /**
- * Common domain error, issues authenticating with repo
+ * Common domain error, issues accessing repo
  *
  * Error manifested as exception
  */
-export class RepositoryAuthenticationError extends UnauthorizedException {
+export class RepositoryServerError extends InternalServerErrorException {
   constructor(postscript?: string) {
-    super(RepositoryAuthenticationError.initMessage(postscript));
+    super(RepositoryServerError.initMessage(postscript));
   }
 
   public static initMessage(postscript: string): string {
-    const baseMessage = RepositoryAuthenticationError.baseMessage();
+    const baseMessage = RepositoryServerError.baseMessage();
     return pipe(
       postscript,
       O.fromNullable,
@@ -27,6 +27,6 @@ export class RepositoryAuthenticationError extends UnauthorizedException {
   }
 
   public static baseMessage(): string {
-    return 'Error authenticating at repository';
+    return 'Error accessing repository';
   }
 }

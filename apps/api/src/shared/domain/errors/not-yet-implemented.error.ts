@@ -1,21 +1,21 @@
-import { ConflictException } from '@nestjs/common';
+import { NotImplementedException } from '@nestjs/common';
 import { pipe } from 'fp-ts/lib/function';
 import * as O from 'fp-ts/lib/Option';
 
 /**
- * Course domain error
- * Occurs when course returned from source already exists in our DB
+ * Common domain error
+ * Occurs when use requests a service that is on our roadmap
  * Error manifested as exception
  * to be caught by Nest and returned
  * as HTTP exception
  */
-export class CourseConflictError extends ConflictException {
+export class NotYetImplementedError extends NotImplementedException {
   constructor(postscript?: string) {
-    super(CourseConflictError.initMessage(postscript));
+    super(NotYetImplementedError.initMessage(postscript));
   }
 
   public static initMessage(postscript: string): string {
-    const baseMessage = CourseConflictError.baseMessage();
+    const baseMessage = NotYetImplementedError.baseMessage();
     return pipe(
       postscript,
       O.fromNullable,
@@ -29,6 +29,6 @@ export class CourseConflictError extends ConflictException {
   }
 
   public static baseMessage(): string {
-    return 'Course already exists';
+    return 'This service is not yet available, please try again later';
   }
 }

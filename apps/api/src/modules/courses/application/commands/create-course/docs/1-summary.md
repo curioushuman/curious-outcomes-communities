@@ -21,8 +21,8 @@
 
 #### Domain
 
-- CourseInvalidError
-- CourseConflictError
+- SourceInvalidError
+- ItemConflictError
 
 #### Other
 

@@ -1,21 +1,21 @@
-import { BadRequestException } from '@nestjs/common';
+import { InternalServerErrorException } from '@nestjs/common';
 import { pipe } from 'fp-ts/lib/function';
 import * as O from 'fp-ts/lib/Option';
 
 /**
- * Common domain error
- * Occurs when request from use is invalid
+ * Common domain error, when item returned from source is invalid
+ *
  * Error manifested as exception
  * to be caught by Nest and returned
  * as HTTP exception
  */
-export class RequestInvalidError extends BadRequestException {
+export class SourceInvalidError extends InternalServerErrorException {
   constructor(message?: string) {
-    super(RequestInvalidError.initMessage(message));
+    super(SourceInvalidError.initMessage(message));
   }
 
   public static initMessage(message: string): string {
-    const baseMessage = RequestInvalidError.baseMessage();
+    const baseMessage = SourceInvalidError.baseMessage();
     return pipe(
       message,
       O.fromNullable,
@@ -29,6 +29,6 @@ export class RequestInvalidError extends BadRequestException {
   }
 
   public static baseMessage(): string {
-    return 'Request is invalid';
+    return 'Course is invalid';
   }
 }

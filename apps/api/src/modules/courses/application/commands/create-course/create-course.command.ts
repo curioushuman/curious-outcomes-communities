@@ -11,7 +11,7 @@ import { CreateCourseDto } from './create-course.dto';
 import { CreateCourseMapper } from './create-course.mapper';
 import { CourseSourceRepository } from '../../../adapter/ports/course-source.repository';
 import { CourseSourceForCreate } from '../../../domain/entities/course-source';
-import { CourseConflictError } from '../../../domain/errors/course-conflict.error';
+import { ItemConflictError } from '../../../../../shared/domain/errors/repository/item-conflict.error';
 import { performAction } from '../../../../../shared/utils/perform-action';
 import { parseActionData } from '../../../../../shared/utils/parse-action-data';
 import { ErrorFactory } from '../../../../../shared/domain/errors/error-factory';
@@ -43,7 +43,11 @@ export class CreateCourseHandler
     const task = pipe(
       // #1. parse the dto
       createCourseDto,
-      parseActionData(CreateCourseMapper.toFindCourseSourceDto),
+      parseActionData(
+        CreateCourseMapper.toFindCourseSourceDto,
+        this.logger,
+        'RequestInvalidError'
+      ),
 
       // #2. find the source
       TE.chain((findSourceDto) =>
@@ -59,11 +63,21 @@ export class CreateCourseHandler
       // #3. parse the source
       TE.chain((courseSource) =>
         sequenceT(TE.ApplySeq)(
-          parseActionData(CourseSourceForCreate.check)(courseSource),
-          parseActionData(CreateCourseMapper.fromSourceToFindCourseDto)(
-            courseSource
-          ),
-          parseActionData(CreateCourseMapper.fromSourceToCourse)(courseSource)
+          parseActionData(
+            CourseSourceForCreate.check,
+            this.logger,
+            'SourceInvalidError'
+          )(courseSource),
+          parseActionData(
+            CreateCourseMapper.fromSourceToFindCourseDto,
+            this.logger,
+            'SourceInvalidError'
+          )(courseSource),
+          parseActionData(
+            CreateCourseMapper.fromSourceToCourse,
+            this.logger,
+            'SourceInvalidError'
+          )(courseSource)
         )
       ),
 
@@ -78,7 +92,7 @@ export class CreateCourseHandler
             `find course from source: ${source.id}`
           ),
           TE.chain((courseAlreadyExists) => {
-            throw new CourseConflictError(courseAlreadyExists.name);
+            throw new ItemConflictError(courseAlreadyExists.name);
           }),
           TE.alt(() => TE.right(courseFromSource))
         )

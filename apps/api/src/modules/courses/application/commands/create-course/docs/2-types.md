@@ -54,10 +54,10 @@ Extends Course
   - RESOLVE THE BELOW, which message? Templated?
   - Message: Error connecting to Course source <`ApiRepository.Name`>, please try again or contact system administrator
   - Message: Error saving new Course for Source with ID <`ExternalId`>, please try again or contact system administrator
-- CourseInvalidError
+- SourceInvalidError
   - Extends: BadRequestException
   - Message: Source with ID <`ExternalId`> contains insufficient or invalid data to create a new Course
-- CourseConflictError
+- ItemConflictError
   - Extends: ConflictException
   - Message: Source with ID <`ExternalId`> already exists within our DB. No action required.
 - NotificationFailedError
@@ -71,7 +71,7 @@ Extends Course
 
 - BadRequestException
   - RequestInvalidError
-  - CourseInvalidError
+  - SourceInvalidError
 - UnauthorizedException
   - RepositoryAuthenticationError
 - NotFoundException
@@ -81,7 +81,7 @@ Extends Course
   - NotificationFailedError
   - EventFailedError
 - ConflictException
-  - CourseConflictError
+  - ItemConflictError
 
 ## Events
 

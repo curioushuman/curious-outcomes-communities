@@ -93,18 +93,18 @@ Else
 
 #### Output: Fail
 
-- CourseInvalidError
+- SourceInvalidError
   - Extends BadRequestException
-- CourseConflictError
+- ItemConflictError
   - Extends ConflictException
 
 #### Steps (pseudocode)
 
 ```
 If Invalid
-  return CourseInvalidError
+  return SourceInvalidError
 If Exists
-  return CourseConflictError
+  return ItemConflictError
 Else
   return Course
 ```

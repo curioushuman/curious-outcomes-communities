@@ -1,70 +1,100 @@
-import {
-  BadRequestException,
-  Injectable,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
-import { LoggableLogger } from '@curioushuman/loggable';
-
+import { UnknownException } from './unknown.error';
+import { RequestInvalidError } from './request-invalid.error';
+import { ItemConflictError } from './repository/item-conflict.error';
+import { SourceInvalidError } from './repository/source-invalid.error';
 import { RepositoryAuthenticationError } from './repository/authentication.error';
 import { RepositoryItemNotFoundError } from './repository/item-not-found.error';
-import { UnknownException } from './unknown.error';
-
-const errorMap = {
-  400: BadRequestException,
-  401: RepositoryAuthenticationError,
-  404: RepositoryItemNotFoundError,
-  500: InternalServerErrorException,
-  1: typeof Error,
-};
-type errorKeys = keyof typeof errorMap;
-type errorTypes = typeof errorMap[errorKeys];
-type ExtractInstanceType<T> = T extends new () => infer R ? R : never;
+import { RepositoryServerError } from './repository/server.error';
 
 /**
+ * Responsible for returning the error we want our users to see
+ * based on what occurs when we interact with external resources
+ *
+ * NOTES
+ * - All custom errors must extend HttpException
+ *
  * TODO
- * - [ ] Replace BadRequestException with something more specific
- * - [ ] use a constructor, rather than setting error in newError
- *       NOTE: doing so resulted in some Nest dependency injection issues
+ * - [ ] this could be split into repo & validation error services
+ *       IN FACT it should be, as currently validationError will accept
+ *       various error types it shouldn't
+ * - [ ] is there a better way than registering ALL errors here?
  */
-@Injectable()
-export abstract class ErrorFactory {
-  constructor(protected logger: LoggableLogger) {
-    this.logger.setContext('ErrorFactory');
-  }
 
-  public error(error: Error): Error {
-    const err = this.isKnown(error) ? error : this.newError(error);
-    this.logger.debug(err);
+// * MUST INCLUDE all error definitions below
+// I attempted to include them in the individual subclasses
+// but couldn't get the generic type for this class to work
+const errorDefinitions = {
+  ItemConflictError,
+  RepositoryAuthenticationError,
+  RepositoryItemNotFoundError,
+  RepositoryServerError,
+  RequestInvalidError,
+  SourceInvalidError,
+  UnknownException,
+};
+
+export type AllErrorTypeNames = keyof typeof errorDefinitions;
+type ErrorType = typeof errorDefinitions[AllErrorTypeNames];
+
+// TODO - should move to utils
+type ExtractInstanceType<T> = T extends new () => infer R ? R : never;
+
+@Injectable()
+export abstract class ErrorFactory<
+  AllowedErrorTypeName extends AllErrorTypeNames = AllErrorTypeNames
+> {
+  constructor(protected errorMap: Record<number, ErrorType>) {}
+
+  public error(error: Error, asErrorType?: AllowedErrorTypeName): Error {
+    const err = this.isKnown(error) ? error : this.newError(error, asErrorType);
     return err;
   }
 
-  private newError(error: Error): ExtractInstanceType<errorTypes> {
-    return this.isCataloged(error)
-      ? this.newCatalogedError(error)
-      : this.newUnknownError(error);
+  private newError(error: Error, asErrorType?: AllowedErrorTypeName): Error {
+    return asErrorType
+      ? this.newErrorAsType(error, asErrorType)
+      : this.newMappedError(error);
   }
 
+  /**
+   * A known error is one WE have a specific definition for
+   */
   private isKnown(error: Error): boolean {
-    const knownError = Object.keys(errorMap).find(
-      (k) => errorMap[k].name === error.name
+    const knownError = Object.keys(this.errorMap).find(
+      (k) => this.errorMap[k].name === error.name
     );
     return 'response' in error && 'status' in error && knownError !== undefined;
   }
 
-  private isCataloged(error: Error): boolean {
-    return Object.keys(errorMap).includes(
+  /**
+   * A mapped error is one that exists in our error map
+   */
+  private isMapped(error: Error): boolean {
+    return Object.keys(this.errorMap).includes(
       this.errorStatusCode(error).toString()
     );
   }
 
-  private newCatalogedError(error: Error): ExtractInstanceType<errorTypes> {
-    return new errorMap[this.errorStatusCode(error)](
-      this.errorDescription(error)
-    );
+  private newMappedError(error: Error): ExtractInstanceType<ErrorType> {
+    return this.isMapped(error)
+      ? new this.errorMap[this.errorStatusCode(error)](
+          this.errorDescription(error)
+        )
+      : this.newUnknownError(error);
   }
 
-  private newUnknownError(error: Error): ExtractInstanceType<errorTypes> {
+  private newErrorAsType(
+    error: Error | string,
+    asErrorType: AllowedErrorTypeName
+  ): ExtractInstanceType<ErrorType> {
+    const errorMessage =
+      typeof error === 'string' ? error : this.errorDescription(error);
+    return new errorDefinitions[asErrorType](errorMessage);
+  }
+
+  private newUnknownError(error: Error): UnknownException {
     return new UnknownException(this.errorDescription(error));
   }
 
@@ -74,6 +104,11 @@ export abstract class ErrorFactory {
     return `${status}: ${description}`;
   }
 
+  /**
+   * These functions will allow us to interpret various
+   * types of errors returned from various repositories
+   * by instantiating them in sub classes
+   */
   abstract errorStatusCode(error: Error): number;
   abstract errorDescription(error: Error): string;
 }

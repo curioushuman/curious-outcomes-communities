@@ -17,8 +17,8 @@ import { executeTask } from '../../../../../../shared/utils/execute-task';
 import { CreateCourseRequestDto } from '../../../../infra/dto/create-course.request.dto';
 import { Course } from '../../../../domain/entities/course';
 import { RepositoryItemNotFoundError } from '../../../../../../shared/domain/errors/repository/item-not-found.error';
-import { CourseInvalidError } from '../../../../domain/errors/course-invalid.error';
-import { CourseConflictError } from '../../../../domain/errors/course-conflict.error';
+import { SourceInvalidError } from '../../../../../../shared/domain/errors/repository/source-invalid.error';
+import { ItemConflictError } from '../../../../../../shared/domain/errors/repository/item-conflict.error';
 import { ErrorFactory } from '../../../../../../shared/domain/errors/error-factory';
 import { FakeRepositoryErrorFactory } from '../../../../../../shared/adapter/fake.repository.error-factory';
 
@@ -149,8 +149,8 @@ defineFeature(feature, (test) => {
       }
     });
 
-    then('I should receive a CourseInvalidError', () => {
-      expect(error).toBeInstanceOf(CourseInvalidError);
+    then('I should receive a SourceInvalidError', () => {
+      expect(error).toBeInstanceOf(SourceInvalidError);
     });
   });
 
@@ -184,8 +184,8 @@ defineFeature(feature, (test) => {
       }
     });
 
-    then('I should receive a CourseConflictError', () => {
-      expect(error).toBeInstanceOf(CourseConflictError);
+    then('I should receive a ItemConflictError', () => {
+      expect(error).toBeInstanceOf(ItemConflictError);
     });
   });
 
@@ -214,8 +214,8 @@ defineFeature(feature, (test) => {
       }
     });
 
-    then('I should receive a CourseInvalidError', () => {
-      expect(error).toBeInstanceOf(CourseInvalidError);
+    then('I should receive a SourceInvalidError', () => {
+      expect(error).toBeInstanceOf(SourceInvalidError);
     });
   });
 });

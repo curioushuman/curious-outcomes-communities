@@ -3,6 +3,8 @@ import { pipe } from 'fp-ts/lib/function';
 import * as O from 'fp-ts/lib/Option';
 
 /**
+ * Common domain error, when item cannot be found in local repo
+ *
  * Error manifested as exception
  */
 export class RepositoryItemNotFoundError extends NotFoundException {

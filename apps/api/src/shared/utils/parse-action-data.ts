@@ -1,9 +1,10 @@
-// import { LoggerService } from '@nestjs/common';
+import { LoggerService } from '@nestjs/common';
 import * as E from 'fp-ts/lib/Either';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { pipe } from 'fp-ts/lib/function';
 
-// import { logAction } from './log-action';
+import { logParse } from './log-parse';
+import { AllowedErrorTypeName } from '../domain/errors/validation.error-factory';
 
 /**
  * Standardized way to parse data, and bring it into a TE flow.
@@ -17,8 +18,9 @@ import { pipe } from 'fp-ts/lib/function';
 
 export const parseActionData =
   <InputLike, OutputLike, ErrorLike extends Error>(
-    parser: (data: InputLike) => OutputLike
-    // logger: LoggerService,
+    parser: (data: InputLike) => OutputLike,
+    logger: LoggerService,
+    asErrorType?: AllowedErrorTypeName
   ) =>
   (data: InputLike): TE.TaskEither<ErrorLike, OutputLike> => {
     // Our current validation methods throw exceptions, so we need to handle them
@@ -28,5 +30,5 @@ export const parseActionData =
       },
       (error: ErrorLike) => error as ErrorLike
     );
-    return pipe(tryParse, TE.fromEither);
+    return pipe(tryParse, TE.fromEither, logParse(logger, asErrorType));
   };
