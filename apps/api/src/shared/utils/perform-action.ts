@@ -3,6 +3,7 @@ import * as TE from 'fp-ts/lib/TaskEither';
 import { pipe } from 'fp-ts/lib/function';
 
 import { logAction } from './log-action';
+import { ErrorFactory } from '../domain/errors/error-factory';
 
 /**
  * Standardized way to perform an action and log the result.
@@ -14,6 +15,7 @@ import { logAction } from './log-action';
 export const performAction = <InputLike, OutputLike, ErrorLike extends Error>(
   data: InputLike,
   action: (data: InputLike) => TE.TaskEither<ErrorLike, OutputLike>,
+  errorFactory: ErrorFactory,
   logger: LoggerService,
   actionDescription: string
 ): TE.TaskEither<ErrorLike, OutputLike> => {
@@ -22,6 +24,7 @@ export const performAction = <InputLike, OutputLike, ErrorLike extends Error>(
     TE.chain(action),
     logAction(
       logger,
+      errorFactory,
       `Successfully managed to ${actionDescription}`,
       `Failed to ${actionDescription}`
     )

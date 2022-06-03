@@ -7,18 +7,17 @@ import { Course } from '../../../domain/entities/course';
 import { CourseRepository } from '../../ports/course.repository';
 import { CourseBuilder } from '../../../test/builders/course.builder';
 import { FindCourseDto } from '../../../application/queries/find-course/find-course.dto';
-import { ErrorFactory } from '../../../../../shared/domain/errors/error-factory';
 
 @Injectable()
 export class FakeCourseRepository implements CourseRepository {
   private courses: Course[] = [];
 
-  constructor(private readonly errorFactory: ErrorFactory) {
+  constructor() {
     this.courses.push(CourseBuilder().build());
     this.courses.push(CourseBuilder().withFunkyChars().build());
   }
 
-  public findOne(dto: FindCourseDto): TE.TaskEither<Error, Course> {
+  findOne = (dto: FindCourseDto): TE.TaskEither<Error, Course> => {
     const { externalId } = dto;
     return TE.tryCatch(
       async () => {
@@ -37,20 +36,18 @@ export class FakeCourseRepository implements CourseRepository {
           )
         );
       },
-      // (error: Error) => error as Error
-      (error: Error) => this.errorFactory.error(error)
+      (error: Error) => error as Error
     );
-  }
+  };
 
-  public save(course: Course): TE.TaskEither<Error, void> {
+  save = (course: Course): TE.TaskEither<Error, void> => {
     return TE.tryCatch(
       async () => {
         this.courses.push(course);
       },
-      // (error: Error) => error as Error
-      (error: Error) => this.errorFactory.error(error)
+      (error: Error) => error as Error
     );
-  }
+  };
 
   all = (): TE.TaskEither<Error, Course[]> => {
     return TE.right(this.courses);

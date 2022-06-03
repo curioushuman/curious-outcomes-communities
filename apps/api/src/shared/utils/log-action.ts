@@ -2,6 +2,8 @@ import { LoggerService } from '@nestjs/common';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { pipe } from 'fp-ts/lib/function';
 
+import { ErrorFactory } from '../domain/errors/error-factory';
+
 /**
  * Standardized way to log an action; good or bad.
  *
@@ -12,6 +14,7 @@ import { pipe } from 'fp-ts/lib/function';
 export const logAction =
   <ErrorLike extends Error, DataLike>(
     logger: LoggerService,
+    errorFactory: ErrorFactory,
     successMessage: string,
     warningMessage: string
   ) =>
@@ -21,10 +24,11 @@ export const logAction =
     return pipe(
       task,
       TE.mapLeft((error: ErrorLike) => {
+        const mappedError = errorFactory.error(error) as ErrorLike;
         logger.warn(warningMessage);
         logger.warn(error.constructor.name);
         logger.debug ? logger.debug(error) : logger.error(error);
-        return error;
+        return mappedError;
       }),
       TE.map((data: DataLike) => {
         logger.debug

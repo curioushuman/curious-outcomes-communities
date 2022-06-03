@@ -7,20 +7,19 @@ import { CourseSource } from '../../../domain/entities/course-source';
 import { CourseSourceRepository } from '../../ports/course-source.repository';
 import { CourseSourceBuilder } from '../../../test/builders/course-source.builder';
 import { FindCourseSourceDto } from '../../../application/queries/find-course-source/find-course-source.dto';
-import { ErrorFactory } from '../../../../../shared/domain/errors/error-factory';
 
 @Injectable()
 export class FakeCourseSourceRepository implements CourseSourceRepository {
   private courseSources: CourseSource[] = [];
 
-  constructor(private readonly errorFactory: ErrorFactory) {
+  constructor() {
     this.courseSources.push(CourseSourceBuilder().build());
     this.courseSources.push(CourseSourceBuilder().testNewValid().build());
     this.courseSources.push(CourseSourceBuilder().testNewInvalid().build());
     this.courseSources.push(CourseSourceBuilder().testNewHasCourseId().build());
   }
 
-  public findOne(dto: FindCourseSourceDto): TE.TaskEither<Error, CourseSource> {
+  findOne = (dto: FindCourseSourceDto): TE.TaskEither<Error, CourseSource> => {
     const { id } = dto;
     return TE.tryCatch(
       async () => {
@@ -39,7 +38,7 @@ export class FakeCourseSourceRepository implements CourseSourceRepository {
           )
         );
       },
-      (error: Error) => this.errorFactory.error(error)
+      (error: Error) => error as Error
     );
-  }
+  };
 }

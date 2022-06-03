@@ -14,7 +14,7 @@ import { CourseSourceForCreate } from '../../../domain/entities/course-source';
 import { CourseConflictError } from '../../../domain/errors/course-conflict.error';
 import { performAction } from '../../../../../shared/utils/perform-action';
 import { parseActionData } from '../../../../../shared/utils/parse-action-data';
-// import { ErrorFactory } from '../../../../../shared/domain/errors/error-factory';
+import { ErrorFactory } from '../../../../../shared/domain/errors/error-factory';
 
 export class CreateCourseCommand implements ICommand {
   constructor(public readonly createCourseDto: CreateCourseDto) {}
@@ -33,7 +33,8 @@ export class CreateCourseHandler
   constructor(
     private readonly courseRepository: CourseRepository,
     private readonly courseSourceRepository: CourseSourceRepository,
-    private logger: LoggableLogger // private errorFactory: ErrorFactory
+    private logger: LoggableLogger,
+    private errorFactory: ErrorFactory
   ) {}
 
   async execute(command: CreateCourseCommand): Promise<void> {
@@ -49,6 +50,7 @@ export class CreateCourseHandler
         performAction(
           findSourceDto,
           this.courseSourceRepository.findOne,
+          this.errorFactory,
           this.logger,
           'find course source'
         )
@@ -71,6 +73,7 @@ export class CreateCourseHandler
           performAction(
             findCourseDto,
             this.courseRepository.findOne,
+            this.errorFactory,
             this.logger,
             `find course from source: ${source.id}`
           ),
@@ -86,6 +89,7 @@ export class CreateCourseHandler
         performAction(
           course,
           this.courseRepository.save,
+          this.errorFactory,
           this.logger,
           `save course from source`
         )
