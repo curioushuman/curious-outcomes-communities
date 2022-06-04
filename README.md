@@ -288,6 +288,28 @@ TBC
 
 TBC
 
+# Troubleshooting
+
+## xVariable cannot be found; on a class (even though it exists)
+
+I'm still learning Functional Programming (FP) and this catches me out every now and then; i.e. the combination of FP and Object Oriented Programming (OO). Essentially it comes down to wanting to include a method of a class, in an FP program, that itself relies on relationships to other classes (more than likely injected by Nest).
+
+In the end it was the simple change of using arrow style functions in my classes, rather than the classic style:
+
+```javascript
+class exampleRepository {
+
+  constructor(private httpService: HttpService) {}
+
+  // Use this
+  findOne = (dto: FindCourseSourceDto): TE.TaskEither<Error, CourseSource> => {}
+
+  // Rather than this
+  public findOne(dto: FindCourseSourceDto): TE.TaskEither<Error, CourseSource> {}
+
+}
+```
+
 # Appendix
 
 ## Connecting to third party APIs
