@@ -10,14 +10,14 @@ import * as O from 'fp-ts/lib/Option';
  * as HTTP exception
  */
 export class NotYetImplementedError extends NotImplementedException {
-  constructor(postscript?: string) {
-    super(NotYetImplementedError.initMessage(postscript));
+  constructor(message?: string) {
+    super(NotYetImplementedError.initMessage(message));
   }
 
-  public static initMessage(postscript: string): string {
+  public static initMessage(message: string): string {
     const baseMessage = NotYetImplementedError.baseMessage();
     return pipe(
-      postscript,
+      message,
       O.fromNullable,
       O.fold(
         () => baseMessage,

@@ -45,6 +45,27 @@ $ npx nx <do_a_thing>
 $ brew install skaffold
 ```
 
+## Environment variables
+
+We use a combination of Dotenv and K8s for environment variables.
+
+- Dotenv for running local tests **outside** of the (K8s) infrastructure
+- K8s configuration and sealed secrets **inside** of the (K8s) infrastructure
+
+K8s setup is baked into the accompanying repo, but for local test running you'll need to create a .env file with the following variables present:
+
+```javascript
+
+# An example sandbox setup
+SALESFORCE_URL_AUTH="https://test.salesforce.com"
+SALESFORCE_URL_DATA="https://customurl--sandboxname.my.salesforce.com/services/data"
+SALESFORCE_URL_DATA_VERSION="v54.0"
+SALESFORCE_USER="sf.username@you.use.sandboxname"
+SALESFORCE_CONSUMER_KEY="obtainedFromYourSalesforceConnectedApp"
+SALESFORCE_CERTIFICATE_KEY="-----BEGIN PRIVATE KEY-----\nsome\nlines\of\key\n-----END PRIVATE KEY-----"
+
+```
+
 # Working locally
 
 Spin up the local k8s environment:
@@ -299,7 +320,7 @@ https://asiapacificforum.lightning.force.com/services/oauth2/authorize?response_
 ***Important notes***
 
 - When requesting the access token (within your code) you must use test.salesforce.com / login.salesforce.com rather than your custom URL
-- When sending the body it DOES INDEED NEED TO BE stringified
+- When sending the body it **DOES INDEED NEED TO BE** stringified
 
 ## TODO
 

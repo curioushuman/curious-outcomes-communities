@@ -16,6 +16,13 @@ Scenario: Fail; Invalid request
   Then I should receive a RequestInvalidError
   And no result is returned
 
+Scenario: Fail; Unable to connect to source repository
+Given the request is valid
+  And the source repository is unavailable
+  When I attempt to create a course
+  Then I should receive a RepositoryServerUnavailableError
+  And no result is returned
+
 Scenario: Fail; Unable to authenticate with source repository
 Given the request is valid
   And I am NOT authorised to access the source repository

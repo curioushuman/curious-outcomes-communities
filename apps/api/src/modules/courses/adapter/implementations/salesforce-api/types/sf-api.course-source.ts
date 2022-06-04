@@ -35,10 +35,10 @@ export type SalesforceApiCourseSource = Static<
   typeof SalesforceApiCourseSource
 >;
 
-export const SalesforceApiCourseSourceResponse = Record({
+export const SalesforceApiCourseSources = Record({
   records: Array(SalesforceApiCourseSource),
 });
 
-export type SalesforceApiCourseSourceResponse = Static<
-  typeof SalesforceApiCourseSourceResponse
+export type SalesforceApiCourseSources = Static<
+  typeof SalesforceApiCourseSources
 >;

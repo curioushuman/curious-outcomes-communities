@@ -62,6 +62,8 @@ Else
 
 #### Output: Fail
 
+- RepositoryServerUnavailableError
+  - Extends ServiceUnavailableException
 - RepositoryAuthenticationError
   - Extends UnauthorizedException
 - RepositoryItemNotFoundError
@@ -72,6 +74,8 @@ Else
 #### Steps (pseudocode)
 
 ```
+If Unable to connect
+  return RepositoryServerUnavailableError
 If Unable to authenticate
   return RepositoryAuthenticationError
 If Not found

@@ -8,14 +8,14 @@ import * as O from 'fp-ts/lib/Option';
  * Error manifested as exception
  */
 export class RepositoryAuthenticationError extends UnauthorizedException {
-  constructor(postscript?: string) {
-    super(RepositoryAuthenticationError.initMessage(postscript));
+  constructor(message?: string) {
+    super(RepositoryAuthenticationError.initMessage(message));
   }
 
-  public static initMessage(postscript: string): string {
+  public static initMessage(message: string): string {
     const baseMessage = RepositoryAuthenticationError.baseMessage();
     return pipe(
-      postscript,
+      message,
       O.fromNullable,
       O.fold(
         () => baseMessage,

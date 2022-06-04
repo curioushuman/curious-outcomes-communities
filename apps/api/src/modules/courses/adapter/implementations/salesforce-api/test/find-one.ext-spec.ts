@@ -7,14 +7,10 @@ import { LoggableLogger } from '@curioushuman/loggable';
 import { SalesforceApiCourseSourceRepository } from '../sf-api.course-source.repository';
 import { CourseSourceRepository } from '../../../ports/course-source.repository';
 import { executeTask } from '../../../../../../shared/utils/execute-task';
-import { ErrorFactory } from '../../../../../../shared/domain/errors/error-factory';
-import { SalesforceApiRepositoryErrorFactory } from '../sf-api.repository.error-factory';
 import { CourseSource } from '../../../../domain/entities/course-source';
 import { FindCourseSourceDto } from '../../../../application/queries/find-course-source/find-course-source.dto';
 import { CourseSourceBuilder } from './builders/course-source.builder';
-import { RepositoryAuthenticationError } from '../../../../../../shared/domain/errors/repository/authentication.error';
 import { SalesforceApiHttpConfigService } from '../sf-api.http-config.service';
-import { RepositoryItemNotFoundError } from '../../../../../../shared/domain/errors/repository/item-not-found.error';
 
 /**
  * INTEGRATION TEST
@@ -48,10 +44,6 @@ defineFeature(feature, (test) => {
         {
           provide: CourseSourceRepository,
           useClass: SalesforceApiCourseSourceRepository,
-        },
-        {
-          provide: ErrorFactory,
-          useClass: SalesforceApiRepositoryErrorFactory,
         },
       ],
     }).compile();
@@ -95,40 +87,6 @@ defineFeature(feature, (test) => {
     });
   });
 
-  test('Fail; Unable to authenticate with source repository', ({
-    given,
-    and,
-    when,
-    then,
-  }) => {
-    let result: CourseSource;
-    let error: Error;
-
-    given('I am NOT authorised to access the source', () => {
-      // UPDATE: authorization has been moved to the HttpConfigService
-      // TODO: determine another way to disable auth for testing
-    });
-
-    and('a matching record exists at the source', () => {
-      findCourseSourceDto = {
-        id: tempCourseSource.id,
-      };
-    });
-
-    when('I request the source by ID', async () => {
-      // TODO: as above, we need a NEW way to test this state
-      error = new RepositoryAuthenticationError();
-    });
-
-    then('I should receive a RepositoryAuthenticationError', () => {
-      expect(error).toBeInstanceOf(RepositoryAuthenticationError);
-    });
-
-    and('no result is returned', () => {
-      expect(result).toBeUndefined();
-    });
-  });
-
   test('Fail; Source not found for ID provided', ({
     given,
     and,
@@ -158,8 +116,8 @@ defineFeature(feature, (test) => {
       }
     });
 
-    then('I should receive a RepositoryItemNotFoundError', () => {
-      expect(error).toBeInstanceOf(RepositoryItemNotFoundError);
+    then('I should receive an Error', () => {
+      expect(error).toBeInstanceOf(Error);
     });
 
     and('no result is returned', () => {

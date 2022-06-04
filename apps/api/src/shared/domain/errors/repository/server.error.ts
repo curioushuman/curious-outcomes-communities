@@ -8,14 +8,14 @@ import * as O from 'fp-ts/lib/Option';
  * Error manifested as exception
  */
 export class RepositoryServerError extends InternalServerErrorException {
-  constructor(postscript?: string) {
-    super(RepositoryServerError.initMessage(postscript));
+  constructor(message?: string) {
+    super(RepositoryServerError.initMessage(message));
   }
 
-  public static initMessage(postscript: string): string {
+  public static initMessage(message: string): string {
     const baseMessage = RepositoryServerError.baseMessage();
     return pipe(
-      postscript,
+      message,
       O.fromNullable,
       O.fold(
         () => baseMessage,

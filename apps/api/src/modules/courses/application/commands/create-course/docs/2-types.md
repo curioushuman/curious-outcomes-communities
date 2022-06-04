@@ -54,6 +54,9 @@ Extends Course
   - RESOLVE THE BELOW, which message? Templated?
   - Message: Error connecting to Course source <`ApiRepository.Name`>, please try again or contact system administrator
   - Message: Error saving new Course for Source with ID <`ExternalId`>, please try again or contact system administrator
+- RepositoryServerUnavailableError
+  - Extends: ServiceUnavailableException
+  - Message: The Course source <`ApiRepository.Name`> is currently unavailable, please try again or contact system administrator
 - SourceInvalidError
   - Extends: BadRequestException
   - Message: Source with ID <`ExternalId`> contains insufficient or invalid data to create a new Course

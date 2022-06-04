@@ -1,9 +1,4 @@
-Feature: Course Source Hygiene
-
-Scenario: Successful connection to repository
-Given the repository is live
-  When I attempt attempt to check live status
-  Then I should receive a positive result
+Feature: Course Source Authentication
 
 Scenario: Successful authentication with repository
 Given the repository is live

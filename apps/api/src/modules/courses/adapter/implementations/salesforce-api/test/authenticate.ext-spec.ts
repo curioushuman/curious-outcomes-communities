@@ -1,12 +1,9 @@
 import { loadFeature, defineFeature } from 'jest-cucumber';
 import { Test } from '@nestjs/testing';
-import { HttpModule } from '@nestjs/axios';
+import { HttpModule, HttpModuleOptions } from '@nestjs/axios';
 
 import { LoggableLogger } from '@curioushuman/loggable';
 
-import { SalesforceApiCourseSourceRepository } from '../sf-api.course-source.repository';
-import { CourseSourceRepository } from '../../../ports/course-source.repository';
-import { executeTask } from '../../../../../../shared/utils/execute-task';
 import { ErrorFactory } from '../../../../../../shared/domain/errors/error-factory';
 import { SalesforceApiRepositoryErrorFactory } from '../sf-api.repository.error-factory';
 import { RepositoryAuthenticationError } from '../../../../../../shared/domain/errors/repository/authentication.error';
@@ -14,24 +11,21 @@ import { SalesforceApiHttpConfigService } from '../sf-api.http-config.service';
 
 /**
  * INTEGRATION TEST
- * SUT = an external repository
+ * SUT = authenticating with an external repository
  * i.e. are we actually connecting with SF
  *
  * Scope
- * - repository connection
  * - repository authorisation
- * - repository access issues
- * - handling of their various responses/errors
  *
  * NOTE: repository functions and behaviours handled in separate tests
  */
 
-const feature = loadFeature('./hygiene.feature', {
+const feature = loadFeature('./authenticate.feature', {
   loadRelativePath: true,
 });
 
 defineFeature(feature, (test) => {
-  let repository: SalesforceApiCourseSourceRepository;
+  let httpConfigService: SalesforceApiHttpConfigService;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -43,41 +37,15 @@ defineFeature(feature, (test) => {
       providers: [
         LoggableLogger,
         {
-          provide: CourseSourceRepository,
-          useClass: SalesforceApiCourseSourceRepository,
-        },
-        {
           provide: ErrorFactory,
           useClass: SalesforceApiRepositoryErrorFactory,
         },
       ],
     }).compile();
 
-    repository = moduleRef.get<CourseSourceRepository>(
-      CourseSourceRepository
-    ) as SalesforceApiCourseSourceRepository;
-  });
-  test('Successful connection to repository', ({ given, when, then }) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let result: any;
-    let error: Error;
-
-    given('the repository is live', () => {
-      // what we are testing
-    });
-
-    when('I attempt attempt to check live status', async () => {
-      try {
-        result = await executeTask(repository.livenessProbe());
-      } catch (err) {
-        error = err;
-        expect(error).toBeUndefined();
-      }
-    });
-
-    then('I should receive a positive result', () => {
-      expect(result).toBe(true);
-    });
+    httpConfigService = moduleRef.get<SalesforceApiHttpConfigService>(
+      SalesforceApiHttpConfigService
+    );
   });
 
   test('Successful authentication with repository', ({
@@ -86,9 +54,7 @@ defineFeature(feature, (test) => {
     when,
     then,
   }) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let result: any;
-    // let error: Error;
+    let result: HttpModuleOptions;
 
     given('the repository is live', () => {
       // assumed
@@ -99,15 +65,15 @@ defineFeature(feature, (test) => {
     });
 
     when('I attempt attempt to authenticate', async () => {
-      // UPDATE: authorization has been moved to the HttpConfigService
-      // TODO: determine another actual test to put here
-      // Potential solution: export SalesforceApiHttpConfigService
-      // add it as a provider above, then call tokenFromSource directly
-      result = true;
+      try {
+        result = await httpConfigService.createHttpOptions();
+      } catch (err) {
+        expect(err).toBeUndefined();
+      }
     });
 
     then('I should receive a positive result', () => {
-      expect(result).toBeDefined();
+      expect(result.headers.Authorization).toBeDefined();
     });
   });
 
@@ -117,8 +83,7 @@ defineFeature(feature, (test) => {
     when,
     then,
   }) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let result: any;
+    let result: HttpModuleOptions;
     let error: Error;
 
     given('the repository is live', () => {
@@ -126,13 +91,15 @@ defineFeature(feature, (test) => {
     });
 
     and('I am NOT authorised to access the source repository', () => {
-      // TODO: need new way to disable auth for testing
+      httpConfigService.testBreakAuth();
     });
 
     when('I attempt to access the source', async () => {
-      // UPDATE: similar to above, this needs a new test
-      // TODO: similarly needs a test
-      error = new RepositoryAuthenticationError();
+      try {
+        result = await httpConfigService.createHttpOptions();
+      } catch (err) {
+        error = err;
+      }
     });
 
     then('I should receive a RepositoryAuthenticationError', () => {

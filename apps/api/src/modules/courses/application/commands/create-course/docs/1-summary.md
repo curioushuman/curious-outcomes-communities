@@ -30,6 +30,7 @@
 - RepositoryAuthenticationError
 - RepositoryItemNotFoundError
 - RepositoryServerError
+- RepositoryServerUnavailableError
 - NotificationFailedError
 - EventFailedError
 

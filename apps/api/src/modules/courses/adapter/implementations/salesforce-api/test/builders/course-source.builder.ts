@@ -34,9 +34,7 @@ export const CourseSourceBuilder = () => {
 
     // TODO - actually create a record in the DB
     create(): CourseSource {
-      return CourseSource.check({
-        ...defaultProperties,
-      });
+      return this.build();
     },
 
     // TODO - actually delete something
