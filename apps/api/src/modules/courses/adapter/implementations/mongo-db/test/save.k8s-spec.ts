@@ -6,17 +6,15 @@ import { MongoDbCourseRepository } from '../mongo-db.course.repository';
 import { CourseRepository } from '../../../ports/course.repository';
 import { executeTask } from '../../../../../../shared/utils/execute-task';
 import { Course } from '../../../../domain/entities/course';
-import { FindCourseDto } from '../../../../application/queries/find-course/find-course.dto';
 import { CourseBuilder } from './builders/course.builder';
 import { MongoDbModule } from '../../../../../../shared/infra/database/mongo-db/mongo-db.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { MongoDbCourse, MongoDbCourseSchema } from '../schema/course.schema';
 import { MongoDbService } from '../../../../../../shared/infra/database/mongo-db/mongo-db.service';
-import { RepositoryItemNotFoundError } from '../../../../../../shared/domain/errors/repository/item-not-found.error';
 
 /**
  * INTEGRATION TEST
- * SUT = the findOne function OF an external repository
+ * SUT = the save function OF an external repository
  * i.e. are we actually connecting with and getting data from MongoDB?
  *
  * Scope
@@ -25,15 +23,13 @@ import { RepositoryItemNotFoundError } from '../../../../../../shared/domain/err
  * - handling of their various responses/errors
  */
 
-const feature = loadFeature('./find-one.feature', {
+const feature = loadFeature('./save.feature', {
   loadRelativePath: true,
 });
 
 defineFeature(feature, (test) => {
   let repository: MongoDbCourseRepository;
   let connection: Connection;
-  let tempCourse: Course;
-  let findCourseDto: FindCourseDto;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -55,8 +51,6 @@ defineFeature(feature, (test) => {
       CourseRepository
     ) as MongoDbCourseRepository;
     connection = moduleRef.get<MongoDbService>(MongoDbService).getConnection();
-
-    tempCourse = await CourseBuilder().create(connection);
   });
 
   afterAll(async () => {
@@ -64,65 +58,64 @@ defineFeature(feature, (test) => {
     connection.close();
   });
 
-  test('Successfully find one course', ({ given, and, when, then }) => {
-    let result: Course;
+  test('Successfully creating a course', ({ given, and, when, then }) => {
+    // Disabled for testing
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let result: any;
     let error: Error;
+    let tempCourse: Course;
 
     given('I am authorised to access the repository', () => {
       // out of scope
     });
 
-    and('a matching record exists in the repository', () => {
-      findCourseDto = {
-        externalId: tempCourse.externalId,
-      };
+    and('a matching record does not already exist in our DB', () => {
+      tempCourse = CourseBuilder().build();
     });
 
-    when('I request the course by ID', async () => {
+    when('I attempt to create a course', async () => {
       try {
-        result = await executeTask(repository.findOne(findCourseDto));
+        result = await executeTask(repository.save(tempCourse));
       } catch (err) {
         error = err;
         expect(error).toBeUndefined();
       }
     });
 
-    then('a course corresponding to that ID should be returned', () => {
-      expect(result.externalId).toEqual(tempCourse.externalId);
+    then('a new record should have been created', async () => {
+      const courseCreated = await CourseBuilder().find(connection);
+      expect(courseCreated?.externalId).toEqual(tempCourse.externalId);
+    });
+
+    and('no result is returned', () => {
+      expect(result).toBeUndefined();
     });
   });
 
-  test('Fail; Course not found for ID provided', ({
-    given,
-    and,
-    when,
-    then,
-  }) => {
-    let absentCourse: Course;
-    let result: Course;
+  test('Fail; Course could not be created', ({ given, and, when, then }) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let result: any;
     let error: Error;
+    let invalidCourse: Course;
 
     given('I am authorised to access the repository', () => {
       // assumed
     });
 
-    and('a matching record DOES NOT exist at the repository', () => {
-      absentCourse = CourseBuilder().noMatchingObject().build();
-      findCourseDto = {
-        externalId: absentCourse.externalId,
-      };
+    and('an error occurred during record creation', () => {
+      invalidCourse = CourseBuilder().invalid().build();
     });
 
-    when('I request the course by ID', async () => {
+    when('I attempt to create a course', async () => {
       try {
-        result = await executeTask(repository.findOne(findCourseDto));
+        result = await executeTask(repository.save(invalidCourse));
       } catch (err) {
         error = err;
       }
     });
 
-    then('I should receive a RepositoryItemNotFoundError', () => {
-      expect(error).toBeInstanceOf(RepositoryItemNotFoundError);
+    then('I should receive an Error', () => {
+      expect(error).toBeInstanceOf(Error);
     });
 
     and('no result is returned', () => {

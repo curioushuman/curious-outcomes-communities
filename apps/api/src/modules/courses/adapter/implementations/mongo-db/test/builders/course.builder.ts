@@ -1,6 +1,7 @@
 import { Connection } from 'mongoose';
 
 import { Course } from '../../../../../domain/entities/course';
+import { MongoDbCourse } from '../../schema/course.schema';
 
 /**
  * Heavily inspired by: https://github.com/VincentJouanne/nest-clean-architecture
@@ -25,6 +26,11 @@ export const CourseBuilder = () => {
       return this;
     },
 
+    invalid() {
+      delete overrides.name;
+      return this;
+    },
+
     build(): Course {
       return Course.check({
         ...defaultProperties,
@@ -43,6 +49,13 @@ export const CourseBuilder = () => {
       const { externalId } = this.build();
       await connection.collection('mongodbcourses').deleteMany({ externalId });
       return;
+    },
+
+    async find(connection: Connection): Promise<MongoDbCourse> {
+      const { externalId } = this.build();
+      return await connection
+        .collection<MongoDbCourse>('mongodbcourses')
+        .findOne({ externalId });
     },
   };
 };

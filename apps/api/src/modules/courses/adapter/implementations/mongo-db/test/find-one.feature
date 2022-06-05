@@ -15,5 +15,5 @@ Scenario: Fail; Course not found for ID provided
   Given I am authorised to access the repository
   And a matching record DOES NOT exist at the repository
   When I request the course by ID
-  Then I should receive an RepositoryItemNotFoundError
+  Then I should receive a RepositoryItemNotFoundError
   And no result is returned
