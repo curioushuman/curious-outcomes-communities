@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Model } from 'mongoose';
 
 import type { Course } from '../../../../domain/entities/course';
+import { ExternalId } from '../../../../domain/value-objects/external-id';
 import { Name } from '../../../../domain/value-objects/name';
 import { Slug } from '../../../../domain/value-objects/slug';
 
@@ -12,6 +13,9 @@ export class MongoDbCourse implements Course {
 
   @Prop({ required: true, unique: true, type: String })
   slug!: Slug;
+
+  @Prop({ required: true, unique: true, type: String })
+  externalId!: ExternalId;
 }
 
 export const MongoDbCourseSchema = SchemaFactory.createForClass(MongoDbCourse);
