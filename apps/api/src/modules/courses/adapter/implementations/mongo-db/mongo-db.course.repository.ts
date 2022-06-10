@@ -80,7 +80,8 @@ export class MongoDbCourseRepository implements CourseRepository {
   save = (course: Course): TE.TaskEither<Error, void> => {
     return TE.tryCatch(
       async () => {
-        const entity = new this.mongoDbCourseModel(course);
+        const mongoDbCourse = MongoDbCourseMapper.toPersist(course);
+        const entity = new this.mongoDbCourseModel(mongoDbCourse);
         await entity.save();
         return;
       },

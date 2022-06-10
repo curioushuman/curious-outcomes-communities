@@ -1,16 +1,17 @@
 import { loadFeature, defineFeature } from 'jest-cucumber';
 import { Test } from '@nestjs/testing';
+import { MongooseModule } from '@nestjs/mongoose';
 import { Connection } from 'mongoose';
 
 import { MongoDbCourseRepository } from '../mongo-db.course.repository';
 import { CourseRepository } from '../../../ports/course.repository';
 import { executeTask } from '../../../../../../shared/utils/execute-task';
 import { Course } from '../../../../domain/entities/course';
-import { CourseBuilder } from './builders/course.builder';
+import { CourseManufacturer } from './builders/course.manufacturer';
 import { MongoDbModule } from '../../../../../../shared/infra/database/mongo-db/mongo-db.module';
-import { MongooseModule } from '@nestjs/mongoose';
 import { MongoDbCourse, MongoDbCourseSchema } from '../schema/course.schema';
 import { MongoDbService } from '../../../../../../shared/infra/database/mongo-db/mongo-db.service';
+import { CourseBuilder } from '../../../../test/builders/course.builder';
 
 /**
  * INTEGRATION TEST
@@ -28,6 +29,8 @@ const feature = loadFeature('./save.feature', {
 });
 
 defineFeature(feature, (test) => {
+  let testingContext: string;
+  let courseManufacturer: CourseManufacturer;
   let repository: MongoDbCourseRepository;
   let connection: Connection;
 
@@ -51,11 +54,14 @@ defineFeature(feature, (test) => {
       CourseRepository
     ) as MongoDbCourseRepository;
     connection = moduleRef.get<MongoDbService>(MongoDbService).getConnection();
+
+    testingContext = 'save-ext';
+    courseManufacturer = new CourseManufacturer(connection, testingContext);
   });
 
   afterAll(async () => {
-    await CourseBuilder().delete(connection);
-    connection.close();
+    await courseManufacturer.tidyUp();
+    await connection.close();
   });
 
   test('Successfully creating a course', ({ given, and, when, then }) => {
@@ -63,19 +69,19 @@ defineFeature(feature, (test) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let result: any;
     let error: Error;
-    let tempCourse: Course;
+    let course: Course;
 
     given('I am authorised to access the repository', () => {
       // out of scope
     });
 
     and('a matching record does not already exist in our DB', () => {
-      tempCourse = CourseBuilder().build();
+      course = CourseBuilder().alpha().forTidy(testingContext).build();
     });
 
     when('I attempt to create a course', async () => {
       try {
-        result = await executeTask(repository.save(tempCourse));
+        result = await executeTask(repository.save(course));
       } catch (err) {
         error = err;
         expect(error).toBeUndefined();
@@ -83,8 +89,8 @@ defineFeature(feature, (test) => {
     });
 
     then('a new record should have been created', async () => {
-      const courseCreated = await CourseBuilder().find(connection);
-      expect(courseCreated?.externalId).toEqual(tempCourse.externalId);
+      const courseCreated = await courseManufacturer.check(course);
+      expect(courseCreated?.externalId).toEqual(course.externalId);
     });
 
     and('no result is returned', () => {
@@ -103,7 +109,7 @@ defineFeature(feature, (test) => {
     });
 
     and('an error occurred during record creation', () => {
-      invalidCourse = CourseBuilder().invalid().build();
+      invalidCourse = CourseBuilder().invalid().buildNoCheck();
     });
 
     when('I attempt to create a course', async () => {

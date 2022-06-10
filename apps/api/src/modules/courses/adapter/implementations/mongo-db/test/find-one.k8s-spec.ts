@@ -7,12 +7,13 @@ import { CourseRepository } from '../../../ports/course.repository';
 import { executeTask } from '../../../../../../shared/utils/execute-task';
 import { Course } from '../../../../domain/entities/course';
 import { FindCourseDto } from '../../../../application/queries/find-course/find-course.dto';
-import { CourseBuilder } from './builders/course.builder';
+import { CourseManufacturer } from './builders/course.manufacturer';
 import { MongoDbModule } from '../../../../../../shared/infra/database/mongo-db/mongo-db.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { MongoDbCourse, MongoDbCourseSchema } from '../schema/course.schema';
 import { MongoDbService } from '../../../../../../shared/infra/database/mongo-db/mongo-db.service';
 import { RepositoryItemNotFoundError } from '../../../../../../shared/domain/errors/repository/item-not-found.error';
+import { CourseBuilder } from '../../../../test/builders/course.builder';
 
 /**
  * INTEGRATION TEST
@@ -30,9 +31,11 @@ const feature = loadFeature('./find-one.feature', {
 });
 
 defineFeature(feature, (test) => {
+  let testingContext: string;
+  let courseManufacturer: CourseManufacturer;
   let repository: MongoDbCourseRepository;
   let connection: Connection;
-  let tempCourse: Course;
+  let course: Course;
   let findCourseDto: FindCourseDto;
 
   beforeAll(async () => {
@@ -56,12 +59,13 @@ defineFeature(feature, (test) => {
     ) as MongoDbCourseRepository;
     connection = moduleRef.get<MongoDbService>(MongoDbService).getConnection();
 
-    tempCourse = await CourseBuilder().create(connection);
+    testingContext = 'find-one-ext';
+    courseManufacturer = new CourseManufacturer(connection, testingContext);
   });
 
   afterAll(async () => {
-    await CourseBuilder().delete(connection);
-    connection.close();
+    await courseManufacturer.tidyUp();
+    await connection.close();
   });
 
   test('Successfully find one course', ({ given, and, when, then }) => {
@@ -72,9 +76,10 @@ defineFeature(feature, (test) => {
       // out of scope
     });
 
-    and('a matching record exists in the repository', () => {
+    and('a matching record exists in the repository', async () => {
+      course = await courseManufacturer.build();
       findCourseDto = {
-        externalId: tempCourse.externalId,
+        externalId: course.externalId,
       };
     });
 
@@ -88,7 +93,7 @@ defineFeature(feature, (test) => {
     });
 
     then('a course corresponding to that ID should be returned', () => {
-      expect(result.externalId).toEqual(tempCourse.externalId);
+      expect(result.externalId).toEqual(course.externalId);
     });
   });
 
@@ -98,7 +103,6 @@ defineFeature(feature, (test) => {
     when,
     then,
   }) => {
-    let absentCourse: Course;
     let result: Course;
     let error: Error;
 
@@ -107,9 +111,9 @@ defineFeature(feature, (test) => {
     });
 
     and('a matching record DOES NOT exist at the repository', () => {
-      absentCourse = CourseBuilder().noMatchingObject().build();
+      course = CourseBuilder().doesntExist().build();
       findCourseDto = {
-        externalId: absentCourse.externalId,
+        externalId: course.externalId,
       };
     });
 
