@@ -17,6 +17,7 @@ import { CourseSourceRepository } from './adapter/ports/course-source.repository
 import { ErrorFactory } from '../../shared/domain/errors/error-factory';
 import { SalesforceApiCourseSourceRepository } from './adapter/implementations/salesforce-api/sf-api.course-source.repository';
 import { SalesforceApiRepositoryErrorFactory } from './adapter/implementations/salesforce-api/sf-api.repository.error-factory';
+import { SalesforceApiHttpConfigService } from './adapter/implementations/salesforce-api/sf-api.http-config.service';
 
 const commandHandlers = [CreateCourseHandler];
 
@@ -49,7 +50,9 @@ const services = [
 @Module({
   imports: [
     CqrsModule,
-    HttpModule,
+    HttpModule.registerAsync({
+      useClass: SalesforceApiHttpConfigService,
+    }),
     LoggableModule,
     MongooseModule.forFeature([
       { name: MongoDbCourse.name, schema: MongoDbCourseSchema },

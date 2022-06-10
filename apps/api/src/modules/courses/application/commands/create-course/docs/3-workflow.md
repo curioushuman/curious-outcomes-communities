@@ -107,6 +107,8 @@ Else
 ```
 If Invalid
   return SourceInvalidError
+If Already associated
+  return SourceInvalidError
 If Exists
   return ItemConflictError
 Else

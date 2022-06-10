@@ -6,12 +6,11 @@ import { LoggableModule } from '@curioushuman/loggable';
 import { MongoDbModule } from '../shared/infra/database/mongo-db/mongo-db.module';
 import { IdentityAndAccessModule } from '../identity-and-access/identity-and-access.module';
 import { CoursesModule } from '../modules/courses/courses.module';
-import { JourneysModule } from '../modules/journeys/journeys.module';
 
 /**
  * Modules = the aggregates of our domain
  */
-const modules = [CoursesModule, JourneysModule];
+const modules = [CoursesModule];
 
 /**
  * Supporting imports
