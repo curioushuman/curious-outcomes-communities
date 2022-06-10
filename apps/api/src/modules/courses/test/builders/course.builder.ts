@@ -1,29 +1,104 @@
+import { CreateCourseDto } from '../../application/commands/create-course/create-course.dto';
 import { Course } from '../../domain/entities/course';
+import { CourseSource } from '../../domain/entities/course-source';
+import { createSlug } from '../../domain/value-objects/slug';
+import { CreateCourseRequestDto } from '../../infra/dto/create-course.request.dto';
+import { CourseSourceBuilder } from './course-source.builder';
 
 /**
+ * A builder for Courses to play with in testing.
+ *
+ * NOTES
+ * - We include alphas, betas etc to overcome duplicates during testing
+ *
+ * TODO
+ * - [ ] support multiple source repositories concurrently during testing
+ *
  * Heavily inspired by: https://github.com/VincentJouanne/nest-clean-architecture
  */
+
 export const CourseBuilder = () => {
+  /**
+   * Default properties don't exist in source repository
+   */
   const defaultProperties = {
     name: 'Learn to be a dancer',
     slug: 'learn-to-be-a-dancer',
-    externalId: '5000K00002O2GEYQA3',
+    externalId: '5008s1234519CjIAAU',
   };
   const overrides = {
     name: 'Learn to be a dancer',
     slug: 'learn-to-be-a-dancer',
-    externalId: '5000K00002O2GEYQA3',
+    externalId: '5008s1234519CjIAAU',
   };
 
   return {
-    withFunkyChars() {
+    funkyChars() {
       overrides.name = "I'm gonna be a dancer!";
-      overrides.slug = 'im-gonna-be-a-dancer';
+      overrides.slug = createSlug(overrides.name);
       return this;
     },
 
-    noMatchingObject() {
-      overrides.externalId = 'ShhhImNotActuallyARealId';
+    alpha() {
+      // ID DOES NOT EXIST IN SF
+      overrides.externalId = '5000K1234567GEYQA3';
+      overrides.name = 'Dance, like an alpha';
+      overrides.slug = createSlug(overrides.name);
+      return this;
+    },
+
+    beta() {
+      // ID DOES NOT EXIST IN SF
+      overrides.externalId = '5008s000000y7LUAAY';
+      overrides.name = 'Beta ray dancing';
+      overrides.slug = createSlug(overrides.name);
+      return this;
+    },
+
+    matchingSourceInvalid() {
+      overrides.externalId = CourseSourceBuilder()
+        .matchingSourceInvalid()
+        .build().id;
+      return this;
+    },
+
+    matchingSourceWithCourse() {
+      overrides.externalId = CourseSourceBuilder()
+        .matchingSourceWithCourse()
+        .build().id;
+      return this;
+    },
+
+    noMatchingSource() {
+      return this;
+    },
+
+    invalid() {
+      delete defaultProperties.externalId;
+      delete overrides.externalId;
+      return this;
+    },
+
+    exists() {
+      overrides.externalId = CourseSourceBuilder().exists().build().id;
+      return this;
+    },
+
+    doesntExist() {
+      overrides.externalId = 'CourseDoesntExist';
+      return this;
+    },
+
+    forTidy(context: string) {
+      overrides.name = overrides.name.concat(' ', context);
+      overrides.slug = createSlug(overrides.name);
+      return this;
+    },
+
+    fromSource(source: CourseSource) {
+      overrides.externalId = source.id;
+      overrides.name = source.name;
+      overrides.slug = source.slug;
       return this;
     },
 
@@ -32,6 +107,25 @@ export const CourseBuilder = () => {
         ...defaultProperties,
         ...overrides,
       });
+    },
+
+    buildNoCheck(): Course {
+      return {
+        ...defaultProperties,
+        ...overrides,
+      } as Course;
+    },
+
+    buildDto(): CreateCourseDto {
+      return CreateCourseDto.check({
+        externalId: this.buildNoCheck().externalId,
+      });
+    },
+
+    buildRequestDto(): CreateCourseRequestDto {
+      return {
+        externalId: this.buildNoCheck().externalId,
+      } as CreateCourseRequestDto;
     },
   };
 };

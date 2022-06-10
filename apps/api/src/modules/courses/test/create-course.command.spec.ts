@@ -4,13 +4,13 @@ import * as request from 'supertest';
 import { loadFeature, defineFeature } from 'jest-cucumber';
 
 import { Bootstrap } from '../../../bootstrap/bootstrap';
-import { CreateCourseRequestDtoBuilder } from './builders/create-course.request.builder';
 import { CoursesModule } from './fake.courses.module';
 import { CreateCourseRequestDto } from '../infra/dto/create-course.request.dto';
 import { FakeCourseRepository } from '../adapter/implementations/fake/fake.course.repository';
 import { CourseRepository } from '../adapter/ports/course.repository';
 import { Course } from '../domain/entities/course';
 import { executeTask } from '../../../shared/utils/execute-task';
+import { CourseBuilder } from './builders/course.builder';
 
 /**
  * INTEGRATION TEST
@@ -63,9 +63,13 @@ defineFeature(feature, (test) => {
     });
 
     given('the request is valid', () => {
-      createCourseRequestDto = CreateCourseRequestDtoBuilder()
-        .newValid()
-        .build();
+      createCourseRequestDto = CourseBuilder()
+        .matchingSourceBeta()
+        .buildRequestDto();
+    });
+
+    and('a matching record is found at the source', () => {
+      // handled in previous
     });
 
     when('I attempt to create a course', async () => {
@@ -88,9 +92,7 @@ defineFeature(feature, (test) => {
     let response: request.Response;
 
     given('the request contains invalid data', () => {
-      createCourseRequestDto = CreateCourseRequestDtoBuilder()
-        .emptyExternalId()
-        .buildNoCheck();
+      createCourseRequestDto = CourseBuilder().invalid().buildRequestDto();
     });
 
     when('I attempt to create a course', async () => {
@@ -117,9 +119,9 @@ defineFeature(feature, (test) => {
     });
 
     and('no record exists that matches our request', () => {
-      createCourseRequestDto = CreateCourseRequestDtoBuilder()
-        .noMatchingObject()
-        .buildNoCheck();
+      createCourseRequestDto = CourseBuilder()
+        .noMatchingSource()
+        .buildRequestDto();
     });
 
     when('I attempt to create a course', async () => {
@@ -132,42 +134,6 @@ defineFeature(feature, (test) => {
       'I should receive a RepositoryItemNotFoundError/NotFoundException',
       () => {
         expect(response.status).toBe(404);
-      }
-    );
-  });
-
-  test('Fail; Source does not translate into a valid Course', ({
-    given,
-    and,
-    when,
-    then,
-  }) => {
-    let response: request.Response;
-
-    given('the request is valid', () => {
-      // true
-    });
-
-    and('a matching record is found at the source', () => {
-      // true
-    });
-
-    and('the returned source does not populate a valid Course', () => {
-      createCourseRequestDto = CreateCourseRequestDtoBuilder()
-        .newInvalid()
-        .buildNoCheck();
-    });
-
-    when('I attempt to create a course', async () => {
-      response = await request(httpServer)
-        .post(`/api/courses`)
-        .send(createCourseRequestDto);
-    });
-
-    then(
-      'I should receive a SourceInvalidError/InternalServerErrorException',
-      () => {
-        expect(response.status).toBe(500);
       }
     );
   });
@@ -193,9 +159,7 @@ defineFeature(feature, (test) => {
     });
 
     and('the source DOES already exist in our DB', () => {
-      createCourseRequestDto = CreateCourseRequestDtoBuilder()
-        .exists()
-        .buildNoCheck();
+      createCourseRequestDto = CourseBuilder().exists().buildRequestDto();
     });
 
     when('I attempt to create a course', async () => {
@@ -204,7 +168,7 @@ defineFeature(feature, (test) => {
         .send(createCourseRequestDto);
     });
 
-    then('I should receive a ItemConflictError/ConflictException', () => {
+    then('I should receive an ItemConflictError/ConflictException', () => {
       expect(response.status).toBe(409);
     });
   });

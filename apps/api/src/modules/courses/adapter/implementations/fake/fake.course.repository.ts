@@ -13,8 +13,7 @@ export class FakeCourseRepository implements CourseRepository {
   private courses: Course[] = [];
 
   constructor() {
-    this.courses.push(CourseBuilder().build());
-    this.courses.push(CourseBuilder().withFunkyChars().build());
+    this.courses.push(CourseBuilder().exists().build());
   }
 
   findOne = (dto: FindCourseDto): TE.TaskEither<Error, Course> => {

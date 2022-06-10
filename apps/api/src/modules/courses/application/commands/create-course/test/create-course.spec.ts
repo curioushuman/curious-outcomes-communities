@@ -12,7 +12,6 @@ import { CourseRepository } from '../../../../adapter/ports/course.repository';
 import { FakeCourseRepository } from '../../../../adapter/implementations/fake/fake.course.repository';
 import { CourseSourceRepository } from '../../../../adapter/ports/course-source.repository';
 import { FakeCourseSourceRepository } from '../../../../adapter/implementations/fake/fake.course-source.repository';
-import { CreateCourseDtoBuilder } from './builders/create-course.dto.builder';
 import { executeTask } from '../../../../../../shared/utils/execute-task';
 import { CreateCourseRequestDto } from '../../../../infra/dto/create-course.request.dto';
 import { Course } from '../../../../domain/entities/course';
@@ -21,6 +20,7 @@ import { SourceInvalidError } from '../../../../../../shared/domain/errors/repos
 import { ItemConflictError } from '../../../../../../shared/domain/errors/repository/item-conflict.error';
 import { ErrorFactory } from '../../../../../../shared/domain/errors/error-factory';
 import { FakeRepositoryErrorFactory } from '../../../../../../shared/adapter/fake.repository.error-factory';
+import { CourseBuilder } from '../../../../test/builders/course.builder';
 
 /**
  * UNIT TEST
@@ -73,7 +73,7 @@ defineFeature(feature, (test) => {
 
     given('a matching record is found at the source', () => {
       // we know this to exist in our fake repo
-      createCourseDto = CreateCourseDtoBuilder().newValid().build();
+      createCourseDto = CourseBuilder().matchingSourceBeta().buildDto();
     });
 
     and('the returned source populates a valid course', () => {
@@ -101,11 +101,10 @@ defineFeature(feature, (test) => {
   });
 
   test('Fail; Source not found for ID provided', ({ given, when, then }) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let error: any;
+    let error: Error;
 
     given('no record exists that matches our request', () => {
-      createCourseDto = CreateCourseDtoBuilder().noMatchingObject().build();
+      createCourseDto = CourseBuilder().noMatchingSource().buildDto();
     });
 
     when('I attempt to create a course', async () => {
@@ -130,11 +129,10 @@ defineFeature(feature, (test) => {
     when,
     then,
   }) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let error: any;
+    let error: Error;
 
     given('a matching record is found at the source', () => {
-      createCourseDto = CreateCourseDtoBuilder().newInvalid().build();
+      createCourseDto = CourseBuilder().matchingSourceInvalid().buildDto();
     });
 
     and('the returned source does not populate a valid Course', () => {
@@ -160,8 +158,7 @@ defineFeature(feature, (test) => {
     when,
     then,
   }) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let error: any;
+    let error: Error;
 
     given('a matching record is found at the source', () => {
       // confirmed
@@ -172,8 +169,7 @@ defineFeature(feature, (test) => {
     });
 
     and('the source DOES already exist in our DB', () => {
-      // added above, in first test
-      createCourseDto = CreateCourseDtoBuilder().exists().build();
+      createCourseDto = CourseBuilder().exists().buildDto();
     });
 
     when('I attempt to create a course', async () => {
@@ -184,7 +180,7 @@ defineFeature(feature, (test) => {
       }
     });
 
-    then('I should receive a ItemConflictError', () => {
+    then('I should receive an ItemConflictError', () => {
       expect(error).toBeInstanceOf(ItemConflictError);
     });
   });
@@ -195,15 +191,14 @@ defineFeature(feature, (test) => {
     when,
     then,
   }) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let error: any;
+    let error: Error;
 
     given('a matching record is found at the source', () => {
       // we know this
     });
 
     and('the returned source is already associated with a Course', () => {
-      createCourseDto = CreateCourseDtoBuilder().newHasCourseId().build();
+      createCourseDto = CourseBuilder().matchingSourceWithCourse().buildDto();
     });
 
     when('I attempt to create a course', async () => {

@@ -1,6 +1,6 @@
 import { loadFeature, defineFeature } from 'jest-cucumber';
 import { Test } from '@nestjs/testing';
-import { HttpModule } from '@nestjs/axios';
+import { HttpModule, HttpService } from '@nestjs/axios';
 
 import { LoggableLogger } from '@curioushuman/loggable';
 
@@ -9,8 +9,9 @@ import { CourseSourceRepository } from '../../../ports/course-source.repository'
 import { executeTask } from '../../../../../../shared/utils/execute-task';
 import { CourseSource } from '../../../../domain/entities/course-source';
 import { FindCourseSourceDto } from '../../../../application/queries/find-course-source/find-course-source.dto';
-import { CourseSourceBuilder } from './builders/course-source.builder';
+import { CourseSourceBuilder } from '../../../../test/builders/course-source.builder';
 import { SalesforceApiHttpConfigService } from '../sf-api.http-config.service';
+import { CourseSourceManufacturer } from './builders/course-source.manufacturer';
 
 /**
  * INTEGRATION TEST
@@ -28,9 +29,10 @@ const feature = loadFeature('./find-one.feature', {
 });
 
 defineFeature(feature, (test) => {
+  let courseSourceManufacturer: CourseSourceManufacturer;
   let repository: SalesforceApiCourseSourceRepository;
-  let tempCourseSource: CourseSource;
   let findCourseSourceDto: FindCourseSourceDto;
+  let httpService: HttpService;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -51,15 +53,20 @@ defineFeature(feature, (test) => {
     repository = moduleRef.get<CourseSourceRepository>(
       CourseSourceRepository
     ) as SalesforceApiCourseSourceRepository;
+    httpService = moduleRef.get<HttpService>(HttpService);
 
-    tempCourseSource = await CourseSourceBuilder().create();
+    courseSourceManufacturer = new CourseSourceManufacturer(
+      httpService,
+      'find-one-ext-spec'
+    );
   });
 
   afterAll(async () => {
-    await CourseSourceBuilder().delete(tempCourseSource);
+    await courseSourceManufacturer.tidyUp();
   });
 
   test('Successfully find one course source', ({ given, and, when, then }) => {
+    let courseSource: CourseSource;
     let result: CourseSource;
     let error: Error;
 
@@ -67,9 +74,10 @@ defineFeature(feature, (test) => {
       // out of scope
     });
 
-    and('a matching record exists at the source', () => {
+    and('a matching record exists at the source', async () => {
+      courseSource = await courseSourceManufacturer.build();
       findCourseSourceDto = {
-        id: tempCourseSource.id,
+        id: courseSource.id,
       };
     });
 
@@ -83,7 +91,7 @@ defineFeature(feature, (test) => {
     });
 
     then('a source corresponding to that ID should be returned', () => {
-      expect(result.id).toEqual(tempCourseSource.id);
+      expect(result.id).toEqual(courseSource.id);
     });
   });
 
@@ -102,7 +110,7 @@ defineFeature(feature, (test) => {
     });
 
     and('a matching record DOES NOT exist at the source', () => {
-      absentCourseSource = CourseSourceBuilder().noMatchingObject().build();
+      absentCourseSource = CourseSourceBuilder().noMatchingSource().build();
       findCourseSourceDto = {
         id: absentCourseSource.id,
       };

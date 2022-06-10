@@ -7,10 +7,10 @@ import { LoggableLogger } from '@curioushuman/loggable';
 
 import { CoursesController } from '../../courses.controller';
 import { CreateCourseRequestDto } from '../../dto/create-course.request.dto';
-import { CreateCourseRequestDtoBuilder } from '../../../test/builders/create-course.request.builder';
 import { RequestInvalidError } from '../../../../../shared/domain/errors/request-invalid.error';
 import { ErrorFactory } from '../../../../../shared/domain/errors/error-factory';
 import { FakeRepositoryErrorFactory } from '../../../../../shared/adapter/fake.repository.error-factory';
+import { CourseBuilder } from '../../../test/builders/course.builder';
 
 /**
  * UNIT TEST
@@ -62,7 +62,7 @@ defineFeature(feature, (test) => {
     given('the request is valid', () => {
       // we test request validity in controller
       // here we assume it is valid, and has been transformed into valid command dto
-      createCourseRequestDto = CreateCourseRequestDtoBuilder().build();
+      createCourseRequestDto = CourseBuilder().buildRequestDto();
     });
 
     when('I attempt to create a course', async () => {
@@ -78,32 +78,7 @@ defineFeature(feature, (test) => {
     let error: Error;
 
     given('the request contains invalid data', () => {
-      createCourseRequestDto = CreateCourseRequestDtoBuilder()
-        .emptyExternalId()
-        .buildNoCheck();
-    });
-
-    when('I attempt to create a course', async () => {
-      try {
-        await controller.create(createCourseRequestDto);
-      } catch (err) {
-        error = err;
-      }
-    });
-
-    then('I should receive a RequestInvalidError', () => {
-      expect(error).toBeInstanceOf(BadRequestException);
-      expect(error.message).toContain(RequestInvalidError.baseMessage());
-    });
-  });
-
-  test('Fail; Invalid request, missing data', ({ given, when, then }) => {
-    let error: Error;
-
-    given('the request contains missing data', () => {
-      createCourseRequestDto = CreateCourseRequestDtoBuilder()
-        .noExternalId()
-        .buildNoCheck();
+      createCourseRequestDto = CourseBuilder().invalid().buildRequestDto();
     });
 
     when('I attempt to create a course', async () => {

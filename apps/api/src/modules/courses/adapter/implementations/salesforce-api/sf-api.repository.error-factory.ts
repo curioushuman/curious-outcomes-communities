@@ -3,6 +3,7 @@ import { RepositoryErrorFactory } from '../../../../../shared/domain/errors/repo
 
 interface SalesforceApiRepositoryErrorDataObject {
   error?: string;
+  errorCode?: string;
   error_description?: string;
   message?: string;
 }
@@ -14,7 +15,7 @@ type SalesforceApiRepositoryErrorData =
   | SalesforceApiRepositoryErrorDataObject
   | SalesforceApiRepositoryErrorDataArray;
 
-interface SalesforceApiRepositoryError extends Error {
+export interface SalesforceApiRepositoryError extends Error {
   response?: {
     status: number;
     statusText: string;
@@ -22,22 +23,70 @@ interface SalesforceApiRepositoryError extends Error {
   };
 }
 
+type SalesforceApiRepositoryErrorOrArray =
+  | SalesforceApiRepositoryError
+  | SalesforceApiRepositoryErrorDataArray;
+
+/**
+ * Factory to interpret and produce consistent errors from the riddled mess
+ * that is returned from Salesforce. Two types of individual error, and maybe
+ * even an array of errors.
+ */
+
 @Injectable()
 export class SalesforceApiRepositoryErrorFactory extends RepositoryErrorFactory {
-  public errorStatusCode(error: SalesforceApiRepositoryError): number {
+  private sfErrorCodes = {
+    NOT_FOUND: 404,
+  };
+
+  public errorStatusCode(
+    errorOrArray: SalesforceApiRepositoryErrorOrArray
+  ): number {
+    return Array.isArray(errorOrArray)
+      ? this.errorStatusCodeFromArray(errorOrArray)
+      : this.errorStatusCodeFromSalesforceError(errorOrArray);
+  }
+
+  private errorStatusCodeFromSalesforceError(
+    error: SalesforceApiRepositoryError
+  ): number {
     return error.response === undefined ? 500 : error.response.status;
   }
 
-  public errorDescription(error: SalesforceApiRepositoryError): string {
+  private errorStatusCodeFromArray(
+    errorArray: SalesforceApiRepositoryErrorDataArray
+  ): number {
+    return this.sfErrorCodes[errorArray[0].errorCode] ?? 500;
+  }
+
+  public errorDescription(
+    errorOrArray: SalesforceApiRepositoryErrorOrArray
+  ): string {
+    return Array.isArray(errorOrArray)
+      ? this.errorDescriptionFromArray(errorOrArray)
+      : this.errorDescriptionFromSalesforceError(errorOrArray);
+  }
+
+  private errorDescriptionFromSalesforceError(
+    error: SalesforceApiRepositoryError
+  ): string {
     return error.response === undefined
       ? error.message
       : this.errorDescriptionFromData(error);
   }
 
-  public errorDescriptionFromData(error: SalesforceApiRepositoryError): string {
+  private errorDescriptionFromData(
+    error: SalesforceApiRepositoryError
+  ): string {
     const description = Array.isArray(error.response.data)
       ? error.response.data.map((d) => d.message).join('\n')
       : error.response.data.error_description;
     return description;
+  }
+
+  private errorDescriptionFromArray(
+    errorArray: SalesforceApiRepositoryErrorDataArray
+  ): string {
+    return errorArray[0].message;
   }
 }

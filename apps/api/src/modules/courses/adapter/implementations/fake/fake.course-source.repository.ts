@@ -13,10 +13,17 @@ export class FakeCourseSourceRepository implements CourseSourceRepository {
   private courseSources: CourseSource[] = [];
 
   constructor() {
-    this.courseSources.push(CourseSourceBuilder().build());
-    this.courseSources.push(CourseSourceBuilder().testNewValid().build());
-    this.courseSources.push(CourseSourceBuilder().testNewInvalid().build());
-    this.courseSources.push(CourseSourceBuilder().testNewHasCourseId().build());
+    this.courseSources.push(CourseSourceBuilder().exists().build());
+    this.courseSources.push(
+      CourseSourceBuilder().matchingSourceInvalid().build()
+    );
+    this.courseSources.push(
+      CourseSourceBuilder().matchingSourceAlpha().build()
+    );
+    this.courseSources.push(CourseSourceBuilder().matchingSourceBeta().build());
+    this.courseSources.push(
+      CourseSourceBuilder().matchingSourceWithCourse().build()
+    );
   }
 
   findOne = (dto: FindCourseSourceDto): TE.TaskEither<Error, CourseSource> => {
