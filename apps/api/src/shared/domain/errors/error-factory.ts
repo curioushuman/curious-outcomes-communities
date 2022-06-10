@@ -32,7 +32,6 @@ const errorDefinitions = {
   RepositoryServerError,
   RequestInvalidError,
   SourceInvalidError,
-  UnknownException,
 };
 
 export type AllErrorTypeNames = keyof typeof errorDefinitions;

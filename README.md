@@ -52,9 +52,11 @@ We use a combination of Dotenv and K8s for environment variables.
 - Dotenv for running local tests **outside** of the (K8s) infrastructure
 - K8s configuration and sealed secrets **inside** of the (K8s) infrastructure
 
-K8s setup is baked into the accompanying repo, but for local test running you'll need to create a .env file with the following variables present:
+K8s setup is baked into the accompanying repo, but for local test running you'll need to create a .env file with the following variables present.
 
-```javascript
+### Salesforce
+
+```bash
 
 # An example sandbox setup
 SALESFORCE_URL_AUTH="https://test.salesforce.com"
@@ -332,10 +334,10 @@ The above includes all the steps required e.g. setting up a connected app in Sal
 https://<your_salesforce_url/services/oauth2/authorize?response_type=token&client_id=<consumer key>&redirect_uri=<your_callback>
 
 # Staging example
-https://asiapacificforum--sandboxname.lightning.force.com/services/oauth2/authorize?response_type=token&client_id=3MVG9e2-this-sdsdf-is-kjnsdfsdf-not-a-sdsdfsdf-real-key&redirect_uri=sfdc://oauth/jwt/success
+https://asiapacificforum--sandboxname.lightning.force.com/services/oauth2/authorize?response_type=token&client_id=3MVG9e2-this-sdsdf-is-kjnsdfsdf-not-a-sdsdfsdf-real-key&redirect_uri=https://oauth.pstmn.io/v1/callback
 
 # Production example
-https://asiapacificforum.lightning.force.com/services/oauth2/authorize?response_type=token&client_id=3MVG9e2-this-sdsdf-is-kjnsdfsdf-not-a-sdsdfsdf-real-key&redirect_uri=sfdc://oauth/jwt/success
+https://asiapacificforum.lightning.force.com/services/oauth2/authorize?response_type=token&client_id=3MVG9e2-this-sdsdf-is-kjnsdfsdf-not-a-sdsdfsdf-real-key&https://oauth.pstmn.io/v1/callback
 
 ```
 
@@ -343,6 +345,7 @@ https://asiapacificforum.lightning.force.com/services/oauth2/authorize?response_
 
 - When requesting the access token (within your code) you must use test.salesforce.com / login.salesforce.com rather than your custom URL
 - When sending the body it **DOES INDEED NEED TO BE** stringified
+- The callback doesn't matter, but I've used one that works well with postman so you can use it for manual testing.
 
 ## TODO
 

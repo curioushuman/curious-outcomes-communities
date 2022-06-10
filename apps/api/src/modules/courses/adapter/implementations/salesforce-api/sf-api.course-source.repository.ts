@@ -3,6 +3,8 @@ import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import * as TE from 'fp-ts/lib/TaskEither';
 
+import { LoggableLogger } from '@curioushuman/loggable';
+
 import { CourseSource } from '../../../domain/entities/course-source';
 import { CourseSourceRepository } from '../../ports/course-source.repository';
 import { FindCourseSourceDto } from '../../../application/queries/find-course-source/find-course-source.dto';
@@ -19,8 +21,12 @@ export class SalesforceApiCourseSourceRepository
 {
   private sourceName: string;
 
-  constructor(private httpService: HttpService) {
+  constructor(
+    private httpService: HttpService,
+    private logger: LoggableLogger
+  ) {
     this.sourceName = 'Case';
+    this.logger.setContext(SalesforceApiCourseSourceRepository.name);
   }
 
   /**
@@ -43,23 +49,28 @@ export class SalesforceApiCourseSourceRepository
 
   findOne = (dto: FindCourseSourceDto): TE.TaskEither<Error, CourseSource> => {
     const { id } = dto;
+    if (!id) {
+      throw new RequestInvalidError(
+        'Invalid ID supplied to findOne() in SalesforceApi'
+      );
+    }
+    const endpoint = `sobjects/${this.sourceName}/${id}`;
+    // TODO: use keyof to get the fields
+    const fields = salesforceApiCourseSourceFields;
+    this.logger.debug(`Finding ${this.sourceName} with endpoint ${endpoint}`);
     return TE.tryCatch(
       async () => {
-        if (!id) {
-          throw new RequestInvalidError(
-            'Invalid ID supplied to findOne() in SalesforceApi'
-          );
-        }
         const request$ = this.httpService.get<SalesforceApiCourseSource>(
-          `sobjects/${this.sourceName}/${id}`,
+          endpoint,
           {
             params: {
-              fields: salesforceApiCourseSourceFields,
+              fields,
             },
           }
         );
         const response = await firstValueFrom(request$);
 
+        // NOTE: if the response was invalid, an error would have been thrown
         // could this similarly be in a serialisation decorator?
         return SalesforceApiCourseSourceMapper.toDomain(response.data);
       },

@@ -28,7 +28,7 @@ export class MongoDbConfigService implements MongooseOptionsFactory {
     const port = process.env.MONGODB_PORT;
     const db = process.env.MONGODB_DATABASE;
     const uri = `mongodb://${u}:${p}@${n}-mongodb.${ns}.svc.cluster.local:${port}/${db}`;
-    this.logger.debug(`MongoDB URI: ${uri}`);
+    this.logger.verbose(`MongoDB URI: ${uri}`);
     return {
       uri,
     };

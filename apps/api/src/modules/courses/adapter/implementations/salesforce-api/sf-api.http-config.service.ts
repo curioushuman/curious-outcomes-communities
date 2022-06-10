@@ -40,10 +40,11 @@ export class SalesforceApiHttpConfigService
     this.errorFactory = new SalesforceApiRepositoryErrorFactory();
     this.logger = new LoggableLogger(SalesforceApiHttpConfigService.name);
     this.authURL = `${process.env.SALESFORCE_URL_AUTH}/services/oauth2/token`;
-    this.baseURL = `${process.env.SALESFORCE_URL_DATA}/${process.env.SALESFORCE_URL_DATA_VERSION}/`;
+    this.baseURL = `${process.env.SALESFORCE_URL_DATA}/services/data/${process.env.SALESFORCE_URL_DATA_VERSION}/`;
   }
   async createHttpOptions(): Promise<HttpModuleOptions> {
     const token = await executeTask(this.token());
+    this.logger.verbose(`BaseURL set: ${this.baseURL}`);
     return {
       baseURL: this.baseURL,
       headers: {
@@ -51,10 +52,6 @@ export class SalesforceApiHttpConfigService
       },
     };
   }
-
-  // UP TO
-  // test authentication here
-  // remove it from the other locations
 
   /**
    * TODO - Implement caching of token

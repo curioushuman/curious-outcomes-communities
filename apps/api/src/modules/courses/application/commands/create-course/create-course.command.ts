@@ -91,7 +91,7 @@ export class CreateCourseHandler
             this.courseRepository.findOne,
             this.errorFactory,
             this.logger,
-            `find course from source: ${source.id}`
+            `check course exists for source: ${source.id}`
           ),
           TE.chain((existingCourse) => {
             throw new ItemConflictError(existingCourse.name);

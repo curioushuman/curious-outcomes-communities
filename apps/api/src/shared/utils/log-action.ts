@@ -24,9 +24,10 @@ export const logAction =
     return pipe(
       task,
       TE.mapLeft((error: ErrorLike) => {
-        const mappedError = errorFactory.error(error) as ErrorLike;
         logger.warn(warningMessage);
-        logger.warn(error.constructor.name);
+        logger.warn(`Error was ${error.constructor.name}: ${error.message}`);
+        const mappedError = errorFactory.error(error) as ErrorLike;
+        logger.warn(`Error became ${error.constructor.name}: ${error.message}`);
         logger.debug ? logger.debug(error) : logger.error(error);
         return mappedError;
       }),
