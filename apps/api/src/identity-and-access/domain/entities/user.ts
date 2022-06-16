@@ -1,4 +1,4 @@
-import { Email } from '../value-objects/email';
+import { Email } from '../../../shared/domain/value-objects/email';
 import { Record, Static } from 'runtypes';
 
 export const User = Record({

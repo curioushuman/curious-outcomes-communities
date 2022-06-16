@@ -8,6 +8,6 @@ import { Static, String } from 'runtypes';
  * - [ ] Double check whether or not there should be constraints
  */
 
-export const Name = String.withBrand('Name');
+export const CourseName = String.withBrand('Name');
 
-export type Name = Static<typeof Name>;
+export type CourseName = Static<typeof CourseName>;

@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Model } from 'mongoose';
 
 import type { User } from '../../../../domain/entities/user';
-import { Email } from '../../../../domain/value-objects/email';
+import { Email } from '../../../../../shared/domain/value-objects/email';
 
 @Schema()
 export class MongoDbUser implements User {

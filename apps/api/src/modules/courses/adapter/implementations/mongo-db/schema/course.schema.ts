@@ -3,13 +3,13 @@ import { Document, Model } from 'mongoose';
 
 import type { Course } from '../../../../domain/entities/course';
 import { ExternalId } from '../../../../domain/value-objects/external-id';
-import { Name } from '../../../../domain/value-objects/name';
+import { CourseName } from '../../../../domain/value-objects/course-name';
 import { Slug } from '../../../../domain/value-objects/slug';
 
 @Schema()
 export class MongoDbCourse implements Course {
   @Prop({ required: true, unique: true, type: String })
-  name!: Name;
+  name!: CourseName;
 
   @Prop({ required: true, unique: true, type: String })
   slug!: Slug;

@@ -2,7 +2,7 @@ import { Optional, Record, Static, String } from 'runtypes';
 import { CourseId } from '../value-objects/course-id';
 
 import { ExternalId } from '../value-objects/external-id';
-import { Name } from '../value-objects/name';
+import { CourseName } from '../value-objects/course-name';
 import { Slug } from '../value-objects/slug';
 
 /**
@@ -14,7 +14,7 @@ import { Slug } from '../value-objects/slug';
 
 export const CourseSource = Record({
   id: ExternalId,
-  name: Name,
+  name: CourseName,
   slug: Optional(Slug),
   courseId: Optional(CourseId),
 });

@@ -2,17 +2,10 @@ import { Static, String } from 'runtypes';
 import * as slug from 'slug';
 
 /**
- * Looking at the list of names the following rules seem to apply
- * - unicode letters only i.e. flabébé becomes flabebe
- * - dashes are allowed e.g. hakamo-o
- * - lowercase only e.g. Hakamo-o returns nothing
- *
- * Uncertain about
- * - spaces, I couldn't find one with a space
- *
  * Heavily inspired by: https://github.com/VincentJouanne/nest-clean-architecture
  *
- * TODO: should this be more OO? e.g. createSlug
+ * TODO
+ * - [ ] should this be more OO? e.g. createSlug
  */
 
 export const SlugRegex = /^[0-9a-z-_]+$/;

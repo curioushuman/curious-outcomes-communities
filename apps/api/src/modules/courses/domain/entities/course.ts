@@ -1,7 +1,7 @@
 import { Record, Static } from 'runtypes';
 
 import { ExternalId } from '../value-objects/external-id';
-import { Name } from '../value-objects/name';
+import { CourseName } from '../value-objects/course-name';
 import { Slug } from '../value-objects/slug';
 
 /**
@@ -12,7 +12,7 @@ import { Slug } from '../value-objects/slug';
  */
 
 export const Course = Record({
-  name: Name,
+  name: CourseName,
   slug: Slug,
   externalId: ExternalId,
 });
