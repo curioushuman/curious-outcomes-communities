@@ -63,9 +63,7 @@ defineFeature(feature, (test) => {
     });
 
     given('the request is valid', () => {
-      createCourseRequestDto = CourseBuilder()
-        .matchingSourceBeta()
-        .buildRequestDto();
+      createCourseRequestDto = CourseBuilder().beta().buildRequestDto();
     });
 
     and('a matching record is found at the source', () => {

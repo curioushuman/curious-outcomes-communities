@@ -55,17 +55,13 @@ export const CourseBuilder = () => {
       return this;
     },
 
-    matchingSourceInvalid() {
-      overrides.externalId = CourseSourceBuilder()
-        .matchingSourceInvalid()
-        .build().id;
+    invalidSource() {
+      overrides.externalId = CourseSourceBuilder().invalidSource().build().id;
       return this;
     },
 
-    matchingSourceWithCourse() {
-      overrides.externalId = CourseSourceBuilder()
-        .matchingSourceWithCourse()
-        .build().id;
+    withCourse() {
+      overrides.externalId = CourseSourceBuilder().withCourse().build().id;
       return this;
     },
 

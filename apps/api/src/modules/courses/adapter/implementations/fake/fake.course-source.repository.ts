@@ -15,15 +15,11 @@ export class FakeCourseSourceRepository implements CourseSourceRepository {
   constructor() {
     this.courseSources.push(CourseSourceBuilder().exists().build());
     this.courseSources.push(
-      CourseSourceBuilder().matchingSourceInvalid().build()
+      CourseSourceBuilder().invalidSource().buildNoCheck()
     );
-    this.courseSources.push(
-      CourseSourceBuilder().matchingSourceAlpha().build()
-    );
-    this.courseSources.push(CourseSourceBuilder().matchingSourceBeta().build());
-    this.courseSources.push(
-      CourseSourceBuilder().matchingSourceWithCourse().build()
-    );
+    this.courseSources.push(CourseSourceBuilder().alpha().build());
+    this.courseSources.push(CourseSourceBuilder().beta().build());
+    this.courseSources.push(CourseSourceBuilder().withCourse().build());
   }
 
   findOne = (dto: FindCourseSourceDto): TE.TaskEither<Error, CourseSource> => {

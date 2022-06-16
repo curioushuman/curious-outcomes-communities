@@ -1,4 +1,6 @@
 import { CourseSource } from '../../domain/entities/course-source';
+import { ExternalId } from '../../domain/value-objects/external-id';
+import { CourseBuilder } from './course.builder';
 
 /**
  * A builder for Course Sources to play with in testing.
@@ -14,34 +16,30 @@ import { CourseSource } from '../../domain/entities/course-source';
  * Heavily inspired by: https://github.com/VincentJouanne/nest-clean-architecture
  */
 
-const caseDummyId = process.env.SALESFORCE_TEST_CASE_DUMMY_ID;
-const caseAlphaId = process.env.SALESFORCE_TEST_CASE_ALPHA_ID;
-const caseBetaId = process.env.SALESFORCE_TEST_CASE_BETA_ID;
-
 export const CourseSourceBuilder = () => {
   /**
    * Default properties don't exist in source repository
    */
   const defaultProperties = {
-    id: caseDummyId,
+    id: '5008s1234519CjIAAU',
     name: 'Learn to be a dancer',
     courseId: '',
   };
   const overrides = {
-    id: caseDummyId,
+    id: '5008s1234519CjIAAU',
     name: 'Learn to be a dancer',
     courseId: '',
   };
 
   return {
-    matchingSourceAlpha() {
-      overrides.id = caseAlphaId;
+    alpha() {
+      overrides.id = CourseBuilder().alpha().build().externalId;
       overrides.name = 'Dance, like an alpha';
       return this;
     },
 
-    matchingSourceBeta() {
-      overrides.id = caseBetaId;
+    beta() {
+      overrides.id = CourseBuilder().beta().build().externalId;
       overrides.name = 'Beta ray dancing';
       return this;
     },
@@ -50,21 +48,21 @@ export const CourseSourceBuilder = () => {
       return this;
     },
 
-    matchingSourceWithCourse() {
-      overrides.id = 'SourceWithCourseForFakeRepoId';
+    withCourse() {
+      overrides.id = ExternalId.check('SourceWithCourseForFakeRepoId');
       overrides.name = 'Already associated';
       overrides.courseId = 'JustAnyOldCourseIdForNow';
       return this;
     },
 
-    matchingSourceInvalid() {
-      overrides.id = 'InvalidIdForFakeRepo';
+    invalidSource() {
+      overrides.id = ExternalId.check('InvalidIdForFakeRepo');
       overrides.name = '';
       return this;
     },
 
     exists() {
-      overrides.id = 'ThisSourceExists';
+      overrides.id = ExternalId.check('ThisSourceExists');
       return this;
     },
 
@@ -73,6 +71,13 @@ export const CourseSourceBuilder = () => {
         ...defaultProperties,
         ...overrides,
       });
+    },
+
+    buildNoCheck(): CourseSource {
+      return {
+        ...defaultProperties,
+        ...overrides,
+      } as CourseSource;
     },
   };
 };

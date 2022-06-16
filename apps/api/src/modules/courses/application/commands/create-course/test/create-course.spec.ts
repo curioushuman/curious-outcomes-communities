@@ -73,7 +73,7 @@ defineFeature(feature, (test) => {
 
     given('a matching record is found at the source', () => {
       // we know this to exist in our fake repo
-      createCourseDto = CourseBuilder().matchingSourceBeta().buildDto();
+      createCourseDto = CourseBuilder().beta().buildDto();
     });
 
     and('the returned source populates a valid course', () => {
@@ -132,7 +132,7 @@ defineFeature(feature, (test) => {
     let error: Error;
 
     given('a matching record is found at the source', () => {
-      createCourseDto = CourseBuilder().matchingSourceInvalid().buildDto();
+      createCourseDto = CourseBuilder().invalidSource().buildDto();
     });
 
     and('the returned source does not populate a valid Course', () => {
@@ -198,7 +198,7 @@ defineFeature(feature, (test) => {
     });
 
     and('the returned source is already associated with a Course', () => {
-      createCourseDto = CourseBuilder().matchingSourceWithCourse().buildDto();
+      createCourseDto = CourseBuilder().withCourse().buildDto();
     });
 
     when('I attempt to create a course', async () => {
