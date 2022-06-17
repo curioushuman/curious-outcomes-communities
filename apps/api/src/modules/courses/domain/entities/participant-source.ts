@@ -4,14 +4,16 @@ import { ExternalId } from '../value-objects/external-id';
 import { PersonName } from '../../../../shared/domain/value-objects/person-name';
 import { Email } from '../../../../shared/domain/value-objects/email';
 import { ParticipantId } from '../value-objects/participant-id';
+import { UserId } from '../../../../shared/domain/value-objects/user-id';
 
 export const ParticipantSource = Record({
+  id: ExternalId,
   firstName: Optional(PersonName),
   lastName: PersonName,
   email: Email,
-  externalId: ExternalId,
   externalCourseId: ExternalId,
   participantId: Optional(ParticipantId.Or(Null)),
+  userId: UserId,
 });
 
 export type ParticipantSource = Static<typeof ParticipantSource>;

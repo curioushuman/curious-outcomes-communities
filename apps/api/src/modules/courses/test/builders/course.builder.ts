@@ -17,18 +17,20 @@ import { CourseSourceBuilder } from './course-source.builder';
  * Heavily inspired by: https://github.com/VincentJouanne/nest-clean-architecture
  */
 
+export const defaultCourseId = '1e72ef98-f21e-4e0a-aff1-a45ed7328ae6';
+
 export const CourseBuilder = () => {
   /**
    * Default properties don't exist in source repository
    */
   const defaultProperties = {
-    id: '1e72ef98-f21e-4e0a-aff1-a45ed7328ae6',
+    id: defaultCourseId,
     name: 'Learn to be a dancer',
     slug: 'learn-to-be-a-dancer',
     externalId: '5008s1234519CjIAAU',
   };
   const overrides = {
-    id: '1e72ef98-f21e-4e0a-aff1-a45ed7328ae6',
+    id: defaultCourseId,
     name: 'Learn to be a dancer',
     slug: 'learn-to-be-a-dancer',
     externalId: '5008s1234519CjIAAU',
