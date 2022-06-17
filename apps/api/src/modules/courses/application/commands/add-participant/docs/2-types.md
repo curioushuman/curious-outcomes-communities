@@ -1,4 +1,4 @@
-# Data types: Create Course
+# Data types: Create Participant
 
 ## Notes
 
@@ -12,32 +12,30 @@ Assume everything is AND unless specified by OR and ()
 - **NOTE**: this could do with better validation; drawn from the specific external source
 e.g. Salesforce IDs have specific rules
 
-### Course
+### Participant
 - id: UUID
-- name: Name extends string
-  - Unsure of validation rules
-  - Maybe max length
-- description: Description extends string
-  - Similar RE validation
-  - Max length
-- startDate: date
-  - Has to be in the future
-- endDate: date
-  - Has to be later than startDate
-- externalId: ExternalId
+- firstName: extends string
+  - Optional
+- lastName: extends string
+- email: email
+- externalId: ExternalId (of participant)
+- courseId: related course
+- userId: related user
 
-### SavedCourse
+### SavedParticipant
 
-Extends Course
+Extends Participant
 
 - RepoIdentifier
   - Dependent on repo
 
-### External Record
+### Source Record
 
-Extends Course
+Extends Participant
 
-- Related Course Id
+- Without UUID
+- Related Participant Id (from our system)
+- External Course Id
 
 ## Errors
 
@@ -87,21 +85,21 @@ Extends Course
 
 ## Events
 
-### CourseCreatedEvent
+### ParticipantCreatedEvent
 
 - createdDatetime: dateTime
-- course: SavedCourse
+- course: SavedParticipant
 
 ## Notifications
 
-### CourseCreatedNotification
+### ParticipantCreatedNotification
 
-- course: SavedCourse
-- subject: Course created <`SavedCourse.name`>
-- message: Course <`SavedCourse.name`></br>
+- course: SavedParticipant
+- subject: Participant created <`SavedParticipant.email`>
+- message: Participant <`SavedParticipant.firstName`> <`SavedParticipant.lastName`></br>
 | created by <`Admin.name`></br>
-| at <`SavedCourse.createdAt as time`></br>
-| on <`SavedCourse.createdAt as date`>
+| at <`SavedParticipant.createdAt as time`></br>
+| on <`SavedParticipant.createdAt as date`>
 
 ### Email
 
