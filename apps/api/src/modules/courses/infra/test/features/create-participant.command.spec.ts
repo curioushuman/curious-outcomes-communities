@@ -73,25 +73,25 @@ defineFeature(feature, (test) => {
     });
   });
 
-  // test('Fail; Invalid request, invalid data', ({ given, when, then }) => {
-  //   let error: Error;
+  test('Fail; Invalid request, invalid data', ({ given, when, then }) => {
+    let error: Error;
 
-  //   given('the request contains invalid data', () => {
-  //     createParticipantRequestDto = ParticipantBuilder()
-  //       .invalid()
-  //       .buildRequestDto();
-  //   });
+    given('the request contains invalid data', () => {
+      createParticipantRequestDto = ParticipantBuilder()
+        .invalid()
+        .buildRequestDto();
+    });
 
-  //   when('I attempt to create a participant', async () => {
-  //     try {
-  //       await controller.create(createParticipantRequestDto);
-  //     } catch (err) {
-  //       error = err;
-  //     }
-  //   });
+    when('I attempt to create a participant', async () => {
+      try {
+        await controller.create(createParticipantRequestDto);
+      } catch (err) {
+        error = err;
+      }
+    });
 
-  //   then('I should receive a RequestInvalidError', () => {
-  //     expect(error).toBeInstanceOf(BadRequestException);
-  //   });
-  // });
+    then('I should receive a RequestInvalidError', () => {
+      expect(error).toBeInstanceOf(BadRequestException);
+    });
+  });
 });
