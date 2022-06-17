@@ -11,7 +11,7 @@ import { CreateCourseDto } from './create-course.dto';
 import { CreateCourseMapper } from './create-course.mapper';
 import { CourseSourceRepository } from '../../../adapter/ports/course-source.repository';
 import { CourseSourceForCreate } from '../../../domain/entities/course-source';
-import { ItemConflictError } from '../../../../../shared/domain/errors/repository/item-conflict.error';
+import { RepositoryItemConflictError } from '../../../../../shared/domain/errors/repository/item-conflict.error';
 import { performAction } from '../../../../../shared/utils/perform-action';
 import { parseActionData } from '../../../../../shared/utils/parse-action-data';
 import { ErrorFactory } from '../../../../../shared/domain/errors/error-factory';
@@ -94,7 +94,7 @@ export class CreateCourseHandler
             `check course exists for source: ${source.id}`
           ),
           TE.chain((existingCourse) => {
-            throw new ItemConflictError(existingCourse.name);
+            throw new RepositoryItemConflictError(existingCourse.name);
           }),
           TE.alt(() => TE.right(courseFromSource))
         )

@@ -9,13 +9,13 @@ import * as O from 'fp-ts/lib/Option';
  * to be caught by Nest and returned
  * as HTTP exception
  */
-export class ItemConflictError extends ConflictException {
+export class RepositoryItemConflictError extends ConflictException {
   constructor(message?: string) {
-    super(ItemConflictError.initMessage(message));
+    super(RepositoryItemConflictError.initMessage(message));
   }
 
   public static initMessage(message: string): string {
-    const baseMessage = ItemConflictError.baseMessage();
+    const baseMessage = RepositoryItemConflictError.baseMessage();
     return pipe(
       message,
       O.fromNullable,

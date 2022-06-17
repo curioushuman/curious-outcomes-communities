@@ -99,7 +99,7 @@ Else
 
 - SourceInvalidError
   - Extends BadRequestException
-- ItemConflictError
+- RepositoryItemConflictError
   - Extends ConflictException
 
 #### Steps (pseudocode)
@@ -110,7 +110,7 @@ If Invalid
 If Already associated
   return SourceInvalidError
 If Exists
-  return ItemConflictError
+  return RepositoryItemConflictError
 Else
   return Course
 ```

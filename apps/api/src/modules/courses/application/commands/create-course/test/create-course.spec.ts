@@ -17,7 +17,7 @@ import { CreateCourseRequestDto } from '../../../../infra/dto/create-course.requ
 import { Course } from '../../../../domain/entities/course';
 import { RepositoryItemNotFoundError } from '../../../../../../shared/domain/errors/repository/item-not-found.error';
 import { SourceInvalidError } from '../../../../../../shared/domain/errors/repository/source-invalid.error';
-import { ItemConflictError } from '../../../../../../shared/domain/errors/repository/item-conflict.error';
+import { RepositoryItemConflictError } from '../../../../../../shared/domain/errors/repository/item-conflict.error';
 import { ErrorFactory } from '../../../../../../shared/domain/errors/error-factory';
 import { FakeRepositoryErrorFactory } from '../../../../../../shared/adapter/fake.repository.error-factory';
 import { CourseBuilder } from '../../../../test/builders/course.builder';
@@ -180,8 +180,8 @@ defineFeature(feature, (test) => {
       }
     });
 
-    then('I should receive an ItemConflictError', () => {
-      expect(error).toBeInstanceOf(ItemConflictError);
+    then('I should receive an RepositoryItemConflictError', () => {
+      expect(error).toBeInstanceOf(RepositoryItemConflictError);
     });
   });
 

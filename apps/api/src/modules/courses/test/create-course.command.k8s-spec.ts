@@ -195,8 +195,11 @@ defineFeature(feature, (test) => {
         .send(createCourseRequestDto);
     });
 
-    then('I should receive an ItemConflictError/ConflictException', () => {
-      expect(response.status).toBe(409);
-    });
+    then(
+      'I should receive an RepositoryItemConflictError/ConflictException',
+      () => {
+        expect(response.status).toBe(409);
+      }
+    );
   });
 });

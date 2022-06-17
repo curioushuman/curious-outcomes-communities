@@ -12,7 +12,7 @@ export class SalesforceApiCourseSourceMapper {
     return CourseSource.check({
       id: source.Id,
       name: source.Summary_quick_year__c,
-      courseId: source.CO_course_ID__c ?? '',
+      courseId: source.CO_course_ID__c,
       slug,
     });
   }

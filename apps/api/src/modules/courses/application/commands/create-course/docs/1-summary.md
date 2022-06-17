@@ -22,7 +22,7 @@
 #### Domain
 
 - SourceInvalidError
-- ItemConflictError
+- RepositoryItemConflictError
 
 #### Other
 

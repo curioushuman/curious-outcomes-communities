@@ -13,6 +13,7 @@ Assume everything is AND unless specified by OR and ()
 e.g. Salesforce IDs have specific rules
 
 ### Course
+- id: UUID
 - name: Name extends string
   - Unsure of validation rules
   - Maybe max length
@@ -60,7 +61,7 @@ Extends Course
 - SourceInvalidError
   - Extends: BadRequestException
   - Message: Source with ID <`ExternalId`> contains insufficient or invalid data to create a new Course
-- ItemConflictError
+- RepositoryItemConflictError
   - Extends: ConflictException
   - Message: Source with ID <`ExternalId`> already exists within our DB. No action required.
 - NotificationFailedError
@@ -84,7 +85,7 @@ Extends Course
   - NotificationFailedError
   - EventFailedError
 - ConflictException
-  - ItemConflictError
+  - RepositoryItemConflictError
 
 ## Events
 

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import { ItemConflictError } from './repository/item-conflict.error';
+import { RepositoryItemConflictError } from './repository/item-conflict.error';
 import { RepositoryAuthenticationError } from './repository/authentication.error';
 import { RepositoryItemNotFoundError } from './repository/item-not-found.error';
 import { RepositoryServerError } from './repository/server.error';
@@ -9,7 +9,7 @@ import { SourceInvalidError } from './repository/source-invalid.error';
 import { ErrorFactory } from './error-factory';
 
 const allowedErrors = {
-  ItemConflictError,
+  RepositoryItemConflictError,
   RepositoryAuthenticationError,
   RepositoryItemNotFoundError,
   RepositoryServerError,

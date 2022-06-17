@@ -72,5 +72,5 @@ Scenario: Fail; Source already exists in our DB
   And the returned source populates a valid course
   And the source DOES already exist in our DB
   When I attempt to create a course
-  Then I should receive a ItemConflictError
+  Then I should receive a RepositoryItemConflictError
   And no result is returned

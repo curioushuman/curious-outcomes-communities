@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 import { UnknownException } from './unknown.error';
 import { RequestInvalidError } from './request-invalid.error';
-import { ItemConflictError } from './repository/item-conflict.error';
+import { RepositoryItemConflictError } from './repository/item-conflict.error';
 import { SourceInvalidError } from './repository/source-invalid.error';
 import { RepositoryAuthenticationError } from './repository/authentication.error';
 import { RepositoryItemNotFoundError } from './repository/item-not-found.error';
@@ -26,7 +26,7 @@ import { RepositoryServerError } from './repository/server.error';
 // I attempted to include them in the individual subclasses
 // but couldn't get the generic type for this class to work
 const errorDefinitions = {
-  ItemConflictError,
+  RepositoryItemConflictError,
   RepositoryAuthenticationError,
   RepositoryItemNotFoundError,
   RepositoryServerError,
