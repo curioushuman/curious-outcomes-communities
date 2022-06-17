@@ -11,7 +11,7 @@ import * as slug from 'slug';
 export const SlugRegex = /^[0-9a-z-_]+$/;
 
 export const Slug = String.withBrand('Slug').withConstraint(
-  (maybeSlug) => SlugRegex.test(maybeSlug) || 'Invalid Contact slug'
+  (maybeSlug) => SlugRegex.test(maybeSlug) || 'Invalid slug'
 );
 
 export type Slug = Static<typeof Slug>;

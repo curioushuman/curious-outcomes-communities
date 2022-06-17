@@ -41,7 +41,8 @@
     "runtypes": "^6.5.1",
     "rxjs": "^7.5.5",
     "slug": "^5.3.0",
-    "tslib": "^2.0.0"
+    "tslib": "^2.0.0",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@nestjs/schematics": "^8.0.0",

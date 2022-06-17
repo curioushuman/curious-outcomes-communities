@@ -1,7 +1,7 @@
 import { CreateCourseDto } from '../../application/commands/create-course/create-course.dto';
 import { Course } from '../../domain/entities/course';
 import { CourseSource } from '../../domain/entities/course-source';
-import { createSlug } from '../../domain/value-objects/slug';
+import { createSlug } from '../../../../shared/domain/value-objects/slug';
 import { CreateCourseRequestDto } from '../../infra/dto/create-course.request.dto';
 import { CourseSourceBuilder } from './course-source.builder';
 
@@ -22,11 +22,13 @@ export const CourseBuilder = () => {
    * Default properties don't exist in source repository
    */
   const defaultProperties = {
+    id: '1e72ef98-f21e-4e0a-aff1-a45ed7328ae6',
     name: 'Learn to be a dancer',
     slug: 'learn-to-be-a-dancer',
     externalId: '5008s1234519CjIAAU',
   };
   const overrides = {
+    id: '1e72ef98-f21e-4e0a-aff1-a45ed7328ae6',
     name: 'Learn to be a dancer',
     slug: 'learn-to-be-a-dancer',
     externalId: '5008s1234519CjIAAU',

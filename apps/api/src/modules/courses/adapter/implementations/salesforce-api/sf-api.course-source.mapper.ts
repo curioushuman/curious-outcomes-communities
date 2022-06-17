@@ -1,5 +1,5 @@
 import { CourseSource } from '../../../domain/entities/course-source';
-import { Slug } from '../../../domain/value-objects/slug';
+import { Slug } from '../../../../../shared/domain/value-objects/slug';
 import { SalesforceApiCourseSource } from './types/sf-api.course-source';
 
 export class SalesforceApiCourseSourceMapper {

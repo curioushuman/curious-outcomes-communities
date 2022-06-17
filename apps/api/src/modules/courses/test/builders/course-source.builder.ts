@@ -23,12 +23,12 @@ export const CourseSourceBuilder = () => {
   const defaultProperties = {
     id: '5008s1234519CjIAAU',
     name: 'Learn to be a dancer',
-    courseId: '',
+    courseId: null,
   };
   const overrides = {
     id: '5008s1234519CjIAAU',
     name: 'Learn to be a dancer',
-    courseId: '',
+    courseId: null,
   };
 
   return {
@@ -51,7 +51,8 @@ export const CourseSourceBuilder = () => {
     withCourse() {
       overrides.id = ExternalId.check('SourceWithCourseForFakeRepoId');
       overrides.name = 'Already associated';
-      overrides.courseId = 'JustAnyOldCourseIdForNow';
+      // NOTE: this is a random UUID that matches to nothing
+      overrides.courseId = 'b0acf835-6fe3-4821-8381-9be7c336dce6';
       return this;
     },
 

@@ -1,5 +1,11 @@
-import { Static, String } from 'runtypes';
+import { Static } from 'runtypes';
 
-export const CourseId = String.withBrand('CourseId');
+import { UUID, createUUID } from '../../../../shared/domain/value-objects/uuid';
+
+export const CourseId = UUID.withBrand('CourseId');
 
 export type CourseId = Static<typeof CourseId>;
+
+export const createCourseId = (): CourseId => {
+  return CourseId.check(createUUID());
+};
