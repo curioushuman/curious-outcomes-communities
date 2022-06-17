@@ -1,4 +1,6 @@
 import { Injectable } from '@nestjs/common';
+import { pipe } from 'fp-ts/lib/function';
+import * as O from 'fp-ts/lib/Option';
 
 import { UnknownException } from './unknown.error';
 import { RequestInvalidError } from './request-invalid.error';
@@ -7,6 +9,15 @@ import { SourceInvalidError } from './repository/source-invalid.error';
 import { RepositoryAuthenticationError } from './repository/authentication.error';
 import { RepositoryItemNotFoundError } from './repository/item-not-found.error';
 import { RepositoryServerError } from './repository/server.error';
+
+/**
+ * This is the minimum aspects of an error message you must provide
+ * NOTE: additional context may be provided at time of error
+ */
+export interface ErrorMessageComponents {
+  base: string;
+  action: string;
+}
 
 /**
  * Responsible for returning the error we want our users to see
@@ -110,4 +121,23 @@ export abstract class ErrorFactory<
    */
   abstract errorStatusCode(error: Error): number;
   abstract errorDescription(error: Error): string;
+
+  /**
+   * Static functions for use where inheritance cannot exist
+   */
+  public static formatMessage(
+    components: ErrorMessageComponents,
+    context: string
+  ): string {
+    return pipe(
+      context,
+      O.fromNullable,
+      O.fold(
+        () => `${components.base}. ${components.action}.`,
+        (c) => {
+          return `${components.base}; ${c}. ${components.action}.`;
+        }
+      )
+    );
+  }
 }

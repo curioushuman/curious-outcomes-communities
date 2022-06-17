@@ -1,6 +1,14 @@
 import { NotImplementedException } from '@nestjs/common';
-import { pipe } from 'fp-ts/lib/function';
-import * as O from 'fp-ts/lib/Option';
+
+import { ErrorFactory, ErrorMessageComponents } from './error-factory';
+
+/**
+ * Error message components for this error
+ */
+const messageComponents: ErrorMessageComponents = {
+  base: 'This particular feature does not yet exist, but is on our roadmap',
+  action: 'Please check back in a short while',
+};
 
 /**
  * Common domain error
@@ -11,24 +19,6 @@ import * as O from 'fp-ts/lib/Option';
  */
 export class NotYetImplementedError extends NotImplementedException {
   constructor(message?: string) {
-    super(NotYetImplementedError.initMessage(message));
-  }
-
-  public static initMessage(message: string): string {
-    const baseMessage = NotYetImplementedError.baseMessage();
-    return pipe(
-      message,
-      O.fromNullable,
-      O.fold(
-        () => baseMessage,
-        (r) => {
-          return `${baseMessage}: ${r}`;
-        }
-      )
-    );
-  }
-
-  public static baseMessage(): string {
-    return 'This service is not yet available, please try again later';
+    super(ErrorFactory.formatMessage(messageComponents, message));
   }
 }

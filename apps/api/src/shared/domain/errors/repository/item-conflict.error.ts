@@ -1,6 +1,14 @@
 import { ConflictException } from '@nestjs/common';
-import { pipe } from 'fp-ts/lib/function';
-import * as O from 'fp-ts/lib/Option';
+
+import { ErrorFactory, ErrorMessageComponents } from '../error-factory';
+
+/**
+ * Error message components for this error
+ */
+const messageComponents: ErrorMessageComponents = {
+  base: 'Source already exists within our database',
+  action: 'No action required',
+};
 
 /**
  * Common domain error, when item already exists in local repo
@@ -11,24 +19,6 @@ import * as O from 'fp-ts/lib/Option';
  */
 export class RepositoryItemConflictError extends ConflictException {
   constructor(message?: string) {
-    super(RepositoryItemConflictError.initMessage(message));
-  }
-
-  public static initMessage(message: string): string {
-    const baseMessage = RepositoryItemConflictError.baseMessage();
-    return pipe(
-      message,
-      O.fromNullable,
-      O.fold(
-        () => baseMessage,
-        (r) => {
-          return `${baseMessage}: ${r}`;
-        }
-      )
-    );
-  }
-
-  public static baseMessage(): string {
-    return 'Item already exists';
+    super(ErrorFactory.formatMessage(messageComponents, message));
   }
 }

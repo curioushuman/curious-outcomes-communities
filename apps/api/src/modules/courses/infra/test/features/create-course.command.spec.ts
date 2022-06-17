@@ -7,7 +7,6 @@ import { LoggableLogger } from '@curioushuman/loggable';
 
 import { CoursesController } from '../../courses.controller';
 import { CreateCourseRequestDto } from '../../dto/create-course.request.dto';
-import { RequestInvalidError } from '../../../../../shared/domain/errors/request-invalid.error';
 import { ErrorFactory } from '../../../../../shared/domain/errors/error-factory';
 import { FakeRepositoryErrorFactory } from '../../../../../shared/adapter/fake.repository.error-factory';
 import { CourseBuilder } from '../../../test/builders/course.builder';
@@ -91,7 +90,6 @@ defineFeature(feature, (test) => {
 
     then('I should receive a RequestInvalidError', () => {
       expect(error).toBeInstanceOf(BadRequestException);
-      expect(error.message).toContain(RequestInvalidError.baseMessage());
     });
   });
 });

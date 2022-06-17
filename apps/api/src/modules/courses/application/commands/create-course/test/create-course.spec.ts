@@ -15,7 +15,6 @@ import { FakeCourseSourceRepository } from '../../../../adapter/implementations/
 import { executeTask } from '../../../../../../shared/utils/execute-task';
 import { CreateCourseRequestDto } from '../../../../infra/dto/create-course.request.dto';
 import { Course } from '../../../../domain/entities/course';
-import { RepositoryItemNotFoundError } from '../../../../../../shared/domain/errors/repository/item-not-found.error';
 import { SourceInvalidError } from '../../../../../../shared/domain/errors/repository/source-invalid.error';
 import { RepositoryItemConflictError } from '../../../../../../shared/domain/errors/repository/item-conflict.error';
 import { ErrorFactory } from '../../../../../../shared/domain/errors/error-factory';
@@ -117,9 +116,6 @@ defineFeature(feature, (test) => {
 
     then('I should receive a RepositoryItemNotFoundError', () => {
       expect(error).toBeInstanceOf(NotFoundException);
-      expect(error.message).toContain(
-        RepositoryItemNotFoundError.baseMessage()
-      );
     });
   });
 

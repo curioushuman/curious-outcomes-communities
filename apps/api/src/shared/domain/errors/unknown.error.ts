@@ -1,36 +1,22 @@
 import { InternalServerErrorException } from '@nestjs/common';
-import { pipe } from 'fp-ts/lib/function';
-import * as O from 'fp-ts/lib/Option';
+
+import { ErrorFactory, ErrorMessageComponents } from './error-factory';
+
+/**
+ * Error message components for this error
+ */
+const messageComponents: ErrorMessageComponents = {
+  base: 'Something... Unexpected happened',
+  action: 'DO NOT PANIC, out talented team are hunting it down as we speak',
+};
 
 /**
  * Unknown exception
  * Calling it out as unknown so we can track them,
  * and know them.
- *
- * TODO
- * - [ ] how to ensure all custom errors include the baseMessage method
- *       while retaining the extension of Nest-specific HTTP exceptions
  */
 export class UnknownException extends InternalServerErrorException {
   constructor(message?: string) {
-    super(UnknownException.initMessage(message));
-  }
-
-  public static initMessage(message: string): string {
-    const baseMessage = UnknownException.baseMessage();
-    return pipe(
-      message,
-      O.fromNullable,
-      O.fold(
-        () => baseMessage,
-        (r) => {
-          return `${baseMessage}: ${r}`;
-        }
-      )
-    );
-  }
-
-  public static baseMessage(): string {
-    return 'Unknown error occurred';
+    super(ErrorFactory.formatMessage(messageComponents, message));
   }
 }

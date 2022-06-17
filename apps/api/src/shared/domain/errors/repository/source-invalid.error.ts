@@ -1,6 +1,14 @@
 import { InternalServerErrorException } from '@nestjs/common';
-import { pipe } from 'fp-ts/lib/function';
-import * as O from 'fp-ts/lib/Option';
+
+import { ErrorFactory, ErrorMessageComponents } from '../error-factory';
+
+/**
+ * Error message components for this error
+ */
+const messageComponents: ErrorMessageComponents = {
+  base: 'Source contains insufficient or invalid data',
+  action: 'Please review requested record at source',
+};
 
 /**
  * Common domain error, when item returned from source is invalid
@@ -11,24 +19,6 @@ import * as O from 'fp-ts/lib/Option';
  */
 export class SourceInvalidError extends InternalServerErrorException {
   constructor(message?: string) {
-    super(SourceInvalidError.initMessage(message));
-  }
-
-  public static initMessage(message: string): string {
-    const baseMessage = SourceInvalidError.baseMessage();
-    return pipe(
-      message,
-      O.fromNullable,
-      O.fold(
-        () => baseMessage,
-        (r) => {
-          return `${baseMessage}: ${r}`;
-        }
-      )
-    );
-  }
-
-  public static baseMessage(): string {
-    return 'Course is invalid';
+    super(ErrorFactory.formatMessage(messageComponents, message));
   }
 }

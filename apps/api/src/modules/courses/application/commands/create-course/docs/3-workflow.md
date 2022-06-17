@@ -170,7 +170,7 @@ Else
 
 #### Output: Success
 
-- CourseCreatedEvent
+- void
 
 #### Output: Fail
 
