@@ -31,7 +31,10 @@ export class FakeCourseRepository implements CourseRepository {
                 `Course with externalId ${externalId} not found`
               );
             },
-            (course) => course
+            // this mimics the fact that all non-fake adapters
+            // will come with a mapper, which will perform a check
+            // prior to return
+            (course) => Course.check(course)
           )
         );
       },

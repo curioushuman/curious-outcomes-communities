@@ -2,10 +2,18 @@ import { ParticipantSource } from '../../domain/entities/participant-source';
 import { ExternalId } from '../../domain/value-objects/external-id';
 import { ParticipantBuilder } from './participant.builder';
 import { defaultUserId } from '../../../../identity-and-access/test/builders/user.builder';
-import { defaultCourseSourceId } from './course-source.builder';
+import {
+  CourseSourceBuilder,
+  defaultCourseSourceId,
+} from './course-source.builder';
 
 /**
  * A builder for Participant Sources to play with in testing.
+ *
+ * NOTES
+ * - not including courseId here on purpose
+ *   as currently it is NOT returned from source
+ *   we obtain this during hydration
  */
 
 export const ParticipantSourceBuilder = () => {
@@ -14,21 +22,21 @@ export const ParticipantSourceBuilder = () => {
    */
   const defaultProperties = {
     id: '5008s1234519CjIAAU',
+    participantId: null,
+    externalCourseId: defaultCourseSourceId,
+    userId: defaultUserId,
     firstName: 'Jake',
     lastName: 'Blues',
     email: 'jake@blues.com',
-    externalCourseId: defaultCourseSourceId,
-    userId: defaultUserId,
-    participantId: null,
   };
   const overrides = {
     id: '5008s1234519CjIAAU',
+    participantId: null,
+    externalCourseId: defaultCourseSourceId,
+    userId: defaultUserId,
     firstName: 'Jake',
     lastName: 'Blues',
     email: 'jake@blues.com',
-    externalCourseId: defaultCourseSourceId,
-    userId: defaultUserId,
-    participantId: null,
   };
 
   return {
@@ -71,6 +79,11 @@ export const ParticipantSourceBuilder = () => {
 
     exists() {
       overrides.id = ExternalId.check('ThisSourceExists');
+      return this;
+    },
+
+    courseExists() {
+      overrides.externalCourseId = CourseSourceBuilder().exists().build().id;
       return this;
     },
 

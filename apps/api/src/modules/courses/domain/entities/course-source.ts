@@ -21,9 +21,11 @@ export const CourseSource = Record({
 
 export type CourseSource = Static<typeof CourseSource>;
 
+// courseId must in fact be empty when we are creating a course (from source)
 const sourceForCreate = Record({
-  courseId: CourseId.Or(Null).withConstraint(
-    (id) => !id || `Source (${id}) already associated with a Course`
+  courseId: Optional(CourseId.Or(Null)).withConstraint(
+    (courseId) =>
+      !courseId || `Source (${courseId}) already associated with a Course`
   ),
 });
 export const CourseSourceForCreate = sourceForCreate.And(CourseSource);

@@ -37,7 +37,10 @@ export class FakeCourseSourceRepository implements CourseSourceRepository {
                 `Course source with id ${id} not found`
               );
             },
-            (source) => source
+            // this mimics the fact that all non-fake adapters
+            // will come with a mapper, which will perform a check
+            // prior to return
+            (source) => CourseSource.check(source)
           )
         );
       },

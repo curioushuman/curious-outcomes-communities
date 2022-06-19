@@ -39,7 +39,9 @@ export const logParse =
         return mappedError;
       }),
       TE.map((data: DataLike) => {
-        logger.verbose ? logger.verbose(data) : logger.log(data);
+        // I've moved this log into the tryCatch itself
+        // this way we get to see the data, whether it's successful or not
+        // logger.verbose ? logger.verbose(data) : logger.log(data);
         return data;
       })
     );

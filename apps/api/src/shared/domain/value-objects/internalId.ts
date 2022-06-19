@@ -10,12 +10,12 @@ import * as uuid from 'uuid';
 
 export const UUIDRegex = /^[0-9a-z-_]+$/;
 
-export const UUID = String.withBrand('UUID').withConstraint(
+export const InternalId = String.withConstraint(
   (maybeUUID) => UUIDRegex.test(maybeUUID) || 'Invalid UUID'
 );
 
-export type UUID = Static<typeof UUID>;
+export type InternalId = Static<typeof InternalId>;
 
-export const createUUID = (): UUID => {
-  return UUID.check(uuid.v4());
+export const createInternalId = (): InternalId => {
+  return InternalId.check(uuid.v4());
 };

@@ -9,12 +9,12 @@ import { ParticipantId } from '../value-objects/participant-id';
 
 export const Participant = Record({
   id: ParticipantId,
-  firstName: Optional(PersonName),
-  lastName: PersonName,
-  email: Email,
   externalId: ExternalId,
   courseId: CourseId,
   userId: UserId,
+  firstName: Optional(PersonName),
+  lastName: PersonName,
+  email: Email,
 });
 
 export type Participant = Static<typeof Participant>;

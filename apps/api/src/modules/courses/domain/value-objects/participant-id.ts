@@ -1,11 +1,14 @@
 import { Static } from 'runtypes';
 
-import { UUID, createUUID } from '../../../../shared/domain/value-objects/uuid';
+import {
+  InternalId,
+  createInternalId,
+} from '../../../../shared/domain/value-objects/internalId';
 
-export const ParticipantId = UUID.withBrand('ParticipantId');
+export const ParticipantId = InternalId.withBrand('ParticipantId');
 
 export type ParticipantId = Static<typeof ParticipantId>;
 
 export const createParticipantId = (): ParticipantId => {
-  return ParticipantId.check(createUUID());
+  return ParticipantId.check(createInternalId());
 };

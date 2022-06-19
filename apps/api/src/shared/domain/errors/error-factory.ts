@@ -9,6 +9,8 @@ import { SourceInvalidError } from './repository/source-invalid.error';
 import { RepositoryAuthenticationError } from './repository/authentication.error';
 import { RepositoryItemNotFoundError } from './repository/item-not-found.error';
 import { RepositoryServerError } from './repository/server.error';
+import { RepositoryServerUnavailableError } from './repository/server-unavailable.error';
+import { NotYetImplementedError } from './not-yet-implemented.error';
 
 /**
  * This is the minimum aspects of an error message you must provide
@@ -37,10 +39,12 @@ export interface ErrorMessageComponents {
 // I attempted to include them in the individual subclasses
 // but couldn't get the generic type for this class to work
 const errorDefinitions = {
-  RepositoryItemConflictError,
+  NotYetImplementedError,
   RepositoryAuthenticationError,
+  RepositoryItemConflictError,
   RepositoryItemNotFoundError,
   RepositoryServerError,
+  RepositoryServerUnavailableError,
   RequestInvalidError,
   SourceInvalidError,
 };
