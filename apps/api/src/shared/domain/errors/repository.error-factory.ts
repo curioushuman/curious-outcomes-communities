@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { ValidationError } from 'runtypes';
 
 import { RepositoryItemConflictError } from './repository/item-conflict.error';
 import { RepositoryAuthenticationError } from './repository/authentication.error';
@@ -29,6 +30,26 @@ const errorMap = {
 export abstract class RepositoryErrorFactory extends ErrorFactory<AllowedErrorTypeName> {
   constructor() {
     super(errorMap);
+  }
+
+  /**
+   * We ask our repositories to return a valid Type
+   * Validation errors are not repository specific
+   * Anything that is returned from any repository
+   * that is invalid should return a SourceInvalidError
+   */
+  private isValidationError(error: Error): boolean {
+    return error instanceof ValidationError;
+  }
+
+  /**
+   * We override the main error function to catch ValidationErrors
+   * in this repository context.
+   */
+  public error(error: Error, asErrorType?: AllowedErrorTypeName): Error {
+    return this.isValidationError(error)
+      ? super.error(error, 'SourceInvalidError')
+      : super.error(error, asErrorType);
   }
 
   abstract errorStatusCode(error: Error): number;

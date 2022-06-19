@@ -12,6 +12,7 @@ export type AllowedErrorTypeName = keyof typeof allowedErrors;
 
 const errorMap = {
   400: RequestInvalidError,
+  500: SourceInvalidError,
 };
 
 @Injectable()

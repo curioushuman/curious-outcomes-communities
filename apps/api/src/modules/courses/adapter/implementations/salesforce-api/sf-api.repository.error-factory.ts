@@ -29,7 +29,7 @@ type SalesforceApiRepositoryErrorOrArray =
 
 /**
  * Factory to interpret and produce consistent errors from the riddled mess
- * that is returned from Salesforce. Two types of individual error, and maybe
+ * that is returned from Salesforce. Two types of individual error, or maybe
  * even an array of errors.
  */
 
