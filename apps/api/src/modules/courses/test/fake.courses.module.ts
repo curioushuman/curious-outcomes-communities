@@ -12,8 +12,14 @@ import { CourseSourceRepository } from '../adapter/ports/course-source.repositor
 import { FakeCourseSourceRepository } from '../adapter/implementations/fake/fake.course-source.repository';
 import { ErrorFactory } from '../../../shared/domain/errors/error-factory';
 import { FakeRepositoryErrorFactory } from '../../../shared/adapter/fake.repository.error-factory';
+import { ParticipantRepository } from '../adapter/ports/participant.repository';
+import { FakeParticipantRepository } from '../adapter/implementations/fake/fake.participant.repository';
+import { ParticipantSourceRepository } from '../adapter/ports/participant-source.repository';
+import { FakeParticipantSourceRepository } from '../adapter/implementations/fake/fake.participant-source.repository';
+import { CreateParticipantHandler } from '../application/commands/create-participant/create-participant.command';
+import { ParticipantSourceHydrationService } from '../application/services/participant-source-hydration.service';
 
-const commandHandlers = [CreateCourseHandler];
+const commandHandlers = [CreateCourseHandler, CreateParticipantHandler];
 
 const repositories = [
   {
@@ -24,6 +30,11 @@ const repositories = [
     provide: CourseSourceRepository,
     useClass: FakeCourseSourceRepository,
   },
+  { provide: ParticipantRepository, useClass: FakeParticipantRepository },
+  {
+    provide: ParticipantSourceRepository,
+    useClass: FakeParticipantSourceRepository,
+  },
 ];
 
 const services = [
@@ -31,6 +42,7 @@ const services = [
     provide: ErrorFactory,
     useClass: FakeRepositoryErrorFactory,
   },
+  ParticipantSourceHydrationService,
 ];
 
 @Module({

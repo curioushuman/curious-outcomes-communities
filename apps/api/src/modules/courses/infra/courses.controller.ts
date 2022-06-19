@@ -57,7 +57,7 @@ export class CoursesController {
     return executeTask(task);
   }
 
-  @Post()
+  @Post('participants')
   async createParticipant(
     @Body() body: CreateParticipantRequestDto
   ): Promise<void> {
