@@ -11,6 +11,8 @@ import { Static, String } from 'runtypes';
  *       e.g. how do I include SF specific ID constraints?
  */
 
-export const ExternalId = String.withBrand('ExternalId');
+export const ExternalId = String.withBrand('ExternalId').withConstraint(
+  (externalId) => !!externalId || `External Id cannot be empty`
+);
 
 export type ExternalId = Static<typeof ExternalId>;

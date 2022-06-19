@@ -6,3 +6,15 @@ Scenario: Successfully hydrate a Participant Source
   When I attempt to hydrate
   Then a hydrated Participant Source should be returned
   And it should include a courseId related to externalCourseId
+
+Scenario: Fail; Source does not include course
+  Given I have an invalid Participant Source
+  When I attempt to hydrate
+  Then I should receive a SourceInvalidError
+  And no result is returned
+
+# Scenario: Fail; A related course could not be found
+  # Given I have an invalid Participant Source
+  # When I attempt to hydrate
+  # Then I should receive a SourceInvalidError
+  # And no result is returned

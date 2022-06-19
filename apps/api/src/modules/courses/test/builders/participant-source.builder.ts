@@ -73,7 +73,7 @@ export const ParticipantSourceBuilder = () => {
 
     invalidSource() {
       overrides.id = ExternalId.check('InvalidIdForFakeRepo');
-      overrides.lastName = '';
+      overrides.externalCourseId = '';
       return this;
     },
 

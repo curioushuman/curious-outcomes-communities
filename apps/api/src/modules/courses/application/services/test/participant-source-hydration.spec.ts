@@ -18,6 +18,7 @@ import {
 } from '../../../domain/entities/participant-source';
 import { ParticipantSourceBuilder } from '../../../test/builders/participant-source.builder';
 import { executeTask } from '../../../../../shared/utils/execute-task';
+import { SourceInvalidError } from '../../../../../shared/domain/errors/repository/source-invalid.error';
 
 /**
  * UNIT TEST
@@ -89,6 +90,36 @@ defineFeature(feature, (test) => {
 
     and('it should include a courseId related to externalCourseId', () => {
       expect(participantSourceHydrated.courseId).toEqual(course.id);
+    });
+  });
+
+  test('Fail; Source does not include course', ({ given, when, then, and }) => {
+    let participantSource: ParticipantSource;
+    let participantSourceHydrated: ParticipantSourceHydrated;
+    let error: Error;
+
+    given('I have an invalid Participant Source', () => {
+      participantSource = ParticipantSourceBuilder()
+        .invalidSource()
+        .buildNoCheck();
+    });
+
+    when('I attempt to hydrate', async () => {
+      try {
+        participantSourceHydrated = await executeTask(
+          hydrationService.hydrate(participantSource)
+        );
+      } catch (err) {
+        error = err;
+      }
+    });
+
+    then('I should receive a SourceInvalidError', () => {
+      expect(error).toBeInstanceOf(SourceInvalidError);
+    });
+
+    and('no result is returned', () => {
+      expect(participantSourceHydrated).toBeUndefined();
     });
   });
 });
