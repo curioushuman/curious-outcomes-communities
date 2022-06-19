@@ -87,6 +87,11 @@ export const ParticipantSourceBuilder = () => {
       return this;
     },
 
+    courseDoesntExist() {
+      overrides.externalCourseId = 'ThereIsNoSuchCourse';
+      return this;
+    },
+
     build(): ParticipantSource {
       return ParticipantSource.check({
         ...defaultProperties,

@@ -19,6 +19,7 @@ import {
 import { ParticipantSourceBuilder } from '../../../test/builders/participant-source.builder';
 import { executeTask } from '../../../../../shared/utils/execute-task';
 import { SourceInvalidError } from '../../../../../shared/domain/errors/repository/source-invalid.error';
+import { RepositoryItemNotFoundError } from '../../../../../shared/domain/errors/repository/item-not-found.error';
 
 /**
  * UNIT TEST
@@ -116,6 +117,45 @@ defineFeature(feature, (test) => {
 
     then('I should receive a SourceInvalidError', () => {
       expect(error).toBeInstanceOf(SourceInvalidError);
+    });
+
+    and('no result is returned', () => {
+      expect(participantSourceHydrated).toBeUndefined();
+    });
+  });
+
+  test('Fail; A related course could not be found', ({
+    given,
+    when,
+    then,
+    and,
+  }) => {
+    let participantSource: ParticipantSource;
+    let participantSourceHydrated: ParticipantSourceHydrated;
+    let error: Error;
+
+    given('I have a valid Participant Source', () => {
+      // below
+    });
+
+    and('a course DOES NOT exist that relates to the externalCourseId', () => {
+      participantSource = ParticipantSourceBuilder()
+        .courseDoesntExist()
+        .buildNoCheck();
+    });
+
+    when('I attempt to hydrate', async () => {
+      try {
+        participantSourceHydrated = await executeTask(
+          hydrationService.hydrate(participantSource)
+        );
+      } catch (err) {
+        error = err;
+      }
+    });
+
+    then('I should receive a RepositoryItemNotFoundError', () => {
+      expect(error).toBeInstanceOf(RepositoryItemNotFoundError);
     });
 
     and('no result is returned', () => {

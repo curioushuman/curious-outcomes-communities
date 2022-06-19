@@ -13,8 +13,9 @@ Scenario: Fail; Source does not include course
   Then I should receive a SourceInvalidError
   And no result is returned
 
-# Scenario: Fail; A related course could not be found
-  # Given I have an invalid Participant Source
-  # When I attempt to hydrate
-  # Then I should receive a SourceInvalidError
-  # And no result is returned
+Scenario: Fail; A related course could not be found
+  Given I have a valid Participant Source
+  And a course DOES NOT exist that relates to the externalCourseId
+  When I attempt to hydrate
+  Then I should receive a RepositoryItemNotFoundError
+  And no result is returned
