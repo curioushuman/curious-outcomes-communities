@@ -29,13 +29,25 @@ Extends Participant
 - RepoIdentifier
   - Dependent on repo
 
-### Source Record
+### ParticipantSource
 
 Extends Participant
 
 - Without UUID
 - Related Participant Id (from our system)
 - External Course Id
+
+### ParticipantSourceHydrated
+
+Extends ParticipantSource
+
+- courseId not optional
+
+### ParticipantSourceForCreate
+
+Extends ParticipantSourceHydrated
+
+- participantId must be empty
 
 ## Errors
 

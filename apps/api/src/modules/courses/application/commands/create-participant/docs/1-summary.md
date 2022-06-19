@@ -11,6 +11,8 @@
 - SourceRepo.findOne(ById)
   - We need to validate that a source object exists before we save it
   - We might as well grab the data while we're there
+- CourseRepo.findOne(ByExternalId)
+  - We need to associated our pax with a course record
 
 ### Output (results, events, errors)
 #### Success (singular result + event)

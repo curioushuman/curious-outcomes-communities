@@ -30,9 +30,9 @@ export class ParticipantSourceHydrationService {
    * you could run them concurrently using
    * one of the fp-ts sequence approaches
    */
-  hydrate(
+  hydrate = (
     participantSource: ParticipantSource
-  ): TE.TaskEither<Error, ParticipantSourceHydrated> {
+  ): TE.TaskEither<Error, ParticipantSourceHydrated> => {
     return pipe(
       participantSource,
       this.hydrateCourse,
@@ -47,7 +47,7 @@ export class ParticipantSourceHydrationService {
         )
       )
     );
-  }
+  };
 
   /**
    * TODO

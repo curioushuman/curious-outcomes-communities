@@ -87,6 +87,7 @@ const variationsForCreate = Record({
  * A Specific Type for ParticipantSource during Create context.
  *
  * * Main variation is participantId **MUST** be empty.
+ * * AND courseId must **NOT** be empty.
  *
  * A _Type_ `AND` _runtypes object_, used for runtime type checking / guarding
  */

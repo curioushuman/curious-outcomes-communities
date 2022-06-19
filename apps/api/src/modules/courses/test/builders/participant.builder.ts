@@ -1,9 +1,9 @@
-// import { CreateParticipantDto } from '../../application/commands/create-participant/create-participant.dto';
+import { CreateParticipantDto } from '../../application/commands/create-participant/create-participant.dto';
 import { Participant } from '../../domain/entities/participant';
 import { ParticipantSource } from '../../domain/entities/participant-source';
 import { CreateParticipantRequestDto } from '../../infra/dto/create-participant.request.dto';
 import { ParticipantSourceBuilder } from './participant-source.builder';
-import { defaultCourseId } from './course.builder';
+import { CourseBuilder, defaultCourseId } from './course.builder';
 import { defaultUserId } from '../../../../identity-and-access/test/builders/user.builder';
 
 /**
@@ -64,7 +64,7 @@ export const ParticipantBuilder = () => {
     invalidSource() {
       overrides.externalId = ParticipantSourceBuilder()
         .invalidSource()
-        .build().id;
+        .buildNoCheck().id;
       return this;
     },
 
@@ -87,6 +87,7 @@ export const ParticipantBuilder = () => {
 
     exists() {
       overrides.externalId = ParticipantSourceBuilder().exists().build().id;
+      overrides.courseId = CourseBuilder().exists().build().id;
       return this;
     },
 
@@ -122,11 +123,11 @@ export const ParticipantBuilder = () => {
       } as Participant;
     },
 
-    // buildDto(): CreateParticipantDto {
-    //   return CreateParticipantDto.check({
-    //     externalId: this.buildNoCheck().externalId,
-    //   });
-    // },
+    buildDto(): CreateParticipantDto {
+      return CreateParticipantDto.check({
+        externalId: this.buildNoCheck().externalId,
+      });
+    },
 
     buildRequestDto(): CreateParticipantRequestDto {
       return {

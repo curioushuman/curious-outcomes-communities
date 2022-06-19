@@ -2,10 +2,7 @@ import { ParticipantSource } from '../../domain/entities/participant-source';
 import { ExternalId } from '../../domain/value-objects/external-id';
 import { ParticipantBuilder } from './participant.builder';
 import { defaultUserId } from '../../../../identity-and-access/test/builders/user.builder';
-import {
-  CourseSourceBuilder,
-  defaultCourseSourceId,
-} from './course-source.builder';
+import { CourseBuilder } from './course.builder';
 
 /**
  * A builder for Participant Sources to play with in testing.
@@ -16,23 +13,25 @@ import {
  *   we obtain this during hydration
  */
 
+const existingCourseSourceId = CourseBuilder().exists().build().externalId;
+
 export const ParticipantSourceBuilder = () => {
   /**
    * Default properties don't exist in source repository
    */
   const defaultProperties = {
-    id: '5008s1234519CjIAAU',
+    id: '5008s1234567CjIAAU',
     participantId: null,
-    externalCourseId: defaultCourseSourceId,
+    externalCourseId: existingCourseSourceId,
     userId: defaultUserId,
     firstName: 'Jake',
     lastName: 'Blues',
     email: 'jake@blues.com',
   };
   const overrides = {
-    id: '5008s1234519CjIAAU',
+    id: '5008s1234567CjIAAU',
     participantId: null,
-    externalCourseId: defaultCourseSourceId,
+    externalCourseId: existingCourseSourceId,
     userId: defaultUserId,
     firstName: 'Jake',
     lastName: 'Blues',
@@ -42,7 +41,7 @@ export const ParticipantSourceBuilder = () => {
   return {
     alpha() {
       const alpha = ParticipantBuilder().alpha().build();
-      overrides.id = alpha.id;
+      overrides.id = alpha.externalId;
       overrides.firstName = alpha.firstName;
       overrides.lastName = alpha.lastName;
       overrides.email = alpha.email;
@@ -51,7 +50,7 @@ export const ParticipantSourceBuilder = () => {
 
     beta() {
       const beta = ParticipantBuilder().beta().build();
-      overrides.id = beta.id;
+      overrides.id = beta.externalId;
       overrides.firstName = beta.firstName;
       overrides.lastName = beta.lastName;
       overrides.email = beta.email;
@@ -83,7 +82,6 @@ export const ParticipantSourceBuilder = () => {
     },
 
     courseExists() {
-      overrides.externalCourseId = CourseSourceBuilder().exists().build().id;
       return this;
     },
 

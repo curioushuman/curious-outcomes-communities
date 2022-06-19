@@ -20,11 +20,12 @@
 
 1. Validate input
 2. Get external record
-3. Validate participant
-4. Save participant
-5. Send notifications
-6. Emit event
-7. Return success
+3. Hydrate participant
+4. Validate participant
+5. Save participant
+6. Send notifications
+7. Emit event
+8. Return success
 
 ## Steps, detail
 
@@ -86,7 +87,32 @@ Else
   return ParticipantSource
 ```
 
-### Step 3. Transform/validate course
+### Step 3. Hydrate participant
+
+#### Input
+- ParticipantSource
+
+#### Output: Success
+
+- ParticipantSourceHydrated
+
+#### Output: Fail
+
+- SourceInvalidError
+  - Extends BadRequestException
+
+#### Steps (pseudocode)
+
+```
+Find Course based on externalCourseId
+If Course cannot be found for externalCourseId
+  return SourceInvalidError
+Else
+  Add course info to ParticipantSource
+return ParticipantSourceHydrated
+```
+
+### Step 4. Transform/validate participant
 
 #### Input
 - ParticipantSource
@@ -115,7 +141,7 @@ Else
   return Course
 ```
 
-### Step 4. Save course
+### Step 5. Save participant
 
 #### Input
 - Course
@@ -139,7 +165,7 @@ Else
   return SavedCourse
 ```
 
-### Step 5. Send notifications
+### Step 6. Send notifications
 
 #### Input
 - SavedCourse
@@ -163,7 +189,7 @@ Else
   return
 ```
 
-### Step 6. Emit event
+### Step 7. Emit event
 
 #### Input
 - SavedCourse
@@ -187,4 +213,4 @@ Else
   return
 ```
 
-### Step 7. Return success
+### Step 8. Return success
