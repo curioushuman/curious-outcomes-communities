@@ -29,24 +29,6 @@ export class SalesforceApiCourseSourceRepository
     this.logger.setContext(SalesforceApiCourseSourceRepository.name);
   }
 
-  /**
-   * TODO
-   * - [ ] find a useful+public SF endpoint for this
-   */
-  livenessProbe = (): TE.TaskEither<Error, boolean> => {
-    return TE.tryCatch(
-      async () => {
-        const request$ = this.httpService.get(
-          `https://pokeapi.co/api/v2/language/en`
-        );
-        await firstValueFrom(request$);
-        // if a value is received, without an error we're good
-        return true;
-      },
-      (error: Error) => error as Error
-    );
-  };
-
   findOne = (dto: FindCourseSourceDto): TE.TaskEither<Error, CourseSource> => {
     const { id } = dto;
     if (!id) {

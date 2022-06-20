@@ -3,8 +3,8 @@ import { Test } from '@nestjs/testing';
 
 import { LoggableLogger } from '@curioushuman/loggable';
 
-import { SalesforceApiCourseSourceRepository } from '../sf-api.course-source.repository';
-import { CourseSourceRepository } from '../../../ports/course-source.repository';
+import { SalesforceApiRepositoryHealthCheck } from '../sf-api.repository.health-check';
+import { RepositoryHealthCheck } from '../../../ports/repository.health-check';
 import { executeTask } from '../../../../../../shared/utils/execute-task';
 import { SalesforceApiHttpConfigService } from '../sf-api.http-config.service';
 import { RepositoryServerUnavailableError } from '../../../../../../shared/domain/errors/repository/server-unavailable.error';
@@ -17,16 +17,14 @@ import { HttpModule } from '@nestjs/axios';
  *
  * Scope
  * - repository connection
- *
- * NOTE: repository functions and behaviours handled in separate tests
  */
 
-const feature = loadFeature('./liveness.feature', {
+const feature = loadFeature('./healthcheck.feature', {
   loadRelativePath: true,
 });
 
 defineFeature(feature, (test) => {
-  let repository: SalesforceApiCourseSourceRepository;
+  let healthcheck: SalesforceApiRepositoryHealthCheck;
   let httpConfigService: SalesforceApiHttpConfigService;
 
   beforeAll(async () => {
@@ -39,15 +37,15 @@ defineFeature(feature, (test) => {
       providers: [
         LoggableLogger,
         {
-          provide: CourseSourceRepository,
-          useClass: SalesforceApiCourseSourceRepository,
+          provide: RepositoryHealthCheck,
+          useClass: SalesforceApiRepositoryHealthCheck,
         },
       ],
     }).compile();
 
-    repository = moduleRef.get<CourseSourceRepository>(
-      CourseSourceRepository
-    ) as SalesforceApiCourseSourceRepository;
+    healthcheck = moduleRef.get<RepositoryHealthCheck>(
+      RepositoryHealthCheck
+    ) as SalesforceApiRepositoryHealthCheck;
     httpConfigService = moduleRef.get<SalesforceApiHttpConfigService>(
       SalesforceApiHttpConfigService
     );
@@ -62,7 +60,7 @@ defineFeature(feature, (test) => {
 
     when('I attempt attempt to check live status', async () => {
       try {
-        result = await executeTask(repository.livenessProbe());
+        result = await executeTask(healthcheck.livenessProbe());
       } catch (err) {
         error = err;
         expect(error).toBeUndefined();
@@ -92,7 +90,7 @@ defineFeature(feature, (test) => {
     when('I attempt to access the source', async () => {
       // TODO - get this to work
       // try {
-      //   result = await executeTask(repository.livenessProbe());
+      //   result = await executeTask(healthcheck.livenessProbe());
       // } catch (err) {
       //   error = err;
       //   console.log(err);
