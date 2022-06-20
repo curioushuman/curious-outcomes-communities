@@ -24,7 +24,7 @@ import { CourseSourceManufacturer } from './builders/course-source.manufacturer'
  * - handling of their various responses/errors
  */
 
-const feature = loadFeature('./find-one.feature', {
+const feature = loadFeature('./course-source.find-one.feature', {
   loadRelativePath: true,
 });
 

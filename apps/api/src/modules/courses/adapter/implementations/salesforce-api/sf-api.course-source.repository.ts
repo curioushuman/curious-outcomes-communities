@@ -10,10 +10,7 @@ import { CourseSourceRepository } from '../../ports/course-source.repository';
 import { FindCourseSourceDto } from '../../../application/queries/find-course-source/find-course-source.dto';
 import { RequestInvalidError } from '../../../../../shared/domain/errors/request-invalid.error';
 import { SalesforceApiCourseSourceMapper } from './sf-api.course-source.mapper';
-import {
-  SalesforceApiCourseSource,
-  salesforceApiCourseSourceFields,
-} from './types/sf-api.course-source';
+import { SalesforceApiCourseSource } from './types/sf-api.course-source';
 
 @Injectable()
 export class SalesforceApiCourseSourceRepository
@@ -37,8 +34,7 @@ export class SalesforceApiCourseSourceRepository
       );
     }
     const endpoint = `sobjects/${this.sourceName}/${id}`;
-    // TODO: use keyof to get the fields
-    const fields = salesforceApiCourseSourceFields;
+    const fields = Object.keys(SalesforceApiCourseSource);
     this.logger.debug(`Finding ${this.sourceName} with endpoint ${endpoint}`);
     return TE.tryCatch(
       async () => {
@@ -88,11 +84,12 @@ export class SalesforceApiCourseSourceRepository
   //           'Invalid ID supplied to findOne() in SalesforceApi'
   //         );
   //       }
+  //       const fields = Object.keys(SalesforceApiCourseSource);
   //       const request$ = this.httpService.get<SalesforceApiCourseSource>(
   //         `sobjects/${this.sourceName}/${id}`,
   //         {
   //           params: {
-  //             fields: salesforceApiCourseSourceFields,
+  //             fields,
   //           },
   //         }
   //       );
