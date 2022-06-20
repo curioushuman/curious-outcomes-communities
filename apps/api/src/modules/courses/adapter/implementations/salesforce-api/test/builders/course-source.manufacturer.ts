@@ -3,19 +3,17 @@ import * as TE from 'fp-ts/lib/TaskEither';
 
 import { CourseSource } from '../../../../../domain/entities/course-source';
 import { SalesforceApiCourseSourceMapper } from '../../sf-api.course-source.mapper';
-import {
-  SalesforceApiCourseSource,
-  SalesforceApiCourseSourceCreate,
-} from '../../types/sf-api.course-source';
+import { SalesforceApiCourseSource } from '../../types/sf-api.course-source';
 import { SalesforceApiRepositoryError } from '../../sf-api.repository.error-factory';
-import { SalesforceApiManufacturer, SourceName } from './sf-api.manufacturer';
+import { SalesforceApiSourceManufacturer } from './sf-api.source.manufacturer';
+import { SalesforceApiCourseSourceCreate } from './types/sf-api.course-create';
 
 /**
  * Creates/deletes records in Salesforce around tests
  */
 
-export class CourseSourceManufacturer extends SalesforceApiManufacturer<CourseSource> {
-  sourceName: SourceName = 'Case';
+export class CourseSourceManufacturer extends SalesforceApiSourceManufacturer<CourseSource> {
+  sourceName = 'Case';
   labelFieldName = 'Subject';
 
   /**
