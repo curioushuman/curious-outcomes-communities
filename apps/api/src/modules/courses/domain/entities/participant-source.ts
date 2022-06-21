@@ -26,7 +26,7 @@ export const ParticipantSource = Record({
   participantId: Optional(ParticipantId.Or(Null)),
   externalCourseId: ExternalId,
   courseId: Optional(CourseId.Or(Null)),
-  userId: UserId,
+  userId: Optional(UserId.Or(Null)),
   firstName: Optional(PersonName),
   lastName: PersonName,
   email: Email,
@@ -44,6 +44,7 @@ export type ParticipantSource = Static<typeof ParticipantSource>;
  */
 const variationsForHydrated = Record({
   courseId: CourseId,
+  userId: UserId,
 });
 
 /**
@@ -53,6 +54,7 @@ const variationsForHydrated = Record({
  * A Specific Type for ParticipantSource once hydration has occurred
  *
  * * Main variation is courseId must **NOT** be empty.
+ * * AND userId **NOT** empty.
  *
  * A _Type_ `AND` _runtypes object_, used for runtime type checking / guarding
  */
@@ -73,6 +75,7 @@ export type ParticipantSourceHydrated = Static<
  */
 const variationsForCreate = Record({
   courseId: CourseId,
+  userId: UserId,
   participantId: Optional(ParticipantId.Or(Null)).withConstraint(
     (participantId) =>
       !participantId ||
@@ -88,6 +91,7 @@ const variationsForCreate = Record({
  *
  * * Main variation is participantId **MUST** be empty.
  * * AND courseId must **NOT** be empty.
+ * * AND userId **NOT** empty.
  *
  * A _Type_ `AND` _runtypes object_, used for runtime type checking / guarding
  */

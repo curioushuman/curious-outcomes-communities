@@ -4,14 +4,14 @@ import { HttpModule, HttpService } from '@nestjs/axios';
 
 import { LoggableLogger } from '@curioushuman/loggable';
 
-import { SalesforceApiCourseSourceRepository } from '../sf-api.course-source.repository';
-import { CourseSourceRepository } from '../../../ports/course-source.repository';
+import { SalesforceApiParticipantSourceRepository } from '../sf-api.participant-source.repository';
+import { ParticipantSourceRepository } from '../../../ports/participant-source.repository';
 import { executeTask } from '../../../../../../shared/utils/execute-task';
-import { CourseSource } from '../../../../domain/entities/course-source';
-import { FindCourseSourceDto } from '../../../../application/queries/find-course-source/find-course-source.dto';
-import { CourseSourceBuilder } from '../../../../test/builders/course-source.builder';
+import { ParticipantSource } from '../../../../domain/entities/participant-source';
+import { FindParticipantSourceDto } from '../../../../application/queries/find-participant-source/find-participant-source.dto';
+import { ParticipantSourceBuilder } from '../../../../test/builders/participant-source.builder';
 import { SalesforceApiHttpConfigService } from '../sf-api.http-config.service';
-import { CourseSourceManufacturer } from './builders/course-source.manufacturer';
+import { ParticipantSourceManufacturer } from './builders/participant-source.manufacturer';
 
 /**
  * INTEGRATION TEST
@@ -24,14 +24,14 @@ import { CourseSourceManufacturer } from './builders/course-source.manufacturer'
  * - handling of their various responses/errors
  */
 
-const feature = loadFeature('./course-source.find-one.feature', {
+const feature = loadFeature('./participant-source.find-one.feature', {
   loadRelativePath: true,
 });
 
 defineFeature(feature, (test) => {
-  let courseSourceManufacturer: CourseSourceManufacturer;
-  let repository: SalesforceApiCourseSourceRepository;
-  let findCourseSourceDto: FindCourseSourceDto;
+  let participantSourceManufacturer: ParticipantSourceManufacturer;
+  let repository: SalesforceApiParticipantSourceRepository;
+  let findParticipantSourceDto: FindParticipantSourceDto;
   let httpService: HttpService;
 
   beforeAll(async () => {
@@ -44,30 +44,35 @@ defineFeature(feature, (test) => {
       providers: [
         LoggableLogger,
         {
-          provide: CourseSourceRepository,
-          useClass: SalesforceApiCourseSourceRepository,
+          provide: ParticipantSourceRepository,
+          useClass: SalesforceApiParticipantSourceRepository,
         },
       ],
     }).compile();
 
-    repository = moduleRef.get<CourseSourceRepository>(
-      CourseSourceRepository
-    ) as SalesforceApiCourseSourceRepository;
+    repository = moduleRef.get<ParticipantSourceRepository>(
+      ParticipantSourceRepository
+    ) as SalesforceApiParticipantSourceRepository;
     httpService = moduleRef.get<HttpService>(HttpService);
 
-    courseSourceManufacturer = new CourseSourceManufacturer(
+    participantSourceManufacturer = new ParticipantSourceManufacturer(
       httpService,
-      'course-find-one-ext-spec'
+      'participant-find-one-ext-spec'
     );
   });
 
   afterAll(async () => {
-    await courseSourceManufacturer.tidyUp();
+    await participantSourceManufacturer.tidyUp();
   });
 
-  test('Successfully find one course source', ({ given, and, when, then }) => {
-    let courseSource: CourseSource;
-    let result: CourseSource;
+  test('Successfully find one participant source', ({
+    given,
+    and,
+    when,
+    then,
+  }) => {
+    let participantSource: ParticipantSource;
+    let result: ParticipantSource;
     let error: Error;
 
     given('I am authorised to access the source', () => {
@@ -75,15 +80,17 @@ defineFeature(feature, (test) => {
     });
 
     and('a matching record exists at the source', async () => {
-      courseSource = await courseSourceManufacturer.build();
-      findCourseSourceDto = {
-        id: courseSource.id,
+      participantSource = await participantSourceManufacturer.build();
+      findParticipantSourceDto = {
+        id: participantSource.id,
       };
     });
 
     when('I request the source by ID', async () => {
       try {
-        result = await executeTask(repository.findOne(findCourseSourceDto));
+        result = await executeTask(
+          repository.findOne(findParticipantSourceDto)
+        );
       } catch (err) {
         error = err;
         expect(error).toBeUndefined();
@@ -91,7 +98,7 @@ defineFeature(feature, (test) => {
     });
 
     then('a source corresponding to that ID should be returned', () => {
-      expect(result.id).toEqual(courseSource.id);
+      expect(result.id).toEqual(participantSource.id);
     });
   });
 
@@ -101,8 +108,8 @@ defineFeature(feature, (test) => {
     when,
     then,
   }) => {
-    let absentCourseSource: CourseSource;
-    let result: CourseSource;
+    let absentParticipantSource: ParticipantSource;
+    let result: ParticipantSource;
     let error: Error;
 
     given('I am authorised to access the source', () => {
@@ -110,15 +117,19 @@ defineFeature(feature, (test) => {
     });
 
     and('a matching record DOES NOT exist at the source', () => {
-      absentCourseSource = CourseSourceBuilder().noMatchingSource().build();
-      findCourseSourceDto = {
-        id: absentCourseSource.id,
+      absentParticipantSource = ParticipantSourceBuilder()
+        .noMatchingSource()
+        .build();
+      findParticipantSourceDto = {
+        id: absentParticipantSource.id,
       };
     });
 
     when('I request the source by ID', async () => {
       try {
-        result = await executeTask(repository.findOne(findCourseSourceDto));
+        result = await executeTask(
+          repository.findOne(findParticipantSourceDto)
+        );
       } catch (err) {
         error = err;
       }
