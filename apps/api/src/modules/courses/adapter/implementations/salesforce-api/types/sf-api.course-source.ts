@@ -33,23 +33,3 @@ export const SalesforceApiCourseSources = Record({
 export type SalesforceApiCourseSources = Static<
   typeof SalesforceApiCourseSources
 >;
-
-/**
- * We use the below for testing only
- * Currently we don't support the creation of new records in Salesforce
- *
- * NOTE: this is the min. num of fields required to create a record
- */
-export const SalesforceApiCourseSourceCreate = Record({
-  Subject: String,
-  Status: String,
-  Type: String,
-  Type_sub__c: String,
-  Case_Year__c: String,
-  RecordTypeId: String,
-  CO_course_ID__c: Optional(String),
-});
-
-export type SalesforceApiCourseSourceCreate = Static<
-  typeof SalesforceApiCourseSourceCreate
->;

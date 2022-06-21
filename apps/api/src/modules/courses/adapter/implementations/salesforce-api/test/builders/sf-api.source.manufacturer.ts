@@ -12,18 +12,11 @@ import { SalesforceApiRepositoryError } from '../../sf-api.repository.error-fact
 import { ParticipantSource } from '../../../../../domain/entities/participant-source';
 import { SalesforceApiParticipantSource } from '../../types/sf-api.participant-source';
 import { SalesforceApiManufacturer } from './sf-api.manufacturer';
-import { SalesforceApiCourseSourceCreate } from './types/sf-api.course-create';
-import { SalesforceApiParticipantSourceCreate } from './types/sf-api.participant-create';
+import { SalesforceApiCourseCreate } from './types/sf-api.course-create';
+import { SalesforceApiParticipantCreate } from './types/sf-api.participant-create';
 
 /**
  * Creates/deletes records in Salesforce around tests
- *
- * ! UP TO HERE!!!
- * Creating an abstract class
- * Making sure course still works
- * * Then create person and organisation manufacturers
- * * Then finish off participant manufacturer
- * * And finally, the participant tests
  */
 
 type SourceTypes = CourseSource | ParticipantSource;
@@ -41,9 +34,9 @@ type SalesforceType<SourceType> = SourceType extends CourseSource
   : never;
 
 type CreateType<SourceType> = SourceType extends CourseSource
-  ? SalesforceApiCourseSourceCreate
+  ? SalesforceApiCourseCreate
   : SourceType extends ParticipantSource
-  ? SalesforceApiParticipantSourceCreate
+  ? SalesforceApiParticipantCreate
   : never;
 
 export abstract class SalesforceApiSourceManufacturer<
@@ -72,6 +65,8 @@ export abstract class SalesforceApiSourceManufacturer<
     CreateType<SourceType>
   >;
 
+  abstract tidyExtra(): TE.TaskEither<SalesforceApiRepositoryError, void>;
+
   /**
    * Additional
    */
@@ -80,9 +75,9 @@ export abstract class SalesforceApiSourceManufacturer<
   async build(): Promise<SourceType> {
     const task = pipe(
       this.default(),
-      TE.chain((sourceCreate) => this.create(sourceCreate)),
+      TE.chain((sourceCreate) => this.save(sourceCreate)),
       // this delays the next call by half a second
-      TE.chain((val) => pipe(val, T.of, T.delay(500), TE.fromTask)),
+      TE.chain((sourceId) => pipe(sourceId, T.of, T.delay(500), TE.fromTask)),
       // passes on through
       TE.chain((id) => this.findById(id))
     );

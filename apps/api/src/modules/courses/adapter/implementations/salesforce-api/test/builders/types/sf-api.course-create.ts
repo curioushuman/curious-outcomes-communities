@@ -1,6 +1,9 @@
 import { Optional, Record, Static, String } from 'runtypes';
 
-export const SalesforceApiCourseSourceCreate = Record({
+/**
+ * Min. fields required to create a Course in Salesforce
+ */
+export const SalesforceApiCourseCreate = Record({
   Subject: String,
   Status: String,
   Type: String,
@@ -10,6 +13,6 @@ export const SalesforceApiCourseSourceCreate = Record({
   CO_course_ID__c: Optional(String),
 });
 
-export type SalesforceApiCourseSourceCreate = Static<
-  typeof SalesforceApiCourseSourceCreate
+export type SalesforceApiCourseCreate = Static<
+  typeof SalesforceApiCourseCreate
 >;

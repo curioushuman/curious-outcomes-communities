@@ -6,7 +6,7 @@ import { SalesforceApiCourseSourceMapper } from '../../sf-api.course-source.mapp
 import { SalesforceApiCourseSource } from '../../types/sf-api.course-source';
 import { SalesforceApiRepositoryError } from '../../sf-api.repository.error-factory';
 import { SalesforceApiSourceManufacturer } from './sf-api.source.manufacturer';
-import { SalesforceApiCourseSourceCreate } from './types/sf-api.course-create';
+import { SalesforceApiCourseCreate } from './types/sf-api.course-create';
 
 /**
  * Creates/deletes records in Salesforce around tests
@@ -26,14 +26,22 @@ export class CourseSourceManufacturer extends SalesforceApiSourceManufacturer<Co
     super(httpService, context);
   }
 
+  /**
+   * Abstract functions
+   */
+  tidyExtra = (): TE.TaskEither<SalesforceApiRepositoryError, void> => {
+    let noop: undefined;
+    return TE.right(noop);
+  };
+
   default = (): TE.TaskEither<
     SalesforceApiRepositoryError,
-    SalesforceApiCourseSourceCreate
+    SalesforceApiCourseCreate
   > => {
     return TE.right(this.populateDefault());
   };
 
-  populateDefault = (): SalesforceApiCourseSourceCreate => {
+  populateDefault = (): SalesforceApiCourseCreate => {
     return {
       Subject: this.contextualLabel(),
       Status: 'In progress',

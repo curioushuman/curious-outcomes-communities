@@ -8,7 +8,7 @@ import { ExternalId } from '../../../../../domain/value-objects/external-id';
 import { executeTask } from '../../../../../../../shared/utils/execute-task';
 import { SalesforceApiRepositoryError } from '../../sf-api.repository.error-factory';
 
-type SalesforceItemForDelete = {
+type SalesforceItemWithId = {
   Id: string;
 };
 
@@ -30,6 +30,8 @@ export abstract class SalesforceApiManufacturer<CreateType> {
    */
   abstract default(): TE.TaskEither<SalesforceApiRepositoryError, CreateType>;
 
+  abstract tidyExtra(): TE.TaskEither<SalesforceApiRepositoryError, void>;
+
   /**
    * Other functions
    */
@@ -47,15 +49,15 @@ export abstract class SalesforceApiManufacturer<CreateType> {
     return name.concat(this.randomString(), ' ', this.context);
   }
 
-  async buildNoReturn(): Promise<void> {
+  async create(): Promise<ExternalId> {
     const task = pipe(
       this.default(),
-      TE.chain((sourceCreate) => this.create(sourceCreate))
+      TE.chain((sourceCreate) => this.save(sourceCreate))
     );
-    executeTask(task);
+    return executeTask(task);
   }
 
-  protected create = (
+  protected save = (
     createSource: CreateType
   ): TE.TaskEither<SalesforceApiRepositoryError, ExternalId> => {
     return TE.tryCatch(
@@ -74,23 +76,24 @@ export abstract class SalesforceApiManufacturer<CreateType> {
     );
   };
 
-  async tidyUp(): Promise<readonly void[]> {
+  async tidyUp(): Promise<void> {
     const task = pipe(
       this.findAllForDelete(),
-      TE.chain((all) => pipe(all, this.deleteAll, TE.sequenceArray))
+      TE.chain((all) => pipe(all, this.deleteAll, TE.sequenceArray)),
+      TE.chain(() => this.tidyExtra())
     );
     return executeTask(task);
   }
 
   private findAllForDelete = (): TE.TaskEither<
     SalesforceApiRepositoryError,
-    SalesforceItemForDelete[]
+    SalesforceItemWithId[]
   > => {
     return TE.tryCatch(
       async () => {
         const q = `SELECT Id FROM ${this.sourceName} WHERE ${this.labelFieldName} LIKE '%${this.context}'`;
         const request$ = this.httpService.get<{
-          records: SalesforceItemForDelete[];
+          records: SalesforceItemWithId[];
         }>(`query`, {
           params: {
             q,
@@ -107,7 +110,7 @@ export abstract class SalesforceApiManufacturer<CreateType> {
   };
 
   private deleteAll = (
-    items: SalesforceItemForDelete[]
+    items: SalesforceItemWithId[]
   ): TE.TaskEither<Error, void>[] => {
     return items.map((item) => this.deleteOne(item.Id as ExternalId));
   };
@@ -129,7 +132,7 @@ export abstract class SalesforceApiManufacturer<CreateType> {
   protected handleError = (
     error: SalesforceApiRepositoryError
   ): SalesforceApiRepositoryError => {
-    console.log(error);
+    console.log(error.response.data);
     return error;
   };
 }
