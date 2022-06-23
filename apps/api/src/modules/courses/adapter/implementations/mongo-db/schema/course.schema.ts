@@ -5,9 +5,20 @@ import type { Course } from '../../../../domain/entities/course';
 import { ExternalId } from '../../../../domain/value-objects/external-id';
 import { CourseName } from '../../../../domain/value-objects/course-name';
 import { Slug } from '../../../../../../shared/domain/value-objects/slug';
+import { CourseId } from '../../../../domain/value-objects/course-id';
+
+/**
+ * Schema for Course
+ *
+ * NOTE:
+ * - I'm using id for my field, even though MongoDb uses _id for the primary key
+ */
 
 @Schema()
 export class MongoDbCourse implements Course {
+  @Prop({ required: true, unique: true, type: String })
+  id!: CourseId;
+
   @Prop({ required: true, unique: true, type: String })
   name!: CourseName;
 
